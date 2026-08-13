@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
 
 :root {
-  --bg: #F8F8F6;
-  --bg-alt: #F8F8F6;
+  --bg: #FFFFFF;
+  --bg-alt: #FFFFFF;
   --text: #0E0E0E;
   --text-light: #9A9895;
   --accent-red: #BF0A19;
