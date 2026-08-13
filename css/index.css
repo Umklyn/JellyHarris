@@ -63,6 +63,7 @@
 .hero-name-line {
   position: relative;
   display: inline-block;
+  align-self: flex-start;
   font-family: var(--font-display);
   font-size: clamp(4rem, 11vw, 10rem);
   font-weight: 400;
