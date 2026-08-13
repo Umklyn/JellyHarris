@@ -49,6 +49,9 @@
         <button class="sidebar-btn" data-panel="articles">
           <span>Articles</span>
         </button>
+        <button class="sidebar-btn" data-panel="messages">
+          <span>Messages</span>
+        </button>
       </div>
 
       <button class="sidebar-logout" id="logout-btn">Sign out</button>
@@ -67,6 +70,19 @@
         </div>
 
         <div class="albums-admin-list" id="albums-admin-list">
+          <div class="loading-state"><span class="label">Loading...</span></div>
+        </div>
+      </div>
+
+      <!-- Panel Messages -->
+      <div class="admin-panel" id="panel-messages" style="display:none;">
+        <div class="panel-header">
+          <div>
+            <span class="label">Inbox</span>
+            <h2>Messages</h2>
+          </div>
+        </div>
+        <div class="messages-admin-list" id="messages-admin-list">
           <div class="loading-state"><span class="label">Loading...</span></div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { db, auth } from "./firebase-init.js";
 import {
   collection, addDoc, getDocs, deleteDoc, doc, updateDoc,
-  query, orderBy, serverTimestamp
+  query, orderBy, serverTimestamp, where
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
@@ -55,6 +55,7 @@ onAuthStateChanged(auth, user => {
     document.getElementById("admin-dashboard").style.display = "grid";
     loadAlbums();
     loadArticles();
+    loadMessages();
   } else {
     document.getElementById("login-screen").style.display = "flex";
     document.getElementById("admin-dashboard").style.display = "none";
@@ -556,6 +557,67 @@ document.getElementById("close-preview-modal").addEventListener("click", () => {
 document.getElementById("back-to-edit-btn").addEventListener("click", () => {
   document.getElementById("modal-preview").classList.remove("open");
 });
+
+// --- Messages ---
+async function loadMessages() {
+  const list = document.getElementById("messages-admin-list");
+  list.innerHTML = `<div class="loading-state"><span class="label">Loading...</span></div>`;
+
+  try {
+    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      list.innerHTML = `<div class="loading-state"><span class="label">No messages yet.</span></div>`;
+      return;
+    }
+
+    list.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const m = docSnap.data();
+      const date = m.createdAt?.toDate?.()
+        ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(m.createdAt.toDate())
+        : "";
+
+      const item = document.createElement("div");
+      item.className = `message-item${m.read ? " read" : ""}`;
+      item.innerHTML = `
+        <div class="message-meta">
+          <span class="message-sender">${m.name || "Unknown"}</span>
+          <span class="message-email">${m.email || ""}</span>
+          <span class="message-date">${date}</span>
+        </div>
+        <div class="message-subject">${m.subject || "(no subject)"}</div>
+        <div class="message-body">${m.message || ""}</div>
+        <div class="message-actions">
+          <a class="admin-action-btn reply-btn" href="mailto:${m.email}?subject=Re: ${encodeURIComponent(m.subject || '')}&body=${encodeURIComponent('\n\n---\n' + (m.message || ''))}">Reply by email</a>
+          <button class="admin-action-btn delete" data-id="${docSnap.id}">Delete</button>
+        </div>
+      `;
+
+      if (!m.read) {
+        item.addEventListener("click", async () => {
+          if (!item.classList.contains("read")) {
+            item.classList.add("read");
+            await updateDoc(doc(db, "messages", docSnap.id), { read: true });
+          }
+        }, { once: true });
+      }
+
+      item.querySelector(".delete").addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (confirm("Delete this message?")) {
+          await deleteDoc(doc(db, "messages", docSnap.id));
+          loadMessages();
+        }
+      });
+
+      list.appendChild(item);
+    });
+  } catch (e) {
+    list.innerHTML = `<div class="loading-state"><span class="label">Error: ${e.message}</span></div>`;
+  }
+}
 
 // --- Modal helpers ---
 function openModal(id) {
