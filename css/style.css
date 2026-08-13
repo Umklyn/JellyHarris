@@ -65,6 +65,15 @@ nav {
   text-decoration: none;
   display: flex;
   align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-logo-text {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text);
 }
 
 .nav-logo-img {
