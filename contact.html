@@ -24,12 +24,15 @@
 
   <main class="page-content contact-main">
 
+    <header class="contact-header">
+      <span class="label">Get in touch</span>
+      <h1 class="display">Contact</h1>
+    </header>
+
     <div class="contact-grid">
 
       <div class="contact-info">
-        <span class="label">Get in touch</span>
-        <h1 class="display">Contact</h1>
-        <p>For collaborations, prints, exhibitions, or just to say hello.</p>
+        <p class="contact-intro">For collaborations, prints, exhibitions, or just to say hello.</p>
 
         <div class="contact-details">
           <div class="contact-detail">
@@ -39,6 +42,10 @@
           <div class="contact-detail">
             <span class="label">Based in</span>
             <p>Brussels, Belgium</p>
+          </div>
+          <div class="contact-detail">
+            <span class="label">Available for</span>
+            <p>Commissions & exhibitions worldwide</p>
           </div>
         </div>
       </div>
@@ -60,8 +67,10 @@
           <label class="label" for="message">Message</label>
           <textarea id="message" name="message" rows="6" required placeholder="Your message..."></textarea>
         </div>
-        <button type="submit" class="btn btn-red" id="submit-btn">Send message</button>
-        <p class="form-status" id="form-status"></p>
+        <div class="form-submit-row">
+          <button type="submit" class="btn btn-red" id="submit-btn">Send message</button>
+          <p class="form-status" id="form-status"></p>
+        </div>
       </form>
 
     </div>
