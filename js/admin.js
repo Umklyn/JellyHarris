@@ -41,6 +41,7 @@ document.getElementById("google-login-btn").addEventListener("click", async () =
 document.getElementById("logout-btn").addEventListener("click", async () => {
   try {
     await signOut(auth);
+    window.location.reload();
   } catch (e) {
     alert("Sign out error: " + e.message);
   }
