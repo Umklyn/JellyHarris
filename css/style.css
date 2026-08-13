@@ -283,6 +283,32 @@ p {
   border-color: var(--text);
 }
 
+.btn-link {
+  padding: 0;
+  color: var(--text);
+  position: relative;
+  gap: 0.5rem;
+}
+
+.btn-link::before {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent-red);
+  transition: width 0.3s cubic-bezier(.25,.46,.45,.94);
+}
+
+.btn-link:hover::before {
+  width: 100%;
+}
+
+.btn-link:hover {
+  color: var(--accent-red);
+}
+
 .btn-red {
   background: var(--accent-red);
   color: var(--white);
