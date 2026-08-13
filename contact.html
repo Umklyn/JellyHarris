@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,10 +9,10 @@
 </head>
 <body>
 
-  <nav id="main-nav">
+  <nav>
     <a href="index.html" class="nav-logo">Jelly Harris</a>
     <ul class="nav-links">
-      <li><a href="gallery.html">Galerie</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
       <li><a href="blog.html">Journal</a></li>
       <li><a href="contact.html" class="active">Contact</a></li>
     </ul>
@@ -23,9 +23,9 @@
     <div class="contact-grid">
 
       <div class="contact-info">
-        <span class="label">Entrer en contact</span>
-        <h1>Contact</h1>
-        <p>Pour toute demande de collaboration, de tirage, d'exposition ou simplement pour échanger.</p>
+        <span class="label">Get in touch</span>
+        <h1 class="display">Contact</h1>
+        <p>For collaborations, prints, exhibitions, or just to say hello.</p>
 
         <div class="contact-details">
           <div class="contact-detail">
@@ -33,30 +33,30 @@
             <a href="mailto:jelisa.harris@gmail.com">jelisa.harris@gmail.com</a>
           </div>
           <div class="contact-detail">
-            <span class="label">Basée à</span>
-            <p>Bruxelles, Belgique</p>
+            <span class="label">Based in</span>
+            <p>Brussels, Belgium</p>
           </div>
         </div>
       </div>
 
       <form class="contact-form" id="contact-form">
         <div class="form-group">
-          <label class="label" for="name">Nom</label>
-          <input type="text" id="name" name="name" required placeholder="Votre nom" />
+          <label class="label" for="name">Name</label>
+          <input type="text" id="name" name="name" required placeholder="Your name" />
         </div>
         <div class="form-group">
           <label class="label" for="email">Email</label>
-          <input type="email" id="email" name="email" required placeholder="votre@email.com" />
+          <input type="email" id="email" name="email" required placeholder="your@email.com" />
         </div>
         <div class="form-group">
-          <label class="label" for="subject">Sujet</label>
-          <input type="text" id="subject" name="subject" placeholder="Collaboration, tirage, expo..." />
+          <label class="label" for="subject">Subject</label>
+          <input type="text" id="subject" name="subject" placeholder="Collaboration, print, exhibition..." />
         </div>
         <div class="form-group">
           <label class="label" for="message">Message</label>
-          <textarea id="message" name="message" rows="6" required placeholder="Votre message..."></textarea>
+          <textarea id="message" name="message" rows="6" required placeholder="Your message..."></textarea>
         </div>
-        <button type="submit" class="btn btn-red" id="submit-btn">Envoyer</button>
+        <button type="submit" class="btn btn-red" id="submit-btn">Send message</button>
         <p class="form-status" id="form-status"></p>
       </form>
 
@@ -66,7 +66,8 @@
 
   <footer>
     <p>© 2026 Jelly Harris</p>
-    <p>Bruxelles, Belgique</p>
+    <p>Photography</p>
+    <p>Brussels, Belgium</p>
   </footer>
 
   <script src="js/contact.js"></script>

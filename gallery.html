@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Galerie — Jelly Harris</title>
+  <title>Gallery — Jelly Harris</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/gallery.css" />
 </head>
 <body>
 
-  <nav id="main-nav">
+  <nav>
     <a href="index.html" class="nav-logo">Jelly Harris</a>
     <ul class="nav-links">
-      <li><a href="gallery.html" class="active">Galerie</a></li>
+      <li><a href="gallery.html" class="active">Gallery</a></li>
       <li><a href="blog.html">Journal</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
@@ -22,24 +22,21 @@
 
     <header class="page-header">
       <span class="label">Portfolio</span>
-      <h1>Galerie</h1>
+      <h1 class="display">Gallery</h1>
     </header>
 
-    <!-- Filtres par série -->
     <div class="gallery-filters" id="gallery-filters">
-      <button class="filter-btn active" data-filter="all">Toutes les séries</button>
+      <button class="filter-btn active" data-filter="all">All series</button>
     </div>
 
-    <!-- Grille albums -->
     <div class="albums-grid" id="albums-grid">
       <div class="loading-state">
-        <span class="label">Chargement...</span>
+        <span class="label">Loading...</span>
       </div>
     </div>
 
   </main>
 
-  <!-- Lightbox -->
   <div class="lightbox" id="lightbox">
     <button class="lightbox-close" id="lightbox-close">✕</button>
     <button class="lightbox-nav lightbox-prev" id="lightbox-prev">‹</button>
@@ -55,7 +52,8 @@
 
   <footer>
     <p>© 2026 Jelly Harris</p>
-    <p>Bruxelles, Belgique</p>
+    <p>Photography</p>
+    <p>Brussels, Belgium</p>
   </footer>
 
   <script type="module" src="js/firebase-init.js"></script>
