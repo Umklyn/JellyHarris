@@ -229,18 +229,19 @@
 
 .lightbox-info {
   display: none;
-  max-width: 80vw;
+  width: 80vw;
   text-align: right;
-  padding-top: 0.25rem;
+  padding-top: 0.6rem;
 }
 
 #lightbox-caption {
-  font-family: var(--font-serif);
-  font-size: clamp(0.8rem, 1.2vw, 0.95rem);
-  font-style: italic;
-  font-weight: 300;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-weight: 400;
   color: var(--text-light);
-  line-height: 1.6;
+  line-height: 1.8;
 }
 
 .lightbox-close {
