@@ -164,17 +164,49 @@
   color: var(--text);
 }
 
-/* ── Latest Works ── */
+/* ── Latest Works — section sombre style Klud ── */
 .latest-works {
-  padding: 8rem 4rem;
-  background: var(--bg-alt);
+  padding: 6rem 4rem;
+  background: var(--text);
+  position: relative;
+}
+
+.rubrique {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.rubrique::before {
+  content: '—';
+  color: var(--accent-red);
+}
+
+.latest-works .rubrique {
+  color: rgba(255,255,255,0.3);
+}
+
+.latest-works .rubrique::before {
+  color: var(--accent-yellow);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.latest-works .section-header {
+  border-top-color: rgba(255,255,255,0.08);
+  margin-top: 2rem;
 }
 
 .section-title {
@@ -197,6 +229,25 @@
 
 .section-title span {
   color: var(--accent-red);
+}
+
+.latest-works .section-title {
+  color: var(--white);
+}
+
+.latest-works .section-title span {
+  color: var(--accent-yellow);
+}
+
+.latest-works .btn-outline {
+  border-color: rgba(255,255,255,0.25);
+  color: var(--white);
+}
+
+.latest-works .btn-outline:hover {
+  background: var(--white);
+  color: var(--text);
+  border-color: var(--white);
 }
 
 .works-grid {
@@ -257,33 +308,34 @@
   mix-blend-mode: normal;
 }
 
-/* Placeholder photo — cadre éditorial */
+/* Placeholder photo — sur fond sombre Klud */
 .work-placeholder {
-  border: 1px dashed rgba(14,14,14,0.15);
+  border: 1px solid rgba(255,255,255,0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   animation: shimmer 2.5s ease-in-out infinite;
+  background: rgba(255,255,255,0.03);
 }
 
 .work-placeholder::before {
   content: '';
   display: block;
-  width: 24px;
-  height: 24px;
-  border: 1px solid rgba(14,14,14,0.2);
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 50%;
 }
 
 .work-placeholder::after {
   content: '[ Photo ]';
   font-family: var(--font-mono);
-  font-size: 0.5rem;
+  font-size: 0.48rem;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: rgba(14,14,14,0.2);
+  color: rgba(255,255,255,0.15);
 }
 
 @keyframes shimmer {
@@ -432,7 +484,23 @@
 
 /* ── Latest Journal ── */
 .latest-journal {
-  padding: 8rem 4rem;
+  padding: 6rem 4rem;
+  border-left: 4px solid var(--accent-yellow);
+  margin-left: 4rem;
+  padding-left: 4rem;
+  margin-right: 4rem;
+  border-left: none;
+  position: relative;
+}
+
+.latest-journal::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent-yellow);
 }
 
 .journal-list {
@@ -527,8 +595,8 @@
   .work-card { height: 240px; }
   .work-card:first-child { grid-column: span 2; height: 300px; }
 
-  .latest-works,
-  .latest-journal { padding: 5rem 1.5rem; }
+  .latest-works { padding: 4rem 1.5rem; }
+  .latest-journal { padding: 4rem 1.5rem; }
 
   .journal-item {
     grid-template-columns: 1fr auto;
