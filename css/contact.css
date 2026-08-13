@@ -83,9 +83,9 @@
 
 .contact-detail a,
 .contact-detail p {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  font-style: italic;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-style: normal;
   font-weight: 300;
   color: var(--text);
   text-decoration: none;
