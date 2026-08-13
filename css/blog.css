@@ -87,13 +87,14 @@
 }
 
 .article-row-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  font-family: 'Anton', Impact, sans-serif !important;
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
   font-weight: 400;
-  font-style: normal;
+  font-style: normal !important;
   text-transform: uppercase;
   line-height: 0.95;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
+  color: var(--text);
   transition: color 0.2s;
 }
 

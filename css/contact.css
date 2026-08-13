@@ -59,7 +59,7 @@
 }
 
 .contact-photo {
-  width: 100%;
+  width: 65%;
   height: auto;
   filter: grayscale(100%);
   display: block;
