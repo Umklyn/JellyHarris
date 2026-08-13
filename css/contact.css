@@ -59,12 +59,12 @@
 }
 
 .contact-intro {
-  font-family: var(--font-serif);
-  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
-  font-style: italic;
+  font-family: var(--font-sans);
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  font-style: normal;
   font-weight: 300;
   line-height: 1.8;
-  color: var(--text);
+  color: var(--text-light);
 }
 
 .contact-details {
@@ -117,7 +117,7 @@
   font-family: var(--font-sans);
   font-size: 0.95rem;
   font-weight: 300;
-  color: var(--text);
+  color: var(--accent-red);
   outline: none;
   transition: border-color 0.25s;
   resize: none;
@@ -132,7 +132,7 @@
 .form-group input::placeholder,
 .form-group textarea::placeholder {
   color: rgba(20,20,20,0.18);
-  font-style: italic;
+  font-style: normal;
 }
 
 .form-submit-row {
