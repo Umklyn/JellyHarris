@@ -387,6 +387,12 @@ footer p:nth-child(2) {
   stroke-dashoffset: 0;
 }
 
+/* Lightbox mode — cache les liens, garde juste le logo */
+nav.lightbox-mode .nav-links,
+nav.lightbox-mode .nav-burger {
+  display: none !important;
+}
+
 /* Nav scrolled */
 nav.scrolled {
   background: rgba(248,248,246,0.75);

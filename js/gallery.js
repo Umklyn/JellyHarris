@@ -149,7 +149,7 @@ function openLightbox(index) {
   lightboxIndex = index;
   showLightboxPhoto(lightboxIndex);
   document.getElementById("lightbox").classList.add("open");
-  document.querySelector("nav").classList.add("scrolled");
+  document.querySelector("nav").classList.add("scrolled", "lightbox-mode");
   document.body.style.overflow = "hidden";
 }
 
@@ -183,8 +183,9 @@ document.addEventListener("keydown", e => {
 
 function closeLightbox() {
   document.getElementById("lightbox").classList.remove("open");
+  document.querySelector("nav").classList.remove("lightbox-mode");
   document.body.style.overflow = "";
-  if (!document.getElementById("album-detail").style.display || document.getElementById("album-detail").style.display === "none") {
+  if (!document.getElementById("album-detail") || document.getElementById("album-detail").style.display === "none") {
     document.querySelector("nav").classList.remove("scrolled");
   }
 }
