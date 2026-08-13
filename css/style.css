@@ -307,11 +307,12 @@ footer p:nth-child(2) {
   color: var(--accent-red);
 }
 
-/* Nav scrolled — légère teinte sur fond clair */
+/* Nav scrolled */
 nav.scrolled {
-  background: rgba(248,248,246,0.92);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(248,248,246,0.75);
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  border-bottom: 1px solid rgba(14,14,14,0.06);
 }
 
 /* Responsive */

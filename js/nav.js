@@ -22,6 +22,6 @@ if (burger && navLinks) {
 // Nav scroll — fond blanc quand on scrolle
 if (nav) {
   window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
+    nav.classList.toggle('scrolled', window.scrollY > 10);
   }, { passive: true });
 }
