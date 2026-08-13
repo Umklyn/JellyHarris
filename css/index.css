@@ -192,7 +192,7 @@
 }
 
 .latest-works .rubrique::before {
-  color: var(--accent-yellow);
+  color: var(--white);
 }
 
 .section-header {
@@ -236,7 +236,7 @@
 }
 
 .latest-works .section-title span {
-  color: var(--accent-yellow);
+  color: var(--white);
 }
 
 .latest-works .btn-outline {
@@ -483,22 +483,7 @@
 /* ── Latest Journal ── */
 .latest-journal {
   padding: 6rem 4rem;
-  border-left: 4px solid var(--accent-yellow);
-  margin-left: 4rem;
-  padding-left: 4rem;
-  margin-right: 4rem;
-  border-left: none;
   position: relative;
-}
-
-.latest-journal::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--accent-yellow);
 }
 
 .journal-list {
