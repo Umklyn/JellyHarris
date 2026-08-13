@@ -61,6 +61,7 @@
 }
 
 .hero-name-line {
+  position: relative;
   font-family: var(--font-display);
   font-size: clamp(4rem, 11vw, 10rem);
   font-weight: 400;
@@ -78,6 +79,10 @@
 .hero-name-line:hover {
   letter-spacing: 0.05em;
   transform: scaleY(1.03);
+}
+
+.hero-name-line:hover .title-strike path {
+  stroke-dashoffset: 0;
 }
 
 .hero-name-line.red {
