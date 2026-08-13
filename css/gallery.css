@@ -227,7 +227,21 @@
   display: block;
 }
 
-.lightbox-info { display: none; }
+.lightbox-info {
+  display: none;
+  max-width: 80vw;
+  text-align: right;
+  padding-top: 0.25rem;
+}
+
+#lightbox-caption {
+  font-family: var(--font-serif);
+  font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--text-light);
+  line-height: 1.6;
+}
 
 .lightbox-close {
   position: fixed;

@@ -3,6 +3,7 @@ import { collection, query, orderBy, getDocs } from "https://www.gstatic.com/fir
 
 let allAlbums = [];
 let lightboxPhotos = [];
+let lightboxCaptions = [];
 let lightboxIndex = 0;
 
 async function loadAlbums() {
@@ -86,6 +87,7 @@ function renderFilters(albums, container) {
 
 async function openAlbumDetail(album) {
   lightboxPhotos = album.photos || [];
+  lightboxCaptions = album.captions || [];
   if (!lightboxPhotos.length) return;
 
   document.querySelector(".albums-grid").style.display = "none";
@@ -165,11 +167,13 @@ function openLightbox(index) {
   document.body.style.overflow = "hidden";
 }
 
-function showLightboxPhoto(index, seriesName) {
-  const img = document.getElementById("lightbox-img");
-  const series = document.getElementById("lightbox-series");
-  img.src = lightboxPhotos[index];
-  if (seriesName) series.textContent = seriesName;
+function showLightboxPhoto(index) {
+  document.getElementById("lightbox-img").src = lightboxPhotos[index];
+  const caption = lightboxCaptions[index] || "";
+  const info = document.querySelector(".lightbox-info");
+  const captionEl = document.getElementById("lightbox-caption");
+  captionEl.textContent = caption;
+  info.style.display = caption ? "block" : "none";
 }
 
 document.getElementById("lightbox-close").addEventListener("click", closeLightbox);

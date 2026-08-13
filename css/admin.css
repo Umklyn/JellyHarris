@@ -113,12 +113,71 @@
   gap: 0.3rem;
 }
 
+.sidebar-logo-img {
+  height: 36px;
+  width: auto;
+  display: block;
+  mix-blend-mode: multiply;
+  margin-bottom: 0.5rem;
+}
+
 .sidebar-name {
   font-family: var(--font-mono);
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text);
+}
+
+/* ── Edit album photos ── */
+.edit-photos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.edit-photo-item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(14,14,14,0.06);
+}
+
+.edit-photo-thumb {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  filter: grayscale(100%);
+  display: block;
+}
+
+.edit-caption-input {
+  width: 100%;
+  padding: 0.6rem 0;
+  border: none;
+  border-bottom: 1px solid rgba(14,14,14,0.12);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--text);
+  outline: none;
+  resize: none;
+  line-height: 1.6;
+  min-height: 60px;
+  border-radius: 0;
+  transition: border-color 0.2s;
+}
+
+.edit-caption-input:focus {
+  border-bottom-color: var(--text);
+}
+
+.edit-caption-input::placeholder {
+  color: rgba(14,14,14,0.2);
 }
 
 .sidebar-nav {

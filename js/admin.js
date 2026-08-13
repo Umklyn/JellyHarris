@@ -1,6 +1,6 @@
 import { db, auth } from "./firebase-init.js";
 import {
-  collection, addDoc, getDocs, deleteDoc, doc,
+  collection, addDoc, getDocs, deleteDoc, doc, updateDoc,
   query, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
@@ -13,6 +13,7 @@ const ADMIN_EMAIL = "jelisa.harris@gmail.com";
 
 let quill = null;
 let currentArticleId = null;
+let currentEditAlbumId = null;
 let albumPhotos = [];
 let coverUrl = "";
 
@@ -119,15 +120,11 @@ async function loadAlbums() {
           <span class="admin-item-meta">${a.photos?.length || 0} photo(s)${a.series ? ` · ${a.series}` : ""}</span>
         </div>
         <div class="admin-item-actions">
-          <button class="admin-action-btn view" data-id="${docSnap.id}">View photos</button>
+          <button class="admin-action-btn edit" data-id="${docSnap.id}">Edit</button>
           <button class="admin-action-btn delete" data-id="${docSnap.id}">Delete</button>
         </div>
       `;
-      item.querySelector(".view").addEventListener("click", () => {
-        const photos = a.photos || [];
-        const win = window.open("", "_blank");
-        win.document.write(`<html><body style="background:#fff;display:flex;flex-wrap:wrap;gap:8px;padding:16px;">${photos.map(u => `<img src="${u}" style="height:200px;object-fit:cover;" />`).join("")}</body></html>`);
-      });
+      item.querySelector(".edit").addEventListener("click", () => openEditAlbum(a, docSnap.id));
       item.querySelector(".delete").addEventListener("click", async () => {
         if (confirm(`Delete album "${a.name}"?`)) {
           await deleteDoc(doc(db, "albums", docSnap.id));
@@ -227,6 +224,56 @@ document.getElementById("save-album-btn").addEventListener("click", async () => 
 
 document.getElementById("cancel-album-btn").addEventListener("click", closeAllModals);
 document.getElementById("close-album-modal").addEventListener("click", closeAllModals);
+
+// --- Edit album ---
+function openEditAlbum(album, id) {
+  currentEditAlbumId = id;
+  document.getElementById("edit-album-name").value = album.name || "";
+  document.getElementById("edit-album-series").value = album.series || "";
+
+  const list = document.getElementById("edit-photos-list");
+  list.innerHTML = "";
+  (album.photos || []).forEach((url, i) => {
+    const caption = (album.captions || [])[i] || "";
+    const item = document.createElement("div");
+    item.className = "edit-photo-item";
+    item.innerHTML = `
+      <img src="${url}" class="edit-photo-thumb" alt="Photo ${i + 1}" />
+      <textarea class="edit-caption-input" data-index="${i}" placeholder="Add a caption...">${caption}</textarea>
+    `;
+    list.appendChild(item);
+  });
+
+  openModal("modal-edit-album");
+}
+
+document.getElementById("save-edit-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("save-edit-btn");
+  btn.textContent = "Saving...";
+  btn.disabled = true;
+
+  try {
+    const captions = Array.from(document.querySelectorAll(".edit-caption-input"))
+      .map(el => el.value.trim());
+
+    await updateDoc(doc(db, "albums", currentEditAlbumId), {
+      name: document.getElementById("edit-album-name").value.trim(),
+      series: document.getElementById("edit-album-series").value.trim() || null,
+      captions
+    });
+
+    closeAllModals();
+    loadAlbums();
+  } catch (e) {
+    alert("Error: " + e.message);
+  } finally {
+    btn.textContent = "Save changes";
+    btn.disabled = false;
+  }
+});
+
+document.getElementById("cancel-edit-btn").addEventListener("click", closeAllModals);
+document.getElementById("close-edit-modal").addEventListener("click", closeAllModals);
 
 // --- Articles ---
 async function loadArticles() {

@@ -37,6 +37,7 @@
 
     <aside class="admin-sidebar">
       <div class="sidebar-logo">
+        <img src="assets/logo.png" alt="Jelly Harris" class="sidebar-logo-img" />
         <span class="label">Admin</span>
         <p class="sidebar-name">Jelly Harris</p>
       </div>
@@ -151,6 +152,31 @@
       <div class="modal-footer">
         <button class="btn btn-outline" id="cancel-article-btn">Cancel</button>
         <button class="btn btn-red" id="save-article-btn">Publish article</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Edit album -->
+  <div class="modal" id="modal-edit-album">
+    <div class="modal-box modal-box-large">
+      <div class="modal-header">
+        <h3 id="modal-edit-title">Edit album</h3>
+        <button class="modal-close" id="close-edit-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="label">Album name</label>
+          <input type="text" id="edit-album-name" />
+        </div>
+        <div class="form-group">
+          <label class="label">Series</label>
+          <input type="text" id="edit-album-series" />
+        </div>
+        <div id="edit-photos-list" class="edit-photos-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="cancel-edit-btn">Cancel</button>
+        <button class="btn btn-red" id="save-edit-btn">Save changes</button>
       </div>
     </div>
   </div>
