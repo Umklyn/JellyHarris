@@ -109,7 +109,7 @@
 
 /* Hero photo */
 .hero-img-wrap {
-  width: 100%;
+  width: 75%;
   aspect-ratio: 4/3;
   overflow: hidden;
   flex-shrink: 0;
