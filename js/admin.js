@@ -258,6 +258,7 @@ function openEditAlbum(album, id) {
   currentEditAlbumId = id;
   document.getElementById("edit-album-name").value = album.name || "";
   document.getElementById("edit-album-series").value = album.series || "";
+  document.getElementById("edit-album-desc").value = album.description || "";
 
   const list = document.getElementById("edit-photos-list");
   list.innerHTML = "";
@@ -287,6 +288,7 @@ document.getElementById("save-edit-btn").addEventListener("click", async () => {
     await updateDoc(doc(db, "albums", currentEditAlbumId), {
       name: document.getElementById("edit-album-name").value.trim(),
       series: document.getElementById("edit-album-series").value.trim() || null,
+      description: document.getElementById("edit-album-desc").value.trim(),
       captions
     });
 

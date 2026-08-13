@@ -98,6 +98,9 @@ async function openAlbumDetail(album) {
   window.scrollTo(0, 0);
 
   document.getElementById("album-detail-title").textContent = album.name || album.title || "";
+  const descEl = document.getElementById("album-detail-desc");
+  descEl.textContent = album.description || "";
+  descEl.style.display = album.description ? "block" : "none";
   const grid = document.getElementById("photos-grid");
   grid.innerHTML = "";
 
