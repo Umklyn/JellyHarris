@@ -62,13 +62,24 @@ nav {
 }
 
 .nav-logo {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 400;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
   text-decoration: none;
-  color: var(--text);
+  display: flex;
+  align-items: center;
+}
+
+.nav-logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
+  mix-blend-mode: multiply;
+}
+
+.footer-logo-img {
+  height: 20px;
+  width: auto;
+  display: block;
+  mix-blend-mode: multiply;
+  opacity: 0.4;
 }
 
 .nav-links {
