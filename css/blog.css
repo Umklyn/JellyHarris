@@ -16,6 +16,16 @@
 
 .page-header h1.display {
   font-size: clamp(4rem, 12vw, 10rem);
+  display: inline-block;
+  cursor: default;
+  transition: letter-spacing 0.6s cubic-bezier(.25,.46,.45,.94),
+              transform 0.4s cubic-bezier(.25,.46,.45,.94);
+  transform-origin: left center;
+}
+
+.page-header h1.display:hover {
+  letter-spacing: 0.04em;
+  transform: scaleY(1.03);
 }
 
 /* Articles list */
