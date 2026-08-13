@@ -84,29 +84,52 @@ function renderFilters(albums, container) {
   });
 }
 
-function openAlbumDetail(album) {
+async function openAlbumDetail(album) {
   lightboxPhotos = album.photos || [];
   if (!lightboxPhotos.length) return;
-
-  document.getElementById("album-detail-title").textContent = album.name || album.title || "";
-  const grid = document.getElementById("photos-grid");
-  grid.innerHTML = "";
-
-  lightboxPhotos.forEach((url, i) => {
-    const img = document.createElement("img");
-    img.src = url;
-    img.alt = album.name;
-    img.loading = "lazy";
-    img.className = "photo-thumb";
-    img.addEventListener("click", () => openLightbox(i));
-    grid.appendChild(img);
-  });
 
   document.querySelector(".albums-grid").style.display = "none";
   document.querySelector(".page-header").style.display = "none";
   document.querySelector(".gallery-filters").style.display = "none";
   document.getElementById("album-detail").style.display = "block";
   window.scrollTo(0, 0);
+
+  document.getElementById("album-detail-title").textContent = album.name || album.title || "";
+  const grid = document.getElementById("photos-grid");
+  grid.innerHTML = "";
+
+  const COLS = window.innerWidth < 480 ? 1 : window.innerWidth < 900 ? 2 : 3;
+
+  // Précharge toutes les images pour connaître les ratios
+  const loaded = await Promise.all(lightboxPhotos.map((url, i) => new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve({ url, i, ratio: img.naturalHeight / img.naturalWidth });
+    img.onerror = () => resolve({ url, i, ratio: 1 });
+    img.src = url;
+  })));
+
+  // Crée les colonnes
+  const columns = Array.from({ length: COLS }, () => {
+    const col = document.createElement("div");
+    col.className = "masonry-col";
+    grid.appendChild(col);
+    return col;
+  });
+  const colHeights = new Array(COLS).fill(0);
+
+  // Place chaque photo dans la colonne la plus courte
+  loaded.forEach(({ url, i, ratio }) => {
+    const minIdx = colHeights.indexOf(Math.min(...colHeights));
+    colHeights[minIdx] += ratio;
+
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = album.name;
+    img.loading = "lazy";
+    img.className = "photo-thumb";
+    img.addEventListener("click", () => openLightbox(i));
+    columns[minIdx].appendChild(img);
+  });
 }
 
 document.getElementById("back-to-albums").addEventListener("click", () => {

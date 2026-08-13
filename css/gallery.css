@@ -318,18 +318,23 @@
 .back-btn:hover::before { transform: translateX(-4px); }
 
 .photos-grid {
-  columns: 3;
-  column-gap: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.masonry-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .photo-thumb {
   width: 100%;
   display: block;
-  margin-bottom: 0;
   cursor: pointer;
   filter: grayscale(100%);
   transition: filter 0.5s;
-  break-inside: avoid;
 }
 
 .photo-thumb:hover {
@@ -348,12 +353,10 @@
   .album-card:nth-child(3n+1) { grid-column: span 2; aspect-ratio: 16/9; }
 
   .album-detail { padding: 0 1.5rem 5rem; }
-  .photos-grid { columns: 2; }
 }
 
 @media (max-width: 480px) {
   .albums-grid { grid-template-columns: 1fr; }
   .album-card:nth-child(n),
   .album-card:nth-child(3n+1) { grid-column: span 1; aspect-ratio: 3/4; }
-  .photos-grid { columns: 1; }
 }
