@@ -6,11 +6,11 @@ async function loadLatestWorks() {
   if (!grid) return;
 
   try {
-    const q = query(collection(db, "albums"), orderBy("createdAt", "desc"), limit(3));
+    const q = query(collection(db, "albums"), orderBy("createdAt", "desc"), limit(2));
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
-      grid.innerHTML = `<div class="work-placeholder"></div><div class="work-placeholder"></div><div class="work-placeholder"></div>`;
+      grid.innerHTML = `<div class="work-placeholder"></div><div class="work-placeholder"></div>`;
       return;
     }
 
