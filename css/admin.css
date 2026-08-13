@@ -612,6 +612,31 @@
 }
 
 /* modal two-col */
+.twocol-position-toggle {
+  display: flex;
+  gap: 0;
+  border: 1px solid rgba(14,14,14,0.2);
+  width: fit-content;
+}
+
+.twocol-pos-btn {
+  background: none;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--text-light);
+  transition: all 0.2s;
+}
+
+.twocol-pos-btn.active {
+  background: var(--text);
+  color: var(--white);
+}
+
 .twocol-preview {
   display: grid;
   grid-template-columns: 1fr 1fr;

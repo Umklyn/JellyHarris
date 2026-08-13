@@ -25,16 +25,19 @@ function registerTwoColBlot() {
     static create(value) {
       const node = super.create();
       node.setAttribute('contenteditable', false);
-      node.innerHTML = `
-        <div class="two-col-img"><img src="${value.img || ''}" alt=""></div>
-        <div class="two-col-text">${value.text || ''}</div>
-      `;
+      if (value.imageRight) node.classList.add('img-right');
+      node.innerHTML = value.imageRight
+        ? `<div class="two-col-text">${value.text || ''}</div>
+           <div class="two-col-img"><img src="${value.img || ''}" alt=""></div>`
+        : `<div class="two-col-img"><img src="${value.img || ''}" alt=""></div>
+           <div class="two-col-text">${value.text || ''}</div>`;
       return node;
     }
     static value(node) {
       return {
         img: node.querySelector('img')?.src || '',
-        text: node.querySelector('.two-col-text')?.innerHTML || ''
+        text: node.querySelector('.two-col-text')?.innerHTML || '',
+        imageRight: node.classList.contains('img-right')
       };
     }
   }
@@ -429,8 +432,21 @@ function openTwoColModal() {
   document.getElementById("twocol-img-preview").innerHTML = "";
   document.getElementById("twocol-text").value = "";
   document.getElementById("twocol-upload-zone").innerHTML = "<p>Click to upload image</p>";
+  // Reset position toggle to left
+  document.querySelectorAll(".twocol-pos-btn").forEach(b => b.classList.remove("active"));
+  document.querySelector(".twocol-pos-btn[data-pos='left']").classList.add("active");
+  document.getElementById("twocol-text-label").textContent = "Text (right side)";
   openModal("modal-twocol");
 }
+
+document.querySelectorAll(".twocol-pos-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".twocol-pos-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const isRight = btn.dataset.pos === "right";
+    document.getElementById("twocol-text-label").textContent = isRight ? "Text (left side)" : "Text (right side)";
+  });
+});
 
 document.getElementById("twocol-upload-zone").addEventListener("click", () => {
   const input = document.createElement("input");
@@ -458,8 +474,9 @@ document.getElementById("insert-twocol-btn").addEventListener("click", () => {
   if (!quill) return;
   const text = document.getElementById("twocol-text").value.trim();
   if (!twoColImageUrl) return alert("Please upload an image first.");
+  const imageRight = document.querySelector(".twocol-pos-btn.active")?.dataset.pos === "right";
   const idx = twoColRange ? twoColRange.index : quill.getLength();
-  quill.insertEmbed(idx, "twoCol", { img: twoColImageUrl, text: `<p>${text}</p>` });
+  quill.insertEmbed(idx, "twoCol", { img: twoColImageUrl, text: `<p>${text}</p>`, imageRight });
   quill.setSelection(idx + 1);
   document.getElementById("modal-twocol").classList.remove("open");
 });

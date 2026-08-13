@@ -55,7 +55,15 @@
 .contact-info {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 2rem;
+}
+
+.contact-photo {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  filter: grayscale(100%);
+  display: block;
 }
 
 .contact-intro {

@@ -211,6 +211,13 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
+          <label class="label">Image position</label>
+          <div class="twocol-position-toggle">
+            <button class="twocol-pos-btn active" data-pos="left">← Image left</button>
+            <button class="twocol-pos-btn" data-pos="right">Image right →</button>
+          </div>
+        </div>
+        <div class="form-group">
           <label class="label">Image</label>
           <div class="upload-zone upload-zone-sm" id="twocol-upload-zone">
             <p>Click to upload image</p>
@@ -218,7 +225,7 @@
           <div id="twocol-img-preview"></div>
         </div>
         <div class="form-group">
-          <label class="label">Text (right side)</label>
+          <label class="label" id="twocol-text-label">Text (right side)</label>
           <textarea id="twocol-text" rows="5" placeholder="Write your text here..."></textarea>
         </div>
       </div>
