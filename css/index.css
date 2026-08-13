@@ -112,8 +112,8 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: clamp(160px, 18vw, 260px);
-  aspect-ratio: 3/4;
+  width: clamp(140px, 15vw, 220px);
+  height: 100%;
   overflow: hidden;
 }
 
@@ -123,7 +123,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 15%;
   filter: grayscale(100%);
 }
 
@@ -331,38 +331,32 @@
   gap: 3rem;
 }
 
-.about-title {
-  font-family: var(--font-display);
-  font-size: clamp(3.5rem, 8vw, 7.5rem);
-  text-transform: uppercase;
-  line-height: 0.88;
-  color: var(--text);
-  display: inline-block;
-  cursor: default;
-  transition: letter-spacing 0.6s cubic-bezier(.25,.46,.45,.94),
-              transform 0.4s cubic-bezier(.25,.46,.45,.94);
-  transform-origin: left center;
-}
 
-.about-title:hover {
-  letter-spacing: 0.04em;
-  transform: scaleY(1.03);
-}
-
-.about-title span {
-  color: var(--accent-red);
-}
-
-/* Slot portrait — remplace avec une vraie photo */
+/* Portrait about */
 .about-photo-slot {
   width: 100%;
-  max-width: 320px;
+  aspect-ratio: 3/4;
+  overflow: hidden;
 }
 
 .about-photo-slot img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
   display: block;
+  filter: grayscale(100%);
+}
+
+/* About heading — plus sobre que le Anton */
+.about-heading {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.2;
+  color: var(--text);
+  letter-spacing: 0;
 }
 
 .about-right {
@@ -417,7 +411,7 @@
 @media (max-width: 900px) {
   .about-section { padding: 0 1.5rem 5rem; }
   .about-grid { grid-template-columns: 1fr; gap: 3rem; }
-  .about-photo-slot { max-width: 200px; }
+  .about-photo-slot { aspect-ratio: 4/3; }
 }
 
 @media (max-width: 480px) {
