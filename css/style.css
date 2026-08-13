@@ -344,6 +344,20 @@ footer p:nth-child(2) {
   text-align: center;
 }
 
+.footer-insta {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  margin-left: 0.6rem;
+  vertical-align: middle;
+  transition: opacity 0.2s;
+  opacity: 0.6;
+}
+
+.footer-insta:hover {
+  opacity: 1;
+}
+
 .admin-link {
   color: rgba(14,14,14,0.25);
   text-decoration: none;
