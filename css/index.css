@@ -396,9 +396,7 @@
 }
 
 .about-title span {
-  background: var(--accent-yellow);
-  padding: 0 0.1em;
-  color: var(--text);
+  color: var(--accent-red);
 }
 
 /* Slot portrait — remplace avec une vraie photo */
