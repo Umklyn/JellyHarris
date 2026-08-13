@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journal — Jelly Harris</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/blog.css" />
+</head>
+<body>
+
+  <nav id="main-nav">
+    <a href="index.html" class="nav-logo">Jelly Harris</a>
+    <ul class="nav-links">
+      <li><a href="gallery.html">Galerie</a></li>
+      <li><a href="blog.html" class="active">Journal</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main class="page-content blog-main" id="blog-main">
+
+    <!-- Liste des articles -->
+    <div class="blog-list-view" id="blog-list-view">
+      <header class="page-header">
+        <span class="label">Écrits</span>
+        <h1>Journal</h1>
+      </header>
+
+      <div class="articles-list" id="articles-list">
+        <div class="loading-state">
+          <span class="label">Chargement...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Article ouvert -->
+    <div class="article-single-view" id="article-single-view" style="display:none;">
+      <button class="back-btn" id="back-to-list">
+        ← Retour au journal
+      </button>
+      <article class="article-content" id="article-content">
+        <!-- Chargé dynamiquement -->
+      </article>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>© 2026 Jelly Harris</p>
+    <p>Bruxelles, Belgique</p>
+  </footer>
+
+  <script type="module" src="js/firebase-init.js"></script>
+  <script type="module" src="js/blog.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Jelly Harris</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/contact.css" />
+</head>
+<body>
+
+  <nav id="main-nav">
+    <a href="index.html" class="nav-logo">Jelly Harris</a>
+    <ul class="nav-links">
+      <li><a href="gallery.html">Galerie</a></li>
+      <li><a href="blog.html">Journal</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main class="page-content contact-main">
+
+    <div class="contact-grid">
+
+      <div class="contact-info">
+        <span class="label">Entrer en contact</span>
+        <h1>Contact</h1>
+        <p>Pour toute demande de collaboration, de tirage, d'exposition ou simplement pour échanger.</p>
+
+        <div class="contact-details">
+          <div class="contact-detail">
+            <span class="label">Email</span>
+            <a href="mailto:jelisa.harris@gmail.com">jelisa.harris@gmail.com</a>
+          </div>
+          <div class="contact-detail">
+            <span class="label">Basée à</span>
+            <p>Bruxelles, Belgique</p>
+          </div>
+        </div>
+      </div>
+
+      <form class="contact-form" id="contact-form">
+        <div class="form-group">
+          <label class="label" for="name">Nom</label>
+          <input type="text" id="name" name="name" required placeholder="Votre nom" />
+        </div>
+        <div class="form-group">
+          <label class="label" for="email">Email</label>
+          <input type="email" id="email" name="email" required placeholder="votre@email.com" />
+        </div>
+        <div class="form-group">
+          <label class="label" for="subject">Sujet</label>
+          <input type="text" id="subject" name="subject" placeholder="Collaboration, tirage, expo..." />
+        </div>
+        <div class="form-group">
+          <label class="label" for="message">Message</label>
+          <textarea id="message" name="message" rows="6" required placeholder="Votre message..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-red" id="submit-btn">Envoyer</button>
+        <p class="form-status" id="form-status"></p>
+      </form>
+
+    </div>
+
+  </main>
+
+  <footer>
+    <p>© 2026 Jelly Harris</p>
+    <p>Bruxelles, Belgique</p>
+  </footer>
+
+  <script src="js/contact.js"></script>
+</body>
+</html>

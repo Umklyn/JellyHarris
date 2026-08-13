@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Jelly Harris</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <!-- Quill rich text editor -->
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+</head>
+<body class="admin-body">
+
+  <!-- Login screen -->
+  <div class="login-screen" id="login-screen">
+    <div class="login-box">
+      <div class="login-logo">
+        <span class="label">Admin</span>
+        <h1>Jelly Harris</h1>
+      </div>
+      <button class="btn btn-google" id="google-login-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        Se connecter avec Google
+      </button>
+      <p class="login-hint">Accès réservé à Jelly Harris</p>
+    </div>
+  </div>
+
+  <!-- Admin dashboard -->
+  <div class="admin-dashboard" id="admin-dashboard" style="display:none;">
+
+    <aside class="admin-sidebar">
+      <div class="sidebar-logo">
+        <span class="label">Admin</span>
+        <p class="sidebar-name">Jelly Harris</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="sidebar-btn active" data-panel="albums">
+          <span>Albums</span>
+        </button>
+        <button class="sidebar-btn" data-panel="articles">
+          <span>Articles</span>
+        </button>
+      </nav>
+
+      <button class="sidebar-logout" id="logout-btn">Se déconnecter</button>
+    </aside>
+
+    <main class="admin-main">
+
+      <!-- Panel Albums -->
+      <div class="admin-panel" id="panel-albums">
+        <div class="panel-header">
+          <div>
+            <span class="label">Galerie</span>
+            <h2>Albums</h2>
+          </div>
+          <button class="btn btn-red" id="new-album-btn">+ Nouvel album</button>
+        </div>
+
+        <div class="albums-admin-list" id="albums-admin-list">
+          <div class="loading-state"><span class="label">Chargement...</span></div>
+        </div>
+      </div>
+
+      <!-- Panel Articles -->
+      <div class="admin-panel" id="panel-articles" style="display:none;">
+        <div class="panel-header">
+          <div>
+            <span class="label">Journal</span>
+            <h2>Articles</h2>
+          </div>
+          <button class="btn btn-red" id="new-article-btn">+ Nouvel article</button>
+        </div>
+
+        <div class="articles-admin-list" id="articles-admin-list">
+          <div class="loading-state"><span class="label">Chargement...</span></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal: Nouvel album -->
+  <div class="modal" id="modal-album">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-album-title">Nouvel album</h3>
+        <button class="modal-close" id="close-album-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="label">Nom de la série</label>
+          <input type="text" id="album-name" placeholder="Ex: Bruxelles, nuit tombée" />
+        </div>
+        <div class="form-group">
+          <label class="label">Description courte</label>
+          <textarea id="album-desc" rows="2" placeholder="Quelques mots sur cette série..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="label">Photos</label>
+          <div class="upload-zone" id="album-upload-zone">
+            <p>Glissez vos photos ici ou cliquez pour sélectionner</p>
+            <span class="label">JPG, PNG — jusqu'à 10 Mo par photo</span>
+          </div>
+          <div class="upload-preview" id="album-upload-preview"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="cancel-album-btn">Annuler</button>
+        <button class="btn btn-red" id="save-album-btn">Publier l'album</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Nouvel article -->
+  <div class="modal" id="modal-article">
+    <div class="modal-box modal-box-large">
+      <div class="modal-header">
+        <h3 id="modal-article-title">Nouvel article</h3>
+        <button class="modal-close" id="close-article-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="label">Titre</label>
+          <input type="text" id="article-title" placeholder="Titre de l'article" class="input-title" />
+        </div>
+        <div class="form-group">
+          <label class="label">Image de couverture</label>
+          <div class="upload-zone upload-zone-sm" id="cover-upload-zone">
+            <p>Cliquez pour uploader une image de couverture</p>
+          </div>
+          <div id="cover-preview"></div>
+        </div>
+        <div class="form-group">
+          <label class="label">Contenu de l'article</label>
+          <div id="quill-editor"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="cancel-article-btn">Annuler</button>
+        <button class="btn btn-red" id="save-article-btn">Publier l'article</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay modal -->
+  <div class="modal-overlay" id="modal-overlay"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  <script type="module" src="js/firebase-init.js"></script>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+.blog-main {
+  padding-top: 8rem;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+
+/* Articles list */
+.articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 6rem;
+}
+
+.article-row {
+  display: grid;
+  grid-template-columns: 280px 1fr 200px;
+  gap: 2rem;
+  align-items: start;
+  padding: 3rem 0;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.article-row:last-child {
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.article-row:hover .article-row-title {
+  color: var(--accent-red);
+}
+
+.article-row-cover {
+  width: 100%;
+  aspect-ratio: 3/2;
+  overflow: hidden;
+  background: #e8e6e0;
+}
+
+.article-row-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  transition: transform 0.5s ease;
+}
+
+.article-row:hover .article-row-cover img {
+  transform: scale(1.05);
+}
+
+.article-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.article-row-title {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.2;
+  transition: color 0.2s;
+}
+
+.article-row-excerpt {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.article-row-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.article-row-date {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--text-light);
+}
+
+.article-row-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--accent-red);
+  color: var(--accent-red);
+}
+
+/* Single article view */
+.back-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  margin-bottom: 3rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-btn:hover {
+  color: var(--text);
+}
+
+.article-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: 6rem;
+}
+
+.article-content .article-header {
+  margin-bottom: 3rem;
+}
+
+.article-content .article-date {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+}
+
+.article-content h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+.article-cover-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  filter: grayscale(100%);
+  margin-bottom: 3rem;
+  display: block;
+}
+
+/* Rich text content from Quill */
+.article-body {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--text);
+}
+
+.article-body h1,
+.article-body h2,
+.article-body h3 {
+  font-family: var(--font-serif);
+  margin: 2.5rem 0 1rem;
+  font-weight: 400;
+}
+
+.article-body h1 { font-size: 2rem; }
+.article-body h2 { font-size: 1.5rem; }
+.article-body h3 { font-size: 1.2rem; }
+
+.article-body p {
+  margin-bottom: 1.5rem;
+}
+
+.article-body img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  filter: grayscale(100%);
+  margin: 2rem 0;
+  display: block;
+}
+
+.article-body blockquote {
+  border-left: 3px solid var(--accent-red);
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  color: var(--text-light);
+}
+
+.article-body strong { font-weight: 500; }
+.article-body em { font-style: italic; }
+
+.article-body a {
+  color: var(--accent-red);
+  text-decoration: underline;
+}
+
+.article-body ul,
+.article-body ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-body li {
+  margin-bottom: 0.4rem;
+}
+
+/* Loading / empty */
+.loading-state,
+.empty-state {
+  padding: 5rem 0;
+  text-align: center;
+  color: var(--text-light);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .blog-main {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .article-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .article-row-meta {
+    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+  }
+}

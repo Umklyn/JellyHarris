@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jelly Harris — Photographe</title>
+  <meta name="description" content="Portfolio de Jelly Harris, photographe." />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+<body class="home-body">
+
+  <nav class="nav-inverted" id="main-nav">
+    <a href="index.html" class="nav-logo">Jelly Harris</a>
+    <ul class="nav-links">
+      <li><a href="gallery.html">Galerie</a></li>
+      <li><a href="blog.html">Journal</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main class="page-content">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <span class="label hero-label">Photographe — Bruxelles</span>
+        <h1 class="hero-title">Jelly<br /><em>Harris</em></h1>
+        <a href="gallery.html" class="btn btn-outline btn-hero">Voir la galerie</a>
+      </div>
+      <div class="hero-scroll-hint">
+        <span class="label">Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- Latest works -->
+    <section class="latest-works">
+      <div class="section-header">
+        <span class="label">Derniers travaux</span>
+        <h2>Séries récentes</h2>
+      </div>
+      <div class="works-grid" id="latest-works-grid">
+        <!-- Chargé dynamiquement -->
+        <div class="work-placeholder"></div>
+        <div class="work-placeholder"></div>
+        <div class="work-placeholder"></div>
+      </div>
+      <div class="section-cta">
+        <a href="gallery.html" class="btn btn-outline">Toute la galerie</a>
+      </div>
+    </section>
+
+    <!-- Latest journal -->
+    <section class="latest-journal">
+      <div class="section-header">
+        <span class="label">Journal</span>
+        <h2>Derniers articles</h2>
+      </div>
+      <div class="journal-list" id="latest-journal-list">
+        <!-- Chargé dynamiquement -->
+      </div>
+      <div class="section-cta">
+        <a href="blog.html" class="btn btn-outline">Tous les articles</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 Jelly Harris</p>
+    <p>Bruxelles, Belgique</p>
+  </footer>
+
+  <script type="module" src="js/firebase-init.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
