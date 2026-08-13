@@ -92,6 +92,7 @@ async function openAlbumDetail(album) {
   document.querySelector(".page-header").style.display = "none";
   document.querySelector(".gallery-filters").style.display = "none";
   document.getElementById("album-detail").style.display = "block";
+  document.querySelector("nav").classList.add("scrolled");
   window.scrollTo(0, 0);
 
   document.getElementById("album-detail-title").textContent = album.name || album.title || "";
@@ -122,13 +123,17 @@ async function openAlbumDetail(album) {
     const minIdx = colHeights.indexOf(Math.min(...colHeights));
     colHeights[minIdx] += ratio;
 
+    const wrap = document.createElement("div");
+    wrap.style.overflow = "hidden";
+
     const img = document.createElement("img");
     img.src = url;
     img.alt = album.name;
     img.loading = "lazy";
     img.className = "photo-thumb";
     img.addEventListener("click", () => openLightbox(i));
-    columns[minIdx].appendChild(img);
+    wrap.appendChild(img);
+    columns[minIdx].appendChild(wrap);
   });
 }
 
@@ -137,6 +142,7 @@ document.getElementById("back-to-albums").addEventListener("click", () => {
   document.querySelector(".albums-grid").style.display = "grid";
   document.querySelector(".page-header").style.display = "flex";
   document.querySelector(".gallery-filters").style.display = "flex";
+  document.querySelector("nav").classList.remove("scrolled");
 });
 
 function openLightbox(index) {

@@ -342,6 +342,12 @@
 
 .photo-thumb:hover {
   filter: grayscale(15%);
+  transform: scale(1.04);
+  transition: filter 0.5s, transform 0.5s cubic-bezier(.25,.46,.45,.94);
+}
+
+.photo-thumb {
+  transition: filter 0.5s, transform 0.5s cubic-bezier(.25,.46,.45,.94);
 }
 
 /* Responsive */
