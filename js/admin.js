@@ -567,6 +567,16 @@ async function loadMessages() {
     const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
 
+    // Badge de notification
+    const unreadCount = snapshot.docs.filter(d => !d.data().read).length;
+    const badge = document.getElementById("msg-badge");
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount;
+      badge.style.display = "inline-flex";
+    } else {
+      badge.style.display = "none";
+    }
+
     if (snapshot.empty) {
       list.innerHTML = `<div class="loading-state"><span class="label">No messages yet.</span></div>`;
       return;
@@ -582,10 +592,15 @@ async function loadMessages() {
       const item = document.createElement("div");
       item.className = `message-item${m.read ? " read" : ""}`;
       item.innerHTML = `
-        <div class="message-meta">
-          <span class="message-sender">${m.name || "Unknown"}</span>
-          <span class="message-email">${m.email || ""}</span>
-          <span class="message-date">${date}</span>
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-sender">${m.name || "Unknown"}</span>
+            <span class="message-email">${m.email || ""}</span>
+          </div>
+          <div class="message-header-right">
+            <span class="message-date">${date}</span>
+            <span class="message-toggle">▾</span>
+          </div>
         </div>
         <div class="message-subject">${m.subject || "(no subject)"}</div>
         <div class="message-body">${m.message || ""}</div>
@@ -595,14 +610,21 @@ async function loadMessages() {
         </div>
       `;
 
-      if (!m.read) {
-        item.addEventListener("click", async () => {
-          if (!item.classList.contains("read")) {
-            item.classList.add("read");
-            await updateDoc(doc(db, "messages", docSnap.id), { read: true });
-          }
-        }, { once: true });
-      }
+      // Click sur le header pour déplier/replier
+      const header = item.querySelector(".message-header");
+      const toggle = item.querySelector(".message-toggle");
+      header.addEventListener("click", async () => {
+        const isOpen = item.classList.toggle("expanded");
+        toggle.textContent = isOpen ? "▴" : "▾";
+        if (isOpen && !item.classList.contains("read")) {
+          item.classList.add("read");
+          await updateDoc(doc(db, "messages", docSnap.id), { read: true });
+          // Met à jour le badge
+          const currentBadge = parseInt(badge.textContent) - 1;
+          if (currentBadge <= 0) badge.style.display = "none";
+          else badge.textContent = currentBadge;
+        }
+      });
 
       item.querySelector(".delete").addEventListener("click", async (e) => {
         e.stopPropagation();
