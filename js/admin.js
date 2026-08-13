@@ -1,6 +1,6 @@
 import { db, auth } from "./firebase-init.js";
 import {
-  collection, addDoc, getDocs, deleteDoc, doc, updateDoc,
+  collection, addDoc, getDocs, deleteDoc, doc,
   query, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
@@ -12,7 +12,6 @@ const CLOUDINARY_PRESET = "JellyHarris_uploads";
 const ADMIN_EMAIL = "jelisa.harris@gmail.com";
 
 let quill = null;
-let currentAlbumId = null;
 let currentArticleId = null;
 let albumPhotos = [];
 let coverUrl = "";
@@ -63,6 +62,7 @@ async function uploadToCloudinary(file) {
     body: formData
   });
   const data = await res.json();
+  if (!data.secure_url) throw new Error(data.error?.message || "Upload Cloudinary échoué");
   return data.secure_url;
 }
 
@@ -109,7 +109,7 @@ async function loadAlbums() {
         ${a.photos?.[0] ? `<img class="admin-item-thumb" src="${a.photos[0]}" alt="${a.name}" />` : `<div class="admin-item-thumb"></div>`}
         <div class="admin-item-info">
           <span class="admin-item-title">${a.name}</span>
-          <span class="admin-item-meta">${a.photos?.length || 0} photo(s) · ${a.series || ""}</span>
+          <span class="admin-item-meta">${a.photos?.length || 0} photo(s)${a.series ? ` · ${a.series}` : ""}</span>
         </div>
         <div class="admin-item-actions">
           <button class="admin-action-btn view" data-id="${docSnap.id}">Voir les photos</button>
@@ -136,42 +136,53 @@ async function loadAlbums() {
 }
 
 document.getElementById("new-album-btn").addEventListener("click", () => {
-  currentAlbumId = null;
   albumPhotos = [];
   document.getElementById("album-name").value = "";
+  document.getElementById("album-series").value = "";
   document.getElementById("album-desc").value = "";
   document.getElementById("album-upload-preview").innerHTML = "";
   openModal("modal-album");
 });
 
-document.getElementById("album-upload-zone").addEventListener("click", () => {
+// Upload zone — click + drag & drop
+function handleAlbumFiles(files) {
+  const preview = document.getElementById("album-upload-preview");
+  files.forEach(file => {
+    if (!file.type.startsWith("image/")) return;
+    const wrap = document.createElement("div");
+    wrap.className = "preview-thumb-wrap";
+    const img = document.createElement("img");
+    img.className = "preview-thumb";
+    img.src = URL.createObjectURL(file);
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "✕";
+    removeBtn.onclick = () => {
+      const idx = albumPhotos.indexOf(file);
+      if (idx > -1) albumPhotos.splice(idx, 1);
+      wrap.remove();
+    };
+    wrap.appendChild(img);
+    wrap.appendChild(removeBtn);
+    preview.appendChild(wrap);
+    albumPhotos.push(file);
+  });
+}
+
+const albumZone = document.getElementById("album-upload-zone");
+albumZone.addEventListener("click", () => {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
   input.multiple = true;
-  input.onchange = async e => {
-    const files = Array.from(e.target.files);
-    const preview = document.getElementById("album-upload-preview");
-    for (const file of files) {
-      const wrap = document.createElement("div");
-      wrap.className = "preview-thumb-wrap";
-      const img = document.createElement("img");
-      img.className = "preview-thumb";
-      img.src = URL.createObjectURL(file);
-      const removeBtn = document.createElement("button");
-      removeBtn.textContent = "✕";
-      removeBtn.onclick = () => {
-        const idx = albumPhotos.indexOf(file);
-        if (idx > -1) albumPhotos.splice(idx, 1);
-        wrap.remove();
-      };
-      wrap.appendChild(img);
-      wrap.appendChild(removeBtn);
-      preview.appendChild(wrap);
-      albumPhotos.push(file);
-    }
-  };
+  input.onchange = e => handleAlbumFiles(Array.from(e.target.files));
   input.click();
+});
+albumZone.addEventListener("dragover", e => { e.preventDefault(); albumZone.classList.add("drag-over"); });
+albumZone.addEventListener("dragleave", () => albumZone.classList.remove("drag-over"));
+albumZone.addEventListener("drop", e => {
+  e.preventDefault();
+  albumZone.classList.remove("drag-over");
+  handleAlbumFiles(Array.from(e.dataTransfer.files));
 });
 
 document.getElementById("save-album-btn").addEventListener("click", async () => {
@@ -191,6 +202,7 @@ document.getElementById("save-album-btn").addEventListener("click", async () => 
 
     await addDoc(collection(db, "albums"), {
       name,
+      series: document.getElementById("album-series").value.trim() || null,
       description: document.getElementById("album-desc").value.trim(),
       photos: urls,
       createdAt: serverTimestamp()
@@ -250,7 +262,8 @@ async function loadArticles() {
       list.appendChild(item);
     });
   } catch (e) {
-    list.innerHTML = `<div class="loading-state"><span class="label">Erreur</span></div>`;
+    list.innerHTML = `<div class="loading-state"><span class="label">Erreur : ${e.message}</span></div>`;
+    console.error("loadArticles:", e);
   }
 }
 
@@ -282,7 +295,7 @@ document.getElementById("new-article-btn").addEventListener("click", () => {
         quill.getModule("toolbar").addHandler("image", () => insertImageInArticle());
       } catch(e) { console.error("Quill init:", e); }
     } else {
-      quill.setText("");
+      quill.setContents([]);
     }
   }, 100);
 });
@@ -294,9 +307,13 @@ function insertImageInArticle() {
   input.onchange = async e => {
     const file = e.target.files[0];
     if (!file) return;
-    const url = await uploadToCloudinary(file);
-    const range = quill.getSelection(true);
-    quill.insertEmbed(range.index, "image", url);
+    try {
+      const url = await uploadToCloudinary(file);
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, "image", url);
+    } catch(e) {
+      alert("Erreur upload image : " + e.message);
+    }
   };
   input.click();
 }
@@ -308,8 +325,12 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
   input.onchange = async e => {
     const file = e.target.files[0];
     if (!file) return;
-    coverUrl = await uploadToCloudinary(file);
-    document.getElementById("cover-preview").innerHTML = `<img src="${coverUrl}" alt="Cover" />`;
+    try {
+      coverUrl = await uploadToCloudinary(file);
+      document.getElementById("cover-preview").innerHTML = `<img src="${coverUrl}" alt="Cover" />`;
+    } catch(e) {
+      alert("Erreur upload cover : " + e.message);
+    }
   };
   input.click();
 });
@@ -317,6 +338,7 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
 document.getElementById("save-article-btn").addEventListener("click", async () => {
   const title = document.getElementById("article-title").value.trim();
   if (!title) return alert("Donne un titre à l'article !");
+  if (!quill) return alert("L'éditeur n'est pas prêt.");
 
   const btn = document.getElementById("save-article-btn");
   btn.textContent = "Publication...";
@@ -324,8 +346,7 @@ document.getElementById("save-article-btn").addEventListener("click", async () =
 
   try {
     const content = quill.root.innerHTML;
-    const plainText = quill.getText().trim();
-    const excerpt = plainText.slice(0, 200);
+    const excerpt = quill.getText().trim().slice(0, 200);
 
     await addDoc(collection(db, "articles"), {
       title,
@@ -358,5 +379,12 @@ function closeAllModals() {
   document.querySelectorAll(".modal").forEach(m => m.classList.remove("open"));
   document.getElementById("modal-overlay").classList.remove("open");
 }
+
+// Fermer en cliquant sur le fond du modal (hors modal-box)
+document.querySelectorAll(".modal").forEach(modal => {
+  modal.addEventListener("click", e => {
+    if (e.target === modal) closeAllModals();
+  });
+});
 
 document.getElementById("modal-overlay").addEventListener("click", closeAllModals);
