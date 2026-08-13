@@ -7,20 +7,15 @@
 /* ── Hero ── */
 .hero {
   min-height: 100vh;
-  padding: 0 4rem;
+  padding: 5.5rem 4rem 0;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto;
   position: relative;
 }
 
-/* Top bar — 3 colonnes style Swiss */
+/* Top bar — caché, l'espace est récupéré par le padding du hero */
 .hero-topbar {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  align-items: start;
-  padding-top: 6.5rem;
-  padding-bottom: 2.5rem;
-  border-bottom: 1px solid rgba(14,14,14,0.1);
+  display: none;
 }
 
 .hero-topbar-left {
@@ -48,7 +43,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: end;
-  padding: 4rem 0 3rem;
+  padding: 1.5rem 0 2rem;
   gap: 4rem;
   position: relative;
 }
