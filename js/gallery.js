@@ -145,11 +145,23 @@ document.getElementById("back-to-albums").addEventListener("click", () => {
   document.querySelector("nav").classList.remove("scrolled");
 });
 
+function setLightboxControls(visible) {
+  const display = visible ? "1" : "0";
+  const events = visible ? "all" : "none";
+  document.getElementById("lightbox-close").style.opacity = display;
+  document.getElementById("lightbox-close").style.pointerEvents = events;
+  document.getElementById("lightbox-prev").style.opacity = display;
+  document.getElementById("lightbox-prev").style.pointerEvents = events;
+  document.getElementById("lightbox-next").style.opacity = display;
+  document.getElementById("lightbox-next").style.pointerEvents = events;
+}
+
 function openLightbox(index) {
   lightboxIndex = index;
   showLightboxPhoto(lightboxIndex);
   document.getElementById("lightbox").classList.add("open");
   document.querySelector("nav").classList.add("scrolled", "lightbox-mode");
+  setLightboxControls(true);
   document.body.style.overflow = "hidden";
 }
 
@@ -184,6 +196,7 @@ document.addEventListener("keydown", e => {
 function closeLightbox() {
   document.getElementById("lightbox").classList.remove("open");
   document.querySelector("nav").classList.remove("lightbox-mode");
+  setLightboxControls(false);
   document.body.style.overflow = "";
   if (!document.getElementById("album-detail") || document.getElementById("album-detail").style.display === "none") {
     document.querySelector("nav").classList.remove("scrolled");

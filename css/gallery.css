@@ -244,6 +244,8 @@
   transition: color 0.2s;
   padding: 0;
   z-index: 1002;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .lightbox-close:hover { color: var(--text); }
@@ -263,6 +265,8 @@
   padding: 1rem;
   transition: color 0.2s;
   z-index: 1002;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .lightbox-nav:hover { color: var(--text); }
