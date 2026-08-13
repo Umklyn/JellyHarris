@@ -124,7 +124,8 @@ async function loadAlbums() {
       list.appendChild(item);
     });
   } catch (e) {
-    list.innerHTML = `<div class="loading-state"><span class="label">Erreur</span></div>`;
+    list.innerHTML = `<div class="loading-state"><span class="label">Erreur : ${e.message}</span></div>`;
+    console.error("loadAlbums:", e);
   }
 }
 
