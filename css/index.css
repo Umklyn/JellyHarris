@@ -82,6 +82,10 @@
   transform: scaleY(1.03);
 }
 
+.hero-name-line .title-strike {
+  overflow: hidden;
+}
+
 .hero-name-line:hover .title-strike path {
   stroke-dashoffset: 0;
 }
