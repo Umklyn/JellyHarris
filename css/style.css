@@ -297,6 +297,19 @@ footer p:nth-child(2) {
   color: rgba(255,255,255,0.12);
 }
 
+.admin-link {
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.2;
+  margin-left: 0.5rem;
+  transition: opacity 0.2s;
+}
+
+.admin-link:hover {
+  opacity: 1;
+  color: var(--accent-red);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   nav { padding: 1.25rem 1.5rem; }
