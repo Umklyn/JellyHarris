@@ -58,7 +58,7 @@ nav {
   align-items: center;
   padding: 1.75rem 4rem;
   background: transparent;
-  mix-blend-mode: multiply;
+  transition: background 0.3s, backdrop-filter 0.3s;
 }
 
 .nav-logo {
@@ -298,16 +298,22 @@ footer p:nth-child(2) {
 }
 
 .admin-link {
-  color: inherit;
+  color: rgba(255,255,255,0.5);
   text-decoration: none;
-  opacity: 0.5;
-  margin-left: 0.5rem;
-  transition: opacity 0.2s;
+  margin-left: 0.75rem;
+  font-size: 0.7rem;
+  transition: color 0.2s;
 }
 
 .admin-link:hover {
-  opacity: 1;
   color: var(--accent-red);
+}
+
+/* Nav scrolled — légère teinte sur fond clair */
+nav.scrolled {
+  background: rgba(248,248,246,0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 /* Responsive */
