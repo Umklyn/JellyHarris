@@ -107,24 +107,21 @@
   max-width: 280px;
 }
 
-/* Floating image */
+/* Hero photo */
 .hero-img-wrap {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: clamp(140px, 15vw, 220px);
-  height: 100%;
+  width: 100%;
+  aspect-ratio: 4/3;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .hero-img-wrap img {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 15%;
+  object-position: center 10%;
   filter: grayscale(100%);
+  display: block;
 }
 
 /* Hero sub — hidden (layout géré autrement) */
