@@ -139,9 +139,9 @@
 
 .hero-signature {
   position: absolute;
-  bottom: -2rem;
-  right: 1.5rem;
-  width: 42%;
+  bottom: -6rem;
+  right: 0.5rem;
+  width: 58%;
   height: auto;
   z-index: 2;
 }
