@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
 
 :root {
-  --bg: #EDEAE3;
-  --bg-alt: #F5F3EE;
-  --text: #141414;
-  --text-light: #8A8782;
+  --bg: #F8F8F6;
+  --bg-alt: #FFFFFF;
+  --text: #0E0E0E;
+  --text-light: #9A9895;
   --accent-red: #BF0A19;
   --accent-yellow: #F0F2AC;
-  --white: #FAF9F6;
+  --white: #FFFFFF;
   --font-display: 'Anton', Impact, sans-serif;
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'DM Sans', system-ui, sans-serif;
