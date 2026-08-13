@@ -137,10 +137,13 @@
 }
 
 .hero-signature {
-  width: 40%;
+  width: 50%;
   height: auto;
   display: block;
-  padding: 1rem 0 0 0.5rem;
+  margin-top: -3rem;
+  padding-left: 0.75rem;
+  position: relative;
+  z-index: 2;
 }
 
 /* Hero sub — hidden (layout géré autrement) */
