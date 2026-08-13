@@ -533,6 +533,7 @@
   .hero-topbar {
     grid-template-columns: 1fr 1fr;
     padding-top: 5.5rem;
+    padding-bottom: 1rem;
   }
 
   .hero-topbar-center { display: none; }
@@ -540,11 +541,20 @@
 
   .hero-inner {
     grid-template-columns: 1fr;
-    padding: 2.5rem 0;
-    gap: 2rem;
+    padding: 1.5rem 0 2rem;
+    gap: 1.5rem;
   }
 
-  .hero-img-wrap { display: none; }
+  .hero-img-wrap {
+    display: block;
+    min-height: 55vw;
+    max-height: 70vw;
+  }
+
+  .hero-signature {
+    width: 38%;
+    bottom: -4rem;
+  }
 
   .works-grid {
     grid-template-columns: 1fr 1fr;
