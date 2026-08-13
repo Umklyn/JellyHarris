@@ -88,6 +88,7 @@
   display: flex !important;
   flex-direction: column;
   align-self: stretch;
+  position: relative;
 }
 
 /* Sub content under name */
@@ -137,12 +138,11 @@
 }
 
 .hero-signature {
-  width: 50%;
+  position: absolute;
+  bottom: -2rem;
+  right: 1.5rem;
+  width: 42%;
   height: auto;
-  display: block;
-  margin-top: -3rem;
-  padding-left: 0.75rem;
-  position: relative;
   z-index: 2;
 }
 
