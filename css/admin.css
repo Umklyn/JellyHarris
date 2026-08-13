@@ -114,11 +114,13 @@
 }
 
 .sidebar-logo-img {
-  height: 36px;
-  width: auto;
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
   display: block;
   mix-blend-mode: multiply;
   margin-bottom: 0.5rem;
+  align-self: flex-start;
 }
 
 .sidebar-name {
