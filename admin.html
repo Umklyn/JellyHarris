@@ -198,6 +198,33 @@
     </div>
   </div>
 
+  <!-- Modal: Insert two-column block -->
+  <div class="modal" id="modal-twocol">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Two-column block</h3>
+        <button class="modal-close" id="close-twocol-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="label">Image</label>
+          <div class="upload-zone upload-zone-sm" id="twocol-upload-zone">
+            <p>Click to upload image</p>
+          </div>
+          <div id="twocol-img-preview"></div>
+        </div>
+        <div class="form-group">
+          <label class="label">Text (right side)</label>
+          <textarea id="twocol-text" rows="5" placeholder="Write your text here..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="cancel-twocol-btn">Cancel</button>
+        <button class="btn btn-red" id="insert-twocol-btn">Insert block</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Overlay modal -->
   <div class="modal-overlay" id="modal-overlay"></div>
 

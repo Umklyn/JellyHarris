@@ -16,6 +16,34 @@ let currentArticleId = null;
 let currentEditAlbumId = null;
 let albumPhotos = [];
 let coverUrl = "";
+let twoColImageUrl = "";
+
+// Register two-col blot for Quill before init
+function registerTwoColBlot() {
+  const BlockEmbed = Quill.import('blots/block/embed');
+  class TwoColBlot extends BlockEmbed {
+    static create(value) {
+      const node = super.create();
+      node.setAttribute('contenteditable', false);
+      node.innerHTML = `
+        <div class="two-col-img"><img src="${value.img || ''}" alt=""></div>
+        <div class="two-col-text">${value.text || ''}</div>
+      `;
+      return node;
+    }
+    static value(node) {
+      return {
+        img: node.querySelector('img')?.src || '',
+        text: node.querySelector('.two-col-text')?.innerHTML || ''
+      };
+    }
+  }
+  TwoColBlot.blotName = 'twoCol';
+  TwoColBlot.tagName = 'div';
+  TwoColBlot.className = 'two-col';
+  Quill.register(TwoColBlot);
+}
+registerTwoColBlot();
 
 // --- Auth ---
 onAuthStateChanged(auth, user => {
@@ -347,11 +375,13 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null) 
               ["blockquote"],
               [{ list: "ordered" }, { list: "bullet" }],
               ["link", "image"],
+              ["twoCol"],
               ["clean"]
             ]
           }
         });
         quill.getModule("toolbar").addHandler("image", () => insertImageInArticle());
+        quill.getModule("toolbar").addHandler("twoCol", () => openTwoColModal());
       } catch(e) { console.error("Quill init:", e); }
     }
     if (content) {
@@ -387,6 +417,57 @@ function insertImageInArticle() {
   };
   input.click();
 }
+
+// --- Two-column block ---
+let twoColRange = null;
+
+function openTwoColModal() {
+  twoColImageUrl = "";
+  twoColRange = quill ? quill.getSelection(true) : null;
+  document.getElementById("twocol-img-preview").innerHTML = "";
+  document.getElementById("twocol-text").value = "";
+  document.getElementById("twocol-upload-zone").innerHTML = "<p>Click to upload image</p>";
+  openModal("modal-twocol");
+}
+
+document.getElementById("twocol-upload-zone").addEventListener("click", () => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.onchange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const zone = document.getElementById("twocol-upload-zone");
+    zone.innerHTML = "<p>Uploading...</p>";
+    try {
+      twoColImageUrl = await uploadToCloudinary(file);
+      zone.innerHTML = "<p>✓ Image uploaded</p>";
+      document.getElementById("twocol-img-preview").innerHTML =
+        `<img src="${twoColImageUrl}" style="max-width:100%;max-height:120px;object-fit:cover;filter:grayscale(100%);margin-top:0.5rem;display:block;" />`;
+    } catch(e) {
+      zone.innerHTML = "<p>Upload error</p>";
+      alert("Upload error: " + e.message);
+    }
+  };
+  input.click();
+});
+
+document.getElementById("insert-twocol-btn").addEventListener("click", () => {
+  if (!quill) return;
+  const text = document.getElementById("twocol-text").value.trim();
+  if (!twoColImageUrl) return alert("Please upload an image first.");
+  const idx = twoColRange ? twoColRange.index : quill.getLength();
+  quill.insertEmbed(idx, "twoCol", { img: twoColImageUrl, text: `<p>${text}</p>` });
+  quill.setSelection(idx + 1);
+  document.getElementById("modal-twocol").classList.remove("open");
+});
+
+document.getElementById("cancel-twocol-btn").addEventListener("click", () => {
+  document.getElementById("modal-twocol").classList.remove("open");
+});
+document.getElementById("close-twocol-modal").addEventListener("click", () => {
+  document.getElementById("modal-twocol").classList.remove("open");
+});
 
 document.getElementById("cover-upload-zone").addEventListener("click", () => {
   const input = document.createElement("input");
