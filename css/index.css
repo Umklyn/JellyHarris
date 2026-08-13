@@ -366,13 +366,11 @@
 
 .about-text {
   font-family: var(--font-serif);
-  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
   font-style: italic;
   font-weight: 300;
-  line-height: 1.75;
+  line-height: 1.8;
   color: var(--text);
-  border-left: 2px solid var(--accent-red);
-  padding-left: 1.5rem;
 }
 
 .about-text-secondary {
