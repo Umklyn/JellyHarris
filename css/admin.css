@@ -118,7 +118,7 @@
   width: 40px;
   object-fit: contain;
   display: block;
-  mix-blend-mode: multiply;
+  /* mix-blend-mode: multiply; — retiré : inutile avec PNG transparent */
   margin-bottom: 0.5rem;
   align-self: flex-start;
 }

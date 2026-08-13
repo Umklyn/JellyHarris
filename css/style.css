@@ -82,7 +82,7 @@ nav {
   max-width: none;
   flex-shrink: 0;
   display: block;
-  mix-blend-mode: multiply;
+  /* mix-blend-mode: multiply; — retiré : inutile avec PNG transparent */
   object-fit: contain;
 }
 
@@ -90,7 +90,7 @@ nav {
   height: 48px;
   width: auto;
   display: block;
-  mix-blend-mode: multiply;
+  /* mix-blend-mode: multiply; — retiré : inutile avec PNG transparent */
   opacity: 0.4;
 }
 
