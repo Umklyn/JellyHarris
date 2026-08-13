@@ -1,15 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
 
 :root {
-  --bg: #F7F6F3;
-  --bg-alt: #FFFFFF;
+  --bg: #EDEAE3;
+  --bg-alt: #F5F3EE;
   --text: #141414;
   --text-light: #8A8782;
   --accent-red: #BF0A19;
   --accent-yellow: #F0F2AC;
   --white: #FAF9F6;
   --font-display: 'Anton', Impact, sans-serif;
-  --font-script: 'Pinyon Script', cursive;
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'Space Mono', monospace;
