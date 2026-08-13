@@ -304,9 +304,11 @@ async function loadArticles() {
           <span class="admin-item-meta">${date}</span>
         </div>
         <div class="admin-item-actions">
-          <button class="admin-action-btn delete" data-id="${docSnap.id}">Delete</button>
+          <button class="admin-action-btn edit">Edit</button>
+          <button class="admin-action-btn delete">Delete</button>
         </div>
       `;
+      item.querySelector(".edit").addEventListener("click", () => openEditArticle(a, docSnap.id));
       item.querySelector(".delete").addEventListener("click", async () => {
         if (confirm(`Delete article "${a.title}"?`)) {
           await deleteDoc(doc(db, "articles", docSnap.id));
@@ -321,12 +323,15 @@ async function loadArticles() {
   }
 }
 
-document.getElementById("new-article-btn").addEventListener("click", () => {
-  currentArticleId = null;
-  coverUrl = "";
-  document.getElementById("article-title").value = "";
-  document.getElementById("cover-preview").innerHTML = "";
-  document.getElementById("modal-article-title").textContent = "New article";
+function initArticleModal(title, content = "", articleCoverUrl = "", id = null) {
+  currentArticleId = id;
+  coverUrl = articleCoverUrl;
+  document.getElementById("article-title").value = title;
+  document.getElementById("modal-article-title").textContent = id ? "Edit article" : "New article";
+  document.getElementById("save-article-btn").textContent = id ? "Save changes" : "Publish article";
+  document.getElementById("cover-preview").innerHTML = articleCoverUrl
+    ? `<img src="${articleCoverUrl}" alt="Cover" />`
+    : "";
 
   openModal("modal-article");
 
@@ -348,11 +353,22 @@ document.getElementById("new-article-btn").addEventListener("click", () => {
         });
         quill.getModule("toolbar").addHandler("image", () => insertImageInArticle());
       } catch(e) { console.error("Quill init:", e); }
+    }
+    if (content) {
+      quill.clipboard.dangerouslyPasteHTML(0, content);
     } else {
       quill.setContents([]);
     }
   }, 100);
+}
+
+document.getElementById("new-article-btn").addEventListener("click", () => {
+  initArticleModal("", "", "", null);
 });
+
+function openEditArticle(article, id) {
+  initArticleModal(article.title || "", article.content || "", article.cover || "", id);
+}
 
 function insertImageInArticle() {
   const input = document.createElement("input");
@@ -389,26 +405,38 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
   input.click();
 });
 
+document.getElementById("preview-article-btn").addEventListener("click", () => {
+  if (!quill) return;
+  const title = document.getElementById("article-title").value.trim() || "Untitled";
+  const content = quill.root.innerHTML;
+  document.getElementById("article-preview-content").innerHTML = `
+    <h1 class="preview-title">${title}</h1>
+    ${coverUrl ? `<img src="${coverUrl}" class="preview-cover" alt="Cover" />` : ""}
+    <div class="preview-body">${content}</div>
+  `;
+  openModal("modal-preview");
+});
+
 document.getElementById("save-article-btn").addEventListener("click", async () => {
   const title = document.getElementById("article-title").value.trim();
   if (!title) return alert("Article title is required!");
   if (!quill) return alert("Editor not ready.");
 
   const btn = document.getElementById("save-article-btn");
-  btn.textContent = "Publishing...";
+  btn.textContent = currentArticleId ? "Saving..." : "Publishing...";
   btn.disabled = true;
 
   try {
     const content = quill.root.innerHTML;
     const excerpt = quill.getText().trim().slice(0, 200);
 
-    await addDoc(collection(db, "articles"), {
-      title,
-      content,
-      excerpt,
-      cover: coverUrl,
-      createdAt: serverTimestamp()
-    });
+    if (currentArticleId) {
+      await updateDoc(doc(db, "articles", currentArticleId), { title, content, excerpt, cover: coverUrl });
+    } else {
+      await addDoc(collection(db, "articles"), {
+        title, content, excerpt, cover: coverUrl, createdAt: serverTimestamp()
+      });
+    }
 
     closeAllModals();
     loadArticles();
@@ -422,6 +450,12 @@ document.getElementById("save-article-btn").addEventListener("click", async () =
 
 document.getElementById("cancel-article-btn").addEventListener("click", closeAllModals);
 document.getElementById("close-article-modal").addEventListener("click", closeAllModals);
+document.getElementById("close-preview-modal").addEventListener("click", () => {
+  document.getElementById("modal-preview").classList.remove("open");
+});
+document.getElementById("back-to-edit-btn").addEventListener("click", () => {
+  document.getElementById("modal-preview").classList.remove("open");
+});
 
 // --- Modal helpers ---
 function openModal(id) {

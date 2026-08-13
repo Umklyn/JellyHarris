@@ -151,7 +151,24 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" id="cancel-article-btn">Cancel</button>
+        <button class="btn btn-outline" id="preview-article-btn">Preview</button>
         <button class="btn btn-red" id="save-article-btn">Publish article</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Article preview -->
+  <div class="modal" id="modal-preview">
+    <div class="modal-box modal-box-large">
+      <div class="modal-header">
+        <h3>Preview</h3>
+        <button class="modal-close" id="close-preview-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="article-preview-content" class="article-preview"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="back-to-edit-btn">← Back to edit</button>
       </div>
     </div>
   </div>
