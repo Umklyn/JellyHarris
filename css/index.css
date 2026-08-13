@@ -137,13 +137,10 @@
 }
 
 .hero-signature {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 1rem;
-  width: 55%;
-  height: auto !important;
-  object-fit: contain !important;
-  filter: none !important;
+  width: 40%;
+  height: auto;
+  display: block;
+  padding: 1rem 0 0 0.5rem;
 }
 
 /* Hero sub — hidden (layout géré autrement) */
