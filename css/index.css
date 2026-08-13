@@ -191,7 +191,15 @@
   margin-bottom: 3rem;
   padding-top: 2rem;
   border-top: 1px solid rgba(14,14,14,0.08);
+}
+
+.latest-works .section-header {
   flex-direction: row-reverse;
+}
+
+.latest-works .section-title {
+  text-align: right;
+  transform-origin: right center;
 }
 
 .section-title {
@@ -204,9 +212,7 @@
   transition: letter-spacing 0.5s cubic-bezier(.25,.46,.45,.94),
               transform 0.4s cubic-bezier(.25,.46,.45,.94);
   display: inline-block;
-  transform-origin: right center;
-  text-align: right;
-  margin-left: auto;
+  transform-origin: left center;
 }
 
 .section-title:hover {
