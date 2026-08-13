@@ -7,15 +7,20 @@
 /* ── Hero ── */
 .hero {
   min-height: 100vh;
-  padding: 5.5rem 4rem 0;
+  padding: 0 4rem;
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: auto 1fr auto;
   position: relative;
 }
 
-/* Top bar — caché, l'espace est récupéré par le padding du hero */
+/* Top bar — 3 colonnes style Swiss */
 .hero-topbar {
-  display: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: start;
+  padding-top: 5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(14,14,14,0.1);
 }
 
 .hero-topbar-left {
@@ -56,7 +61,7 @@
 
 .hero-name-line {
   font-family: var(--font-display);
-  font-size: clamp(5rem, 14vw, 13rem);
+  font-size: clamp(4rem, 10vw, 9rem);
   font-weight: 400;
   line-height: 0.9;
   letter-spacing: -0.01em;
