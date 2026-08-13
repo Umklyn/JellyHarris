@@ -136,6 +136,16 @@
   display: block;
 }
 
+.hero-signature {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1rem;
+  width: 55%;
+  height: auto !important;
+  object-fit: contain !important;
+  filter: none !important;
+}
+
 /* Hero sub — hidden (layout géré autrement) */
 .hero-sub { display: none; }
 
