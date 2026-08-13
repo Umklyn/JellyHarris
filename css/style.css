@@ -68,10 +68,13 @@ nav {
 }
 
 .nav-logo-img {
-  height: 28px;
+  height: 32px;
   width: auto;
+  max-width: none;
+  flex-shrink: 0;
   display: block;
   mix-blend-mode: multiply;
+  object-fit: contain;
 }
 
 .footer-logo-img {
