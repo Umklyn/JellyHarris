@@ -225,3 +225,8 @@
 
   .article-row-meta { align-items: flex-start; flex-direction: row; }
 }
+
+@media (max-width: 480px) {
+  .blog-main { padding-left: 1rem; padding-right: 1rem; }
+  .article-content { padding-left: 0; padding-right: 0; }
+}

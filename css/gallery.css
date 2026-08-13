@@ -216,3 +216,9 @@
   .album-card:nth-child(n) { grid-column: span 1; aspect-ratio: 3/4; }
   .album-card:nth-child(3n+1) { grid-column: span 2; aspect-ratio: 16/9; }
 }
+
+@media (max-width: 480px) {
+  .albums-grid { grid-template-columns: 1fr; }
+  .album-card:nth-child(n),
+  .album-card:nth-child(3n+1) { grid-column: span 1; aspect-ratio: 3/4; }
+}

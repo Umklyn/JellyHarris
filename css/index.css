@@ -343,3 +343,21 @@
   .journal-arrow { grid-row: 1; grid-column: 2; }
   .journal-title { grid-column: 1; }
 }
+
+@media (max-width: 480px) {
+  .hero-topbar { grid-template-columns: 1fr; gap: 0.25rem; }
+  .hero-topbar-right { display: none; }
+
+  .hero-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .works-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .work-card,
+  .work-card:first-child { grid-column: span 1; height: 260px; }
+}
