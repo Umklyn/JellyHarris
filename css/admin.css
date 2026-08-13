@@ -104,6 +104,7 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  z-index: 10;
 }
 
 .sidebar-logo {
@@ -187,6 +188,8 @@
   padding: 3.5rem 4rem;
   overflow-y: auto;
   background: var(--bg);
+  position: relative;
+  z-index: 1;
 }
 
 .admin-panel {
