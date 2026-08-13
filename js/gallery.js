@@ -39,16 +39,17 @@ function renderAlbums(albums) {
   const grid = document.getElementById("albums-grid");
   grid.innerHTML = "";
 
-  albums.forEach(album => {
+  albums.forEach((album, i) => {
     const cover = album.photos?.[0] || "";
     const count = album.photos?.length || 0;
+    const index = String(i + 1).padStart(2, "0");
 
     const card = document.createElement("div");
     card.className = "album-card";
     card.innerHTML = `
+      <span class="album-index">${index}</span>
       <img src="${cover}" alt="${album.name}" loading="lazy" />
       <div class="album-overlay">
-        <span class="label">${album.series || ""}</span>
         <h3>${album.name}</h3>
         <span class="album-count">${count} photo${count > 1 ? "s" : ""}</span>
       </div>

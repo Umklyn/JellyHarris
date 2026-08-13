@@ -3,11 +3,25 @@
   min-height: 100vh;
 }
 
+/* Page header */
 .page-header {
-  padding: 0 4rem 3rem;
+  padding: 0 4rem 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(20,20,20,0.08);
+  margin-bottom: 3rem;
+}
+
+.page-header .label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-header .label::before {
+  content: '—';
+  color: var(--accent-red);
 }
 
 .page-header h1.display {
@@ -15,6 +29,7 @@
   color: var(--text);
   display: inline-block;
   cursor: default;
+  line-height: 0.85;
   transition: letter-spacing 0.6s cubic-bezier(.25,.46,.45,.94),
               transform 0.4s cubic-bezier(.25,.46,.45,.94);
   transform-origin: left center;
@@ -27,32 +42,50 @@
 
 /* Filters */
 .gallery-filters {
-  padding: 0 4rem 2rem;
+  padding: 0 4rem 3rem;
   display: flex;
-  gap: 0.5rem;
+  gap: 2rem;
   flex-wrap: wrap;
-  border-bottom: 1px solid rgba(20,20,20,0.08);
-  margin-bottom: 4rem;
+  align-items: center;
 }
 
 .filter-btn {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.25em;
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  padding: 0.5rem 1.2rem;
-  border: 1px solid rgba(20,20,20,0.15);
+  padding: 0;
+  border: none;
   background: transparent;
   cursor: pointer;
-  transition: all 0.2s;
   color: var(--text-light);
+  transition: color 0.2s;
+  position: relative;
+  padding-bottom: 3px;
 }
 
-.filter-btn.active,
+.filter-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent-red);
+  transition: width 0.25s;
+}
+
+.filter-btn.active {
+  color: var(--text);
+}
+
+.filter-btn.active::after,
+.filter-btn:hover::after {
+  width: 100%;
+}
+
 .filter-btn:hover {
-  background: var(--text);
-  color: var(--bg);
-  border-color: var(--text);
+  color: var(--text);
 }
 
 /* Albums grid */
@@ -60,7 +93,7 @@
   padding: 0 4rem;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 1rem;
+  gap: 0.75rem;
   margin-bottom: 8rem;
 }
 
@@ -68,7 +101,7 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  background: #d8d5ce;
+  background: #e8e5de;
 }
 
 .album-card:nth-child(6n+1) { grid-column: span 7; aspect-ratio: 4/3; }
@@ -78,18 +111,35 @@
 .album-card:nth-child(6n+5) { grid-column: span 4; aspect-ratio: 1/1; }
 .album-card:nth-child(6n+6) { grid-column: span 8; aspect-ratio: 16/9; }
 
+/* Index badge */
+.album-index {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.5);
+  z-index: 2;
+  transition: opacity 0.3s;
+}
+
+.album-card:hover .album-index {
+  opacity: 0;
+}
+
 .album-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: grayscale(100%);
-  transition: transform 0.7s cubic-bezier(.25,.46,.45,.94), filter 0.4s;
+  transition: transform 0.8s cubic-bezier(.25,.46,.45,.94), filter 0.5s;
   display: block;
 }
 
 .album-card:hover img {
-  transform: scale(1.05);
-  filter: grayscale(60%);
+  transform: scale(1.04);
+  filter: grayscale(50%);
 }
 
 .album-overlay {
@@ -97,10 +147,10 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  background: rgba(0,0,0,0.55);
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%);
   opacity: 0;
   transition: opacity 0.4s;
 }
@@ -114,17 +164,23 @@
 .album-overlay h3 {
   font-family: var(--font-display);
   color: var(--white);
-  font-size: clamp(3rem, 8vw, 8rem);
+  font-size: clamp(2rem, 5vw, 5rem);
   font-weight: 400;
-  font-style: normal;
   text-transform: uppercase;
   line-height: 0.9;
   letter-spacing: -0.01em;
-  text-align: center;
   word-break: break-word;
 }
 
-.album-count { display: none; }
+.album-count {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-top: 0.75rem;
+  display: block !important;
+}
 
 .loading-state,
 .empty-state {
@@ -233,8 +289,8 @@
 
 .back-btn {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   background: none;
   border: none;
@@ -243,37 +299,46 @@
   padding: 0;
   transition: color 0.2s;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-btn::before {
+  content: '←';
+  transition: transform 0.2s;
 }
 
 .back-btn:hover { color: var(--accent-red); }
+.back-btn:hover::before { transform: translateX(-4px); }
 
 .photos-grid {
-  columns: 3;
-  column-gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 220px;
+  gap: 0;
 }
 
 .photo-thumb {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   display: block;
-  margin-bottom: 0.75rem;
   cursor: pointer;
   filter: grayscale(100%);
-  transition: filter 0.4s, transform 0.3s;
-  break-inside: avoid;
+  transition: filter 0.5s, transform 0.4s;
 }
+
+.photo-thumb:nth-child(5n+1) { grid-row: span 2; }
+.photo-thumb:nth-child(5n+3) { grid-row: span 2; }
+.photo-thumb:nth-child(7n+5) { grid-column: span 2; }
 
 .photo-thumb:hover {
-  filter: grayscale(30%);
-  transform: scale(1.01);
-}
-
-@media (max-width: 900px) {
-  .album-detail { padding: 0 1.5rem 5rem; }
-  .photos-grid { columns: 2; }
-}
-
-@media (max-width: 480px) {
-  .photos-grid { columns: 1; }
+  filter: grayscale(20%);
+  transform: scale(1.02);
+  z-index: 1;
+  position: relative;
 }
 
 /* Responsive */
@@ -286,10 +351,16 @@
 
   .album-card:nth-child(n) { grid-column: span 1; aspect-ratio: 3/4; }
   .album-card:nth-child(3n+1) { grid-column: span 2; aspect-ratio: 16/9; }
+
+  .album-detail { padding: 0 1.5rem 5rem; }
+  .photos-grid { grid-template-columns: repeat(2, 1fr); }
+  .photo-thumb:nth-child(7n+5) { grid-column: span 1; }
 }
 
 @media (max-width: 480px) {
   .albums-grid { grid-template-columns: 1fr; }
   .album-card:nth-child(n),
   .album-card:nth-child(3n+1) { grid-column: span 1; aspect-ratio: 3/4; }
+  .photos-grid { grid-template-columns: 1fr; }
+  .photo-thumb:nth-child(n) { grid-row: span 1; grid-column: span 1; }
 }
