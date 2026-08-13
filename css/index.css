@@ -83,14 +83,26 @@
   color: var(--accent-red);
 }
 
-/* Right side — tagline + CTA */
+/* Right side — photo only */
 .hero-right {
   display: flex !important;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 2rem;
-  padding-bottom: 0.5rem;
-  align-items: flex-start;
+  align-self: stretch;
+}
+
+/* Sub content under name */
+.hero-sub-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 2rem;
+  max-width: 380px;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .hero-meta {
@@ -101,19 +113,18 @@
 
 .hero-tagline {
   font-family: var(--font-sans);
-  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-size: clamp(0.85rem, 1.1vw, 0.95rem);
   font-weight: 300;
   color: var(--text-light);
-  line-height: 1.7;
-  max-width: 280px;
+  line-height: 1.8;
 }
 
 /* Hero photo */
 .hero-img-wrap {
-  width: 75%;
-  aspect-ratio: 4/3;
+  width: 100%;
+  flex: 1;
   overflow: hidden;
-  flex-shrink: 0;
+  min-height: 400px;
 }
 
 .hero-img-wrap img {

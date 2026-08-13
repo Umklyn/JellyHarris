@@ -112,9 +112,15 @@ async function loadAlbums() {
           <span class="admin-item-meta">${a.photos?.length || 0} photo(s) · ${a.series || ""}</span>
         </div>
         <div class="admin-item-actions">
+          <button class="admin-action-btn view" data-id="${docSnap.id}">Voir les photos</button>
           <button class="admin-action-btn delete" data-id="${docSnap.id}">Supprimer</button>
         </div>
       `;
+      item.querySelector(".view").addEventListener("click", () => {
+        const photos = a.photos || [];
+        const win = window.open("", "_blank");
+        win.document.write(`<html><body style="background:#fff;display:flex;flex-wrap:wrap;gap:8px;padding:16px;">${photos.map(u => `<img src="${u}" style="height:200px;object-fit:cover;" />`).join("")}</body></html>`);
+      });
       item.querySelector(".delete").addEventListener("click", async () => {
         if (confirm(`Supprimer l'album "${a.name}" ?`)) {
           await deleteDoc(doc(db, "albums", docSnap.id));
@@ -253,31 +259,32 @@ document.getElementById("new-article-btn").addEventListener("click", () => {
   coverUrl = "";
   document.getElementById("article-title").value = "";
   document.getElementById("cover-preview").innerHTML = "";
-
-  if (!quill) {
-    quill = new Quill("#quill-editor", {
-      theme: "snow",
-      modules: {
-        toolbar: [
-          [{ header: [1, 2, 3, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ color: [] }, { background: [] }],
-          [{ font: [] }, { size: ["small", false, "large", "huge"] }],
-          [{ align: [] }],
-          ["blockquote"],
-          [{ list: "ordered" }, { list: "bullet" }],
-          ["link", "image"],
-          ["clean"]
-        ]
-      }
-    });
-
-    quill.getModule("toolbar").addHandler("image", () => insertImageInArticle());
-  } else {
-    quill.setText("");
-  }
+  document.getElementById("modal-article-title").textContent = "Nouvel article";
 
   openModal("modal-article");
+
+  setTimeout(() => {
+    if (!quill) {
+      try {
+        quill = new Quill("#quill-editor", {
+          theme: "snow",
+          modules: {
+            toolbar: [
+              [{ header: [1, 2, 3, false] }],
+              ["bold", "italic", "underline"],
+              ["blockquote"],
+              [{ list: "ordered" }, { list: "bullet" }],
+              ["link", "image"],
+              ["clean"]
+            ]
+          }
+        });
+        quill.getModule("toolbar").addHandler("image", () => insertImageInArticle());
+      } catch(e) { console.error("Quill init:", e); }
+    } else {
+      quill.setText("");
+    }
+  }, 100);
 });
 
 function insertImageInArticle() {
