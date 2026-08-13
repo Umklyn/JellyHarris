@@ -14,7 +14,7 @@ async function loadAlbums() {
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
-      grid.innerHTML = `<div class="empty-state"><span class="label">Aucun album pour le moment</span></div>`;
+      grid.innerHTML = `<div class="empty-state"><span class="label">No albums yet</span></div>`;
       return;
     }
 
@@ -31,7 +31,7 @@ async function loadAlbums() {
     }
   } catch (e) {
     console.error(e);
-    grid.innerHTML = `<div class="empty-state"><span class="label">Erreur de chargement</span></div>`;
+    grid.innerHTML = `<div class="empty-state"><span class="label">Loading error</span></div>`;
   }
 }
 

@@ -34,11 +34,17 @@ document.getElementById("google-login-btn").addEventListener("click", async () =
   try {
     await signInWithPopup(auth, provider);
   } catch (e) {
-    alert("Erreur de connexion : " + e.message);
+    alert("Sign in error: " + e.message);
   }
 });
 
-document.getElementById("logout-btn").addEventListener("click", () => signOut(auth));
+document.getElementById("logout-btn").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (e) {
+    alert("Sign out error: " + e.message);
+  }
+});
 
 // --- Sidebar navigation ---
 document.querySelectorAll(".sidebar-btn").forEach(btn => {
@@ -62,7 +68,7 @@ async function uploadToCloudinary(file) {
     body: formData
   });
   const data = await res.json();
-  if (!data.secure_url) throw new Error(data.error?.message || "Upload Cloudinary échoué");
+  if (!data.secure_url) throw new Error(data.error?.message || "Cloudinary upload failed");
   return data.secure_url;
 }
 
@@ -89,14 +95,14 @@ function compressImage(file, maxWidth, quality) {
 // --- Albums ---
 async function loadAlbums() {
   const list = document.getElementById("albums-admin-list");
-  list.innerHTML = `<div class="loading-state"><span class="label">Chargement...</span></div>`;
+  list.innerHTML = `<div class="loading-state"><span class="label">Loading...</span></div>`;
 
   try {
     const q = query(collection(db, "albums"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
-      list.innerHTML = `<div class="loading-state"><span class="label">Aucun album — créez-en un !</span></div>`;
+      list.innerHTML = `<div class="loading-state"><span class="label">No albums yet — create one!</span></div>`;
       return;
     }
 
@@ -112,8 +118,8 @@ async function loadAlbums() {
           <span class="admin-item-meta">${a.photos?.length || 0} photo(s)${a.series ? ` · ${a.series}` : ""}</span>
         </div>
         <div class="admin-item-actions">
-          <button class="admin-action-btn view" data-id="${docSnap.id}">Voir les photos</button>
-          <button class="admin-action-btn delete" data-id="${docSnap.id}">Supprimer</button>
+          <button class="admin-action-btn view" data-id="${docSnap.id}">View photos</button>
+          <button class="admin-action-btn delete" data-id="${docSnap.id}">Delete</button>
         </div>
       `;
       item.querySelector(".view").addEventListener("click", () => {
@@ -122,7 +128,7 @@ async function loadAlbums() {
         win.document.write(`<html><body style="background:#fff;display:flex;flex-wrap:wrap;gap:8px;padding:16px;">${photos.map(u => `<img src="${u}" style="height:200px;object-fit:cover;" />`).join("")}</body></html>`);
       });
       item.querySelector(".delete").addEventListener("click", async () => {
-        if (confirm(`Supprimer l'album "${a.name}" ?`)) {
+        if (confirm(`Delete album "${a.name}"?`)) {
           await deleteDoc(doc(db, "albums", docSnap.id));
           loadAlbums();
         }
@@ -130,7 +136,7 @@ async function loadAlbums() {
       list.appendChild(item);
     });
   } catch (e) {
-    list.innerHTML = `<div class="loading-state"><span class="label">Erreur : ${e.message}</span></div>`;
+    list.innerHTML = `<div class="loading-state"><span class="label">Error: ${e.message}</span></div>`;
     console.error("loadAlbums:", e);
   }
 }
@@ -187,10 +193,10 @@ albumZone.addEventListener("drop", e => {
 
 document.getElementById("save-album-btn").addEventListener("click", async () => {
   const name = document.getElementById("album-name").value.trim();
-  if (!name) return alert("Donne un nom à l'album !");
+  if (!name) return alert("Album name is required!");
 
   const btn = document.getElementById("save-album-btn");
-  btn.textContent = "Upload en cours...";
+  btn.textContent = "Uploading...";
   btn.disabled = true;
 
   try {
@@ -211,9 +217,9 @@ document.getElementById("save-album-btn").addEventListener("click", async () => 
     closeAllModals();
     loadAlbums();
   } catch (e) {
-    alert("Erreur lors de l'upload : " + e.message);
+    alert("Upload error: " + e.message);
   } finally {
-    btn.textContent = "Publier l'album";
+    btn.textContent = "Publish album";
     btn.disabled = false;
   }
 });
@@ -224,14 +230,14 @@ document.getElementById("close-album-modal").addEventListener("click", closeAllM
 // --- Articles ---
 async function loadArticles() {
   const list = document.getElementById("articles-admin-list");
-  list.innerHTML = `<div class="loading-state"><span class="label">Chargement...</span></div>`;
+  list.innerHTML = `<div class="loading-state"><span class="label">Loading...</span></div>`;
 
   try {
     const q = query(collection(db, "articles"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
-      list.innerHTML = `<div class="loading-state"><span class="label">Aucun article — créez-en un !</span></div>`;
+      list.innerHTML = `<div class="loading-state"><span class="label">No articles yet — create one!</span></div>`;
       return;
     }
 
@@ -239,7 +245,7 @@ async function loadArticles() {
     snapshot.forEach(docSnap => {
       const a = docSnap.data();
       const date = a.createdAt?.toDate?.()
-        ? new Intl.DateTimeFormat("fr-BE", { year: "numeric", month: "long", day: "numeric" }).format(a.createdAt.toDate())
+        ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(a.createdAt.toDate())
         : "";
       const item = document.createElement("div");
       item.className = "admin-item";
@@ -250,11 +256,11 @@ async function loadArticles() {
           <span class="admin-item-meta">${date}</span>
         </div>
         <div class="admin-item-actions">
-          <button class="admin-action-btn delete" data-id="${docSnap.id}">Supprimer</button>
+          <button class="admin-action-btn delete" data-id="${docSnap.id}">Delete</button>
         </div>
       `;
       item.querySelector(".delete").addEventListener("click", async () => {
-        if (confirm(`Supprimer l'article "${a.title}" ?`)) {
+        if (confirm(`Delete article "${a.title}"?`)) {
           await deleteDoc(doc(db, "articles", docSnap.id));
           loadArticles();
         }
@@ -262,7 +268,7 @@ async function loadArticles() {
       list.appendChild(item);
     });
   } catch (e) {
-    list.innerHTML = `<div class="loading-state"><span class="label">Erreur : ${e.message}</span></div>`;
+    list.innerHTML = `<div class="loading-state"><span class="label">Error: ${e.message}</span></div>`;
     console.error("loadArticles:", e);
   }
 }
@@ -272,7 +278,7 @@ document.getElementById("new-article-btn").addEventListener("click", () => {
   coverUrl = "";
   document.getElementById("article-title").value = "";
   document.getElementById("cover-preview").innerHTML = "";
-  document.getElementById("modal-article-title").textContent = "Nouvel article";
+  document.getElementById("modal-article-title").textContent = "New article";
 
   openModal("modal-article");
 
@@ -312,7 +318,7 @@ function insertImageInArticle() {
       const range = quill.getSelection(true);
       quill.insertEmbed(range.index, "image", url);
     } catch(e) {
-      alert("Erreur upload image : " + e.message);
+      alert("Image upload error: " + e.message);
     }
   };
   input.click();
@@ -329,7 +335,7 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
       coverUrl = await uploadToCloudinary(file);
       document.getElementById("cover-preview").innerHTML = `<img src="${coverUrl}" alt="Cover" />`;
     } catch(e) {
-      alert("Erreur upload cover : " + e.message);
+      alert("Cover upload error: " + e.message);
     }
   };
   input.click();
@@ -337,11 +343,11 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
 
 document.getElementById("save-article-btn").addEventListener("click", async () => {
   const title = document.getElementById("article-title").value.trim();
-  if (!title) return alert("Donne un titre à l'article !");
-  if (!quill) return alert("L'éditeur n'est pas prêt.");
+  if (!title) return alert("Article title is required!");
+  if (!quill) return alert("Editor not ready.");
 
   const btn = document.getElementById("save-article-btn");
-  btn.textContent = "Publication...";
+  btn.textContent = "Publishing...";
   btn.disabled = true;
 
   try {
@@ -359,9 +365,9 @@ document.getElementById("save-article-btn").addEventListener("click", async () =
     closeAllModals();
     loadArticles();
   } catch (e) {
-    alert("Erreur : " + e.message);
+    alert("Error: " + e.message);
   } finally {
-    btn.textContent = "Publier l'article";
+    btn.textContent = "Publish article";
     btn.disabled = false;
   }
 });
@@ -380,7 +386,6 @@ function closeAllModals() {
   document.getElementById("modal-overlay").classList.remove("open");
 }
 
-// Fermer en cliquant sur le fond du modal (hors modal-box)
 document.querySelectorAll(".modal").forEach(modal => {
   modal.addEventListener("click", e => {
     if (e.target === modal) closeAllModals();

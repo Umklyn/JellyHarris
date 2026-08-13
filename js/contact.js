@@ -11,7 +11,7 @@ form.addEventListener("submit", async (e) => {
   const message = document.getElementById("message").value.trim();
 
   submitBtn.disabled = true;
-  submitBtn.textContent = "Envoi...";
+  submitBtn.textContent = "Sending...";
   status.textContent = "";
   status.className = "form-status";
 
@@ -24,17 +24,17 @@ form.addEventListener("submit", async (e) => {
     });
 
     if (res.ok) {
-      status.textContent = "Message envoyé — merci !";
+      status.textContent = "Message sent — thank you!";
       status.className = "form-status success";
       form.reset();
     } else {
-      throw new Error("Erreur serveur");
+      throw new Error("Server error");
     }
   } catch {
-    status.textContent = "Erreur d'envoi, réessaie ou contacte-moi par email.";
+    status.textContent = "Send error — try again or reach me by email.";
     status.className = "form-status error";
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = "Envoyer";
+    submitBtn.textContent = "Send message";
   }
 });

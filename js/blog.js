@@ -9,7 +9,7 @@ async function loadArticles() {
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
-      list.innerHTML = `<div class="empty-state"><span class="label">Aucun article pour le moment</span></div>`;
+      list.innerHTML = `<div class="empty-state"><span class="label">No articles yet</span></div>`;
       return;
     }
 
@@ -17,7 +17,7 @@ async function loadArticles() {
     snapshot.forEach(docSnap => {
       const article = docSnap.data();
       const date = article.createdAt?.toDate?.()
-        ? new Intl.DateTimeFormat("fr-BE", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
+        ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
         : "";
 
       const excerpt = article.excerpt || stripHtml(article.content).slice(0, 180) + "...";
@@ -48,7 +48,7 @@ async function loadArticles() {
     }
   } catch (e) {
     console.error(e);
-    list.innerHTML = `<div class="empty-state"><span class="label">Erreur de chargement</span></div>`;
+    list.innerHTML = `<div class="empty-state"><span class="label">Loading error</span></div>`;
   }
 }
 
@@ -56,7 +56,7 @@ function openArticle(id, article) {
   window.history.pushState({}, "", `#${id}`);
 
   const date = article.createdAt?.toDate?.()
-    ? new Intl.DateTimeFormat("fr-BE", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
+    ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
     : "";
 
   document.getElementById("article-content").innerHTML = `

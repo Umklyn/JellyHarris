@@ -45,7 +45,7 @@ async function loadLatestJournal() {
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
-      list.innerHTML = `<p class="journal-empty label">Aucun article pour le moment</p>`;
+      list.innerHTML = `<p class="journal-empty label">No articles yet</p>`;
       return;
     }
 
@@ -53,7 +53,7 @@ async function loadLatestJournal() {
     snapshot.forEach(doc => {
       const article = doc.data();
       const date = article.createdAt?.toDate?.()
-        ? new Intl.DateTimeFormat("fr-BE", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
+        ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
         : "";
 
       const item = document.createElement("a");
