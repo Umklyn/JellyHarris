@@ -113,10 +113,10 @@
 }
 
 .sidebar-name {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  font-style: italic;
-  font-weight: 300;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: var(--text);
 }
 
@@ -242,10 +242,10 @@
 }
 
 .admin-item-title {
-  font-family: var(--font-serif);
-  font-size: 1rem;
-  font-weight: 300;
-  font-style: italic;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text);
 }
 
 .admin-item-meta {
@@ -263,25 +263,31 @@
 
 .admin-action-btn {
   background: none;
-  border: 1px solid rgba(14,14,14,0.12);
-  padding: 0.4rem 0.85rem;
+  border: 1px solid rgba(14,14,14,0.25);
+  padding: 0.5rem 1rem;
   font-family: var(--font-mono);
   font-size: 0.55rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.2s;
-  color: var(--text-light);
-}
-
-.admin-action-btn:hover {
-  border-color: var(--text);
   color: var(--text);
 }
 
+.admin-action-btn:hover {
+  background: var(--text);
+  color: var(--white);
+  border-color: var(--text);
+}
+
+.admin-action-btn.delete {
+  color: var(--text-light);
+}
+
 .admin-action-btn.delete:hover {
+  background: var(--accent-red);
   border-color: var(--accent-red);
-  color: var(--accent-red);
+  color: var(--white);
 }
 
 /* ── Modals ── */
@@ -420,9 +426,8 @@
 }
 
 .input-title {
-  font-family: var(--font-serif) !important;
-  font-size: 1.3rem !important;
-  font-style: italic;
+  font-family: var(--font-sans) !important;
+  font-size: 1rem !important;
 }
 
 /* ── Upload ── */
