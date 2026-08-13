@@ -47,8 +47,8 @@
 .hero-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  align-items: end;
-  padding: 1.5rem 0 2rem;
+  align-items: stretch;
+  padding: 0 0 2rem;
   gap: 4rem;
   position: relative;
 }
@@ -57,11 +57,12 @@
   display: flex;
   flex-direction: column;
   gap: 0;
+  justify-content: flex-end;
 }
 
 .hero-name-line {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 7.5vw, 7rem);
+  font-size: clamp(3.5rem, 9vw, 8.5rem);
   font-weight: 400;
   line-height: 0.9;
   letter-spacing: -0.01em;
