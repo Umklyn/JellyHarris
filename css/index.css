@@ -107,36 +107,22 @@
   max-width: 280px;
 }
 
-/* Floating image — placeholder visible si pas de photo */
+/* Floating image */
 .hero-img-wrap {
   position: absolute;
   top: 0;
   right: 0;
-  width: clamp(160px, 18vw, 280px);
-  aspect-ratio: 2/3;
-  overflow: hidden;
-  border: 1px dashed rgba(14,14,14,0.2);
+  width: clamp(180px, 20vw, 300px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
-.hero-img-wrap::before {
-  content: '[ Photo ]';
-  font-family: var(--font-mono);
-  font-size: 0.5rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgba(14,14,14,0.25);
-}
-
 .hero-img-wrap img {
-  position: absolute;
-  inset: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(100%);
+  height: auto;
+  display: block;
+  mix-blend-mode: multiply;
 }
 
 /* Hero sub — hidden (layout géré autrement) */
