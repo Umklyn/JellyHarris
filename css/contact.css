@@ -91,15 +91,15 @@
 .contact-detail a,
 .contact-detail p {
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-style: normal;
   font-weight: 300;
-  color: var(--text);
+  color: var(--accent-red);
   text-decoration: none;
   transition: color 0.2s;
 }
 
-.contact-detail a:hover { color: var(--accent-red); }
+.contact-detail a:hover { color: var(--text); }
 
 /* Form droite */
 .contact-form {
