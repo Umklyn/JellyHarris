@@ -350,6 +350,10 @@ footer p:nth-child(2) {
   text-align: center;
 }
 
+.footer-duo {
+  grid-template-columns: 1fr 1fr;
+}
+
 .footer-insta {
   display: inline-flex;
   align-items: center;
@@ -440,7 +444,8 @@ nav.menu-open {
 @media (max-width: 768px) {
   nav { padding: 1.25rem 1.5rem; }
   .nav-links { gap: 1.75rem; }
-  footer {
+  footer,
+  .footer-duo {
     grid-template-columns: 1fr;
     gap: 0.75rem;
     padding: 2rem 1.5rem;
