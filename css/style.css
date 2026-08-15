@@ -447,9 +447,13 @@ nav.scrolled {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    position: relative;
   }
-  footer p:last-child .footer-insta,
-  footer p:last-child .admin-link {
+  footer p:last-child .footer-insta {
     margin-left: 0;
+  }
+  footer p:last-child .admin-link {
+    position: absolute;
+    right: 0;
   }
 }
