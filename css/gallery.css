@@ -391,10 +391,12 @@
 
   .lightbox-nav {
     top: auto;
-    bottom: 1.5rem;
+    bottom: 4.5rem;
     transform: none;
+    left: 50%;
+    right: auto;
   }
 
-  .lightbox-prev { left: 1.5rem; }
-  .lightbox-next { right: 1.5rem; }
+  .lightbox-prev { transform: translateX(calc(-100% - 0.75rem)); }
+  .lightbox-next { transform: translateX(0.75rem); }
 }
