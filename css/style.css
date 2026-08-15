@@ -438,6 +438,7 @@ nav.scrolled {
 nav.menu-open {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  transition: none;
 }
 
 /* Responsive */
