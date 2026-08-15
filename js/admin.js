@@ -321,15 +321,42 @@ function openEditAlbum(album, id) {
     const caption = (album.captions || [])[i] || "";
     const item = document.createElement("div");
     item.className = "edit-photo-item";
+    item.draggable = true;
+    item.dataset.url = url;
     item.innerHTML = `
+      <span class="edit-photo-drag" aria-hidden="true" title="Drag to reorder">⠿</span>
       <img src="${cldResize(url, 300)}" class="edit-photo-thumb" alt="Photo ${i + 1}" />
-      <textarea class="edit-caption-input" data-index="${i}" placeholder="Add a caption...">${caption}</textarea>
+      <textarea class="edit-caption-input" placeholder="Add a caption...">${caption}</textarea>
+      <button type="button" class="edit-photo-remove" title="Remove photo">✕</button>
     `;
+    item.querySelector(".edit-photo-remove").addEventListener("click", () => item.remove());
+    item.addEventListener("dragstart", () => item.classList.add("dragging"));
+    item.addEventListener("dragend", () => item.classList.remove("dragging"));
     list.appendChild(item);
   });
 
   openModal("modal-edit-album");
 }
+
+function getPhotoDragAfterElement(container, y) {
+  const els = [...container.querySelectorAll(".edit-photo-item:not(.dragging)")];
+  return els.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) return { offset, element: child };
+    return closest;
+  }, { offset: -Infinity }).element;
+}
+
+document.getElementById("edit-photos-list").addEventListener("dragover", e => {
+  e.preventDefault();
+  const list = e.currentTarget;
+  const dragging = list.querySelector(".dragging");
+  if (!dragging) return;
+  const after = getPhotoDragAfterElement(list, e.clientY);
+  if (after == null) list.appendChild(dragging);
+  else list.insertBefore(dragging, after);
+});
 
 document.getElementById("save-edit-btn").addEventListener("click", async () => {
   const btn = document.getElementById("save-edit-btn");
@@ -337,13 +364,15 @@ document.getElementById("save-edit-btn").addEventListener("click", async () => {
   btn.disabled = true;
 
   try {
-    const captions = Array.from(document.querySelectorAll(".edit-caption-input"))
-      .map(el => el.value.trim());
+    const items = [...document.querySelectorAll("#edit-photos-list .edit-photo-item")];
+    const photos = items.map(item => item.dataset.url);
+    const captions = items.map(item => item.querySelector(".edit-caption-input").value.trim());
 
     await updateDoc(doc(db, "albums", currentEditAlbumId), {
       name: document.getElementById("edit-album-name").value.trim(),
       series: document.getElementById("edit-album-series").value.trim() || null,
       description: document.getElementById("edit-album-desc").value.trim(),
+      photos,
       captions
     });
 
