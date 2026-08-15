@@ -1,5 +1,6 @@
 import { db } from "./firebase-init.js";
 import { collection, query, orderBy, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { cldResize } from "./cloudinary.js";
 
 async function loadArticles() {
   const list = document.getElementById("articles-list");
@@ -26,7 +27,7 @@ async function loadArticles() {
       row.className = "article-row";
       row.innerHTML = `
         <div class="article-row-cover">
-          ${article.cover ? `<img src="${article.cover}" alt="${article.title}" loading="lazy" />` : ""}
+          ${article.cover ? `<img src="${cldResize(article.cover, 600)}" alt="${article.title}" loading="lazy" />` : ""}
         </div>
         <div class="article-row-body">
           <h2 class="article-row-title">${article.title}</h2>
@@ -63,7 +64,7 @@ function openArticle(id, article) {
     <div class="article-header">
       <span class="article-date label">${date}</span>
       <h1>${article.title}</h1>
-      ${article.cover ? `<img class="article-cover-img" src="${article.cover}" alt="${article.title}" />` : ""}
+      ${article.cover ? `<img class="article-cover-img" src="${cldResize(article.cover, 1200)}" alt="${article.title}" />` : ""}
     </div>
     <div class="article-body">${article.content || ""}</div>
   `;

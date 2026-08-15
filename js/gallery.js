@@ -1,5 +1,6 @@
 import { db } from "./firebase-init.js";
 import { collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { cldResize } from "./cloudinary.js";
 
 let allAlbums = [];
 let lightboxPhotos = [];
@@ -49,7 +50,7 @@ function renderAlbums(albums) {
     card.className = "album-card";
     card.innerHTML = `
       <span class="album-index">${index}</span>
-      <img src="${cover}" alt="${album.name}" loading="lazy" />
+      <img src="${cldResize(cover, 800)}" alt="${album.name}" loading="lazy" />
       <div class="album-overlay">
         <h3>${album.name}</h3>
         <span class="album-count">${count} photo${count > 1 ? "s" : ""}</span>
@@ -109,7 +110,7 @@ async function openAlbumDetail(album) {
     wrap.className = "photo-cell";
 
     const img = document.createElement("img");
-    img.src = url;
+    img.src = cldResize(url, 800);
     img.alt = album.name;
     img.loading = "lazy";
     img.className = "photo-thumb";
@@ -148,7 +149,7 @@ function openLightbox(index) {
 }
 
 function showLightboxPhoto(index) {
-  document.getElementById("lightbox-img").src = lightboxPhotos[index];
+  document.getElementById("lightbox-img").src = cldResize(lightboxPhotos[index], 1600);
   const caption = lightboxCaptions[index] || "";
   const info = document.querySelector(".lightbox-info");
   const captionEl = document.getElementById("lightbox-caption");

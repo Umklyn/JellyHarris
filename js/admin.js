@@ -6,6 +6,7 @@ import {
 import {
   GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { cldResize } from "./cloudinary.js";
 
 const CLOUDINARY_CLOUD = "qjupwxds";
 const CLOUDINARY_PRESET = "JellyHarris_uploads";
@@ -146,7 +147,7 @@ async function loadAlbums() {
       const item = document.createElement("div");
       item.className = "admin-item";
       item.innerHTML = `
-        ${a.photos?.[0] ? `<img class="admin-item-thumb" src="${a.photos[0]}" alt="${a.name}" />` : `<div class="admin-item-thumb"></div>`}
+        ${a.photos?.[0] ? `<img class="admin-item-thumb" src="${cldResize(a.photos[0], 200)}" alt="${a.name}" />` : `<div class="admin-item-thumb"></div>`}
         <div class="admin-item-info">
           <span class="admin-item-title">${a.name}</span>
           <span class="admin-item-meta">${a.photos?.length || 0} photo(s)${a.series ? ` · ${a.series}` : ""}</span>
@@ -271,7 +272,7 @@ function openEditAlbum(album, id) {
     const item = document.createElement("div");
     item.className = "edit-photo-item";
     item.innerHTML = `
-      <img src="${url}" class="edit-photo-thumb" alt="Photo ${i + 1}" />
+      <img src="${cldResize(url, 300)}" class="edit-photo-thumb" alt="Photo ${i + 1}" />
       <textarea class="edit-caption-input" data-index="${i}" placeholder="Add a caption...">${caption}</textarea>
     `;
     list.appendChild(item);
@@ -332,7 +333,7 @@ async function loadArticles() {
       const item = document.createElement("div");
       item.className = "admin-item";
       item.innerHTML = `
-        ${a.cover ? `<img class="admin-item-thumb" src="${a.cover}" alt="${a.title}" />` : `<div class="admin-item-thumb"></div>`}
+        ${a.cover ? `<img class="admin-item-thumb" src="${cldResize(a.cover, 200)}" alt="${a.title}" />` : `<div class="admin-item-thumb"></div>`}
         <div class="admin-item-info">
           <span class="admin-item-title">${a.title}</span>
           <span class="admin-item-meta">${date}</span>
