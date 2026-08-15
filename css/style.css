@@ -434,4 +434,5 @@ nav.scrolled {
   }
   footer p:last-child,
   footer p:nth-child(2) { text-align: center; }
+  .footer-logo-img { margin: 0 auto; }
 }
