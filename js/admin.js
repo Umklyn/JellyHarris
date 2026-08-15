@@ -128,6 +128,8 @@ function compressImage(file, maxWidth, quality) {
 }
 
 // --- Albums ---
+let albumsOrderState = [];
+
 async function loadAlbums() {
   const list = document.getElementById("albums-admin-list");
   list.innerHTML = `<div class="loading-state"><span class="label">Loading...</span></div>`;
@@ -138,38 +140,86 @@ async function loadAlbums() {
 
     if (snapshot.empty) {
       list.innerHTML = `<div class="loading-state"><span class="label">No albums yet — create one!</span></div>`;
+      albumsOrderState = [];
       return;
     }
 
-    list.innerHTML = "";
-    snapshot.forEach(docSnap => {
-      const a = docSnap.data();
-      const item = document.createElement("div");
-      item.className = "admin-item";
-      item.innerHTML = `
-        ${a.photos?.[0] ? `<img class="admin-item-thumb" src="${cldResize(a.photos[0], 200)}" alt="${a.name}" />` : `<div class="admin-item-thumb"></div>`}
-        <div class="admin-item-info">
-          <span class="admin-item-title">${a.name}</span>
-          <span class="admin-item-meta">${a.photos?.length || 0} photo(s)${a.series ? ` · ${a.series}` : ""}</span>
-        </div>
-        <div class="admin-item-actions">
-          <button class="admin-action-btn edit" data-id="${docSnap.id}">Edit</button>
-          <button class="admin-action-btn delete" data-id="${docSnap.id}">Delete</button>
-        </div>
-      `;
-      item.querySelector(".edit").addEventListener("click", () => openEditAlbum(a, docSnap.id));
-      item.querySelector(".delete").addEventListener("click", async () => {
-        if (confirm(`Delete album "${a.name}"?`)) {
-          await deleteDoc(doc(db, "albums", docSnap.id));
-          loadAlbums();
-        }
-      });
-      list.appendChild(item);
-    });
+    const albums = [];
+    snapshot.forEach(docSnap => albums.push({ id: docSnap.id, ...docSnap.data() }));
+    albums.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+
+    albumsOrderState = albums;
+    renderAlbumsAdminList();
   } catch (e) {
     list.innerHTML = `<div class="loading-state"><span class="label">Error: ${e.message}</span></div>`;
     console.error("loadAlbums:", e);
   }
+}
+
+function renderAlbumsAdminList() {
+  const list = document.getElementById("albums-admin-list");
+  list.innerHTML = "";
+
+  albumsOrderState.forEach(a => {
+    const item = document.createElement("div");
+    item.className = "admin-item";
+    item.draggable = true;
+    item.dataset.id = a.id;
+    item.innerHTML = `
+      <span class="admin-item-drag" aria-hidden="true" title="Drag to reorder">⠿</span>
+      ${a.photos?.[0] ? `<img class="admin-item-thumb" src="${cldResize(a.photos[0], 200)}" alt="${a.name}" />` : `<div class="admin-item-thumb"></div>`}
+      <div class="admin-item-info">
+        <span class="admin-item-title">${a.name}</span>
+        <span class="admin-item-meta">${a.photos?.length || 0} photo(s)${a.series ? ` · ${a.series}` : ""}</span>
+      </div>
+      <div class="admin-item-actions">
+        <button class="admin-action-btn edit" data-id="${a.id}">Edit</button>
+        <button class="admin-action-btn delete" data-id="${a.id}">Delete</button>
+      </div>
+    `;
+    item.querySelector(".edit").addEventListener("click", () => openEditAlbum(a, a.id));
+    item.querySelector(".delete").addEventListener("click", async () => {
+      if (confirm(`Delete album "${a.name}"?`)) {
+        await deleteDoc(doc(db, "albums", a.id));
+        loadAlbums();
+      }
+    });
+
+    item.addEventListener("dragstart", () => item.classList.add("dragging"));
+    item.addEventListener("dragend", () => {
+      item.classList.remove("dragging");
+      persistAlbumsOrder();
+    });
+
+    list.appendChild(item);
+  });
+}
+
+function getDragAfterElement(container, y) {
+  const els = [...container.querySelectorAll(".admin-item:not(.dragging)")];
+  return els.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) return { offset, element: child };
+    return closest;
+  }, { offset: -Infinity }).element;
+}
+
+document.getElementById("albums-admin-list").addEventListener("dragover", e => {
+  e.preventDefault();
+  const list = e.currentTarget;
+  const dragging = list.querySelector(".dragging");
+  if (!dragging) return;
+  const after = getDragAfterElement(list, e.clientY);
+  if (after == null) list.appendChild(dragging);
+  else list.insertBefore(dragging, after);
+});
+
+async function persistAlbumsOrder() {
+  const list = document.getElementById("albums-admin-list");
+  const ids = [...list.querySelectorAll(".admin-item")].map(el => el.dataset.id);
+  albumsOrderState = ids.map(id => albumsOrderState.find(a => a.id === id));
+  await Promise.all(ids.map((id, index) => updateDoc(doc(db, "albums", id), { order: index })));
 }
 
 document.getElementById("new-album-btn").addEventListener("click", () => {

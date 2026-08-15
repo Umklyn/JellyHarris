@@ -23,6 +23,7 @@ async function loadAlbums() {
 
     allAlbums = [];
     snapshot.forEach(doc => allAlbums.push({ id: doc.id, ...doc.data() }));
+    allAlbums.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
 
     renderAlbums(allAlbums);
     renderFilters(allAlbums, filtersEl);

@@ -283,11 +283,28 @@
 
 .admin-item {
   display: grid;
-  grid-template-columns: 72px 1fr auto;
+  grid-template-columns: 20px 72px 1fr auto;
   align-items: center;
   gap: 1.5rem;
   padding: 1.25rem 0;
   border-bottom: 1px solid rgba(14,14,14,0.06);
+  background: var(--bg, #fff);
+}
+
+.admin-item.dragging {
+  opacity: 0.4;
+}
+
+.admin-item-drag {
+  cursor: grab;
+  color: var(--text-light);
+  font-size: 1rem;
+  text-align: center;
+  user-select: none;
+}
+
+.admin-item-drag:active {
+  cursor: grabbing;
 }
 
 .admin-item-thumb {
