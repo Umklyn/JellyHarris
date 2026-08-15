@@ -8,6 +8,7 @@ if (burger && navLinks) {
     const open = navLinks.classList.toggle('nav-open');
     burger.setAttribute('aria-expanded', open);
     burger.classList.toggle('is-open', open);
+    nav.classList.toggle('menu-open', open);
   });
 
   navLinks.querySelectorAll('a').forEach(a => {
@@ -15,6 +16,7 @@ if (burger && navLinks) {
       navLinks.classList.remove('nav-open');
       burger.classList.remove('is-open');
       burger.setAttribute('aria-expanded', false);
+      nav.classList.remove('menu-open');
     });
   });
 }

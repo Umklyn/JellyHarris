@@ -428,6 +428,14 @@ nav.scrolled {
   border-bottom: 1px solid rgba(14,14,14,0.06);
 }
 
+/* backdrop-filter crée un containing block pour les descendants position:fixed
+   (le menu mobile plein écran) — on le désactive pendant que le menu est ouvert
+   pour que .nav-links.nav-open reste positionné par rapport au viewport. */
+nav.menu-open {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   nav { padding: 1.25rem 1.5rem; }
