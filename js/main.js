@@ -1,6 +1,6 @@
 import { db } from "./firebase-init.js";
 import { collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { cldResize } from "./cloudinary.js";
+import { cldWatermark } from "./cloudinary.js";
 
 async function loadLatestWorks() {
   const grid = document.getElementById("latest-works-grid");
@@ -22,7 +22,7 @@ async function loadLatestWorks() {
       const card = document.createElement("div");
       card.className = "work-card";
       card.innerHTML = `
-        <img src="${cldResize(cover, 800)}" alt="${album.name}" loading="lazy" />
+        <img src="${cldWatermark(cover, 800)}" alt="${album.name}" loading="lazy" />
         <div class="work-card-overlay">
           <h3>${album.name}</h3>
         </div>
