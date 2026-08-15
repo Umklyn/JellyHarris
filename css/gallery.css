@@ -383,3 +383,18 @@
   .album-card img { object-position: center; }
   .photos-grid { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 640px) {
+  .lightbox-content { max-width: 92vw; }
+  .lightbox-img { max-width: 92vw; max-height: 68vh; }
+  .lightbox-info { width: 92vw; }
+
+  .lightbox-nav {
+    top: auto;
+    bottom: 1.5rem;
+    transform: none;
+  }
+
+  .lightbox-prev { left: 1.5rem; }
+  .lightbox-next { right: 1.5rem; }
+}
