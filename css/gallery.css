@@ -382,4 +382,5 @@
 
 @media (max-width: 480px) {
   .albums-grid { grid-template-columns: 1fr; }
+  .photos-grid { grid-template-columns: 1fr; }
 }
