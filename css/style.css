@@ -455,5 +455,7 @@ nav.scrolled {
   footer p:last-child .admin-link {
     position: absolute;
     right: 0;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
