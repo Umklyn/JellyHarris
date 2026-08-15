@@ -99,7 +99,7 @@
 .hero-right {
   display: flex !important;
   flex-direction: column;
-  align-self: stretch;
+  align-self: center;
   position: relative;
 }
 
@@ -135,9 +135,9 @@
 /* Hero photo */
 .hero-img-wrap {
   width: 100%;
-  flex: 1;
+  aspect-ratio: 4 / 5;
+  max-height: 70vh;
   overflow: hidden;
-  min-height: 400px;
   margin-bottom: -2rem;
 }
 
