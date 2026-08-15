@@ -3,6 +3,7 @@ import { collection, query, orderBy, getDocs } from "https://www.gstatic.com/fir
 import { cldWatermark } from "./cloudinary.js";
 
 let allAlbums = [];
+let currentAlbum = null;
 let lightboxPhotos = [];
 let lightboxCaptions = [];
 let lightboxIndex = 0;
@@ -26,10 +27,15 @@ async function loadAlbums() {
     renderAlbums(allAlbums);
     renderFilters(allAlbums, filtersEl);
 
+    history.replaceState({ view: "grid" }, "", window.location.pathname);
+
     if (window.location.hash) {
       const id = window.location.hash.replace("#", "");
       const album = allAlbums.find(a => a.id === id);
-      if (album) openAlbumLightbox(album);
+      if (album) {
+        history.pushState({ view: "album", id }, "", `#${id}`);
+        openAlbumDetail(album);
+      }
     }
   } catch (e) {
     console.error(e);
@@ -56,7 +62,10 @@ function renderAlbums(albums) {
         <span class="album-count">${count} photo${count > 1 ? "s" : ""}</span>
       </div>
     `;
-    card.addEventListener("click", () => openAlbumDetail(album));
+    card.addEventListener("click", () => {
+      history.pushState({ view: "album", id: album.id }, "", `#${album.id}`);
+      openAlbumDetail(album);
+    });
     grid.appendChild(card);
   });
 }
@@ -87,6 +96,7 @@ function renderFilters(albums, container) {
 }
 
 async function openAlbumDetail(album) {
+  currentAlbum = album;
   lightboxPhotos = album.photos || [];
   lightboxCaptions = album.captions || [];
   if (!lightboxPhotos.length) return;
@@ -114,19 +124,24 @@ async function openAlbumDetail(album) {
     img.alt = album.name;
     img.loading = "lazy";
     img.className = "photo-thumb";
-    img.addEventListener("click", () => openLightbox(i));
+    img.addEventListener("click", () => {
+      history.pushState({ view: "lightbox", id: album.id, index: i }, "", `#${album.id}`);
+      openLightbox(i);
+    });
     wrap.appendChild(img);
     grid.appendChild(wrap);
   });
 }
 
-document.getElementById("back-to-albums").addEventListener("click", () => {
+function showGrid() {
   document.getElementById("album-detail").style.display = "none";
   document.querySelector(".albums-grid").style.display = "grid";
   document.querySelector(".page-header").style.display = "flex";
   document.querySelector(".gallery-filters").style.display = "flex";
   document.querySelector("nav").classList.remove("scrolled");
-});
+}
+
+document.getElementById("back-to-albums").addEventListener("click", () => history.back());
 
 function setLightboxControls(visible) {
   const display = visible ? "1" : "0";
@@ -157,9 +172,9 @@ function showLightboxPhoto(index) {
   info.style.display = caption ? "block" : "none";
 }
 
-document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
+document.getElementById("lightbox-close").addEventListener("click", () => history.back());
 document.getElementById("lightbox").addEventListener("click", e => {
-  if (e.target === e.currentTarget) closeLightbox();
+  if (e.target === e.currentTarget) history.back();
 });
 
 document.getElementById("lightbox-prev").addEventListener("click", () => {
@@ -173,7 +188,7 @@ document.getElementById("lightbox-next").addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeLightbox();
+  if (e.key === "Escape" && document.getElementById("lightbox").classList.contains("open")) history.back();
   if (e.key === "ArrowRight") { lightboxIndex = (lightboxIndex + 1) % lightboxPhotos.length; showLightboxPhoto(lightboxIndex); }
   if (e.key === "ArrowLeft") { lightboxIndex = (lightboxIndex - 1 + lightboxPhotos.length) % lightboxPhotos.length; showLightboxPhoto(lightboxIndex); }
 });
@@ -187,5 +202,26 @@ function closeLightbox() {
     document.querySelector("nav").classList.remove("scrolled");
   }
 }
+
+window.addEventListener("popstate", e => {
+  const state = e.state;
+
+  if (!state || state.view === "grid") {
+    closeLightbox();
+    showGrid();
+    return;
+  }
+
+  const album = state.id ? allAlbums.find(a => a.id === state.id) : currentAlbum;
+  if (!album) return;
+
+  if (state.view === "album") {
+    closeLightbox();
+    openAlbumDetail(album);
+  } else if (state.view === "lightbox") {
+    if (currentAlbum?.id !== album.id) openAlbumDetail(album);
+    openLightbox(state.index || 0);
+  }
+});
 
 loadAlbums();
