@@ -9,6 +9,8 @@
   --font-display: 'Clash Display', Impact, sans-serif;
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'Space Mono', monospace;
+  --cursor-default: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2228%22%20height%3D%2228%22%20viewBox%3D%220%200%2028%2028%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%230E0E0E%22%20stroke-width%3D%221.6%22%3E%3Cpath%20d%3D%22M2%208V2H8%22/%3E%3Cpath%20d%3D%22M20%202H26V8%22/%3E%3Cpath%20d%3D%22M26%2020V26H20%22/%3E%3Cpath%20d%3D%22M8%2026H2V20%22/%3E%3C/g%3E%3C/svg%3E") 14 14, auto;
+  --cursor-hover: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23BF0A19%22%20stroke-width%3D%221.8%22%3E%3Cpath%20d%3D%22M1.5%206V1.5H6%22/%3E%3Cpath%20d%3D%22M14%201.5H18.5V6%22/%3E%3Cpath%20d%3D%22M18.5%2014V18.5H14%22/%3E%3Cpath%20d%3D%22M6%2018.5H1.5V14%22/%3E%3C/g%3E%3C/svg%3E") 10 10, pointer;
 }
 
 *, *::before, *::after {
@@ -35,6 +37,13 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   position: relative;
+  cursor: var(--cursor-default);
+}
+
+/* Curseur viseur — resserré + rouge sur tout élément interactif */
+a, button, input, textarea, select, label,
+.work-card, .album-card, .article-row, .journal-item, .photo-thumb {
+  cursor: var(--cursor-hover);
 }
 
 /* Grain */
@@ -144,7 +153,6 @@ nav {
   height: 28px;
   background: none;
   border: none;
-  cursor: pointer;
   padding: 0;
   z-index: 200;
 }
@@ -259,7 +267,6 @@ p {
   text-transform: uppercase;
   padding: 0.85rem 2rem;
   text-decoration: none;
-  cursor: pointer;
   transition: all 0.22s;
   border: none;
   background: none;
