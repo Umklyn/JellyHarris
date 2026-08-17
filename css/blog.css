@@ -155,9 +155,9 @@
 .back-btn:hover { color: var(--text); }
 
 .article-content {
-  max-width: 680px;
+  max-width: 600px;
   margin: 0 auto;
-  padding-bottom: 8rem;
+  padding-bottom: 6rem;
 }
 
 .article-date {
@@ -212,13 +212,13 @@
   aspect-ratio: 16/9;
   object-fit: cover;
   filter: grayscale(100%);
-  margin-bottom: 3.5rem;
+  margin-bottom: 2.5rem;
   display: block;
 }
 
 .article-body {
-  font-size: 1.05rem;
-  line-height: 1.85;
+  font-size: 0.92rem;
+  line-height: 1.7;
   font-weight: 300;
 }
 
@@ -227,29 +227,29 @@
 .article-body h3 {
   font-family: var(--font-sans);
   font-weight: 500;
-  margin: 3rem 0 1.25rem;
+  margin: 2.25rem 0 1rem;
 }
 
-.article-body h1 { font-size: 2rem; }
-.article-body h2 { font-size: 1.5rem; }
-.article-body h3 { font-size: 1.2rem; }
+.article-body h1 { font-size: 1.6rem; }
+.article-body h2 { font-size: 1.25rem; }
+.article-body h3 { font-size: 1.05rem; }
 
-.article-body p { margin-bottom: 1.75rem; }
+.article-body p { margin-bottom: 1.4rem; }
 
 .article-body img {
   width: 100%;
   height: auto;
   filter: grayscale(100%);
-  margin: 2.5rem 0;
+  margin: 1.75rem 0;
   display: block;
 }
 
 .article-body blockquote {
   border-left: 2px solid var(--accent-red);
-  padding-left: 1.5rem;
-  margin: 2.5rem 0;
+  padding-left: 1.25rem;
+  margin: 1.75rem 0;
   font-family: var(--font-sans);
-  font-size: 1.3rem;
+  font-size: 1.05rem;
   color: var(--text-light);
   font-weight: 300;
 }
