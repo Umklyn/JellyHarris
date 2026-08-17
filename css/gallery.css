@@ -27,7 +27,7 @@
 
 .page-header h1.display {
   font-weight: 700;
-  font-size: clamp(3rem, 9vw, 7.5rem);
+  font-size: clamp(2.6rem, 7.5vw, 6.5rem);
   color: var(--text);
   display: inline-block;
   line-height: 0.85;

@@ -28,7 +28,7 @@
 
 .page-header h1.display {
   font-weight: 700;
-  font-size: clamp(3rem, 9vw, 7.5rem);
+  font-size: clamp(2.6rem, 7.5vw, 6.5rem);
   letter-spacing: -0.02em;
   display: inline-block;
   transition: letter-spacing 0.6s cubic-bezier(.25,.46,.45,.94),
