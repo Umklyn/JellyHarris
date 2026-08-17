@@ -100,7 +100,7 @@
 }
 
 .article-row:hover .article-row-title {
-  filter: blur(1.1px) contrast(9);
+  filter: blur(0.6px) contrast(9);
 }
 
 .article-row-excerpt {
@@ -189,7 +189,7 @@
 }
 
 .article-content h1:hover {
-  filter: blur(1.3px) contrast(9);
+  filter: blur(0.7px) contrast(9);
 }
 
 /* Two-column block: image + text side by side */
