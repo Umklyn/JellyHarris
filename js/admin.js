@@ -28,7 +28,7 @@ function registerTwoColBlot() {
     static create(value) {
       const node = super.create();
       node.setAttribute('contenteditable', false);
-      if (value.imageRight) node.classList.add('img-right');
+      node.dataset.imageRight = value.imageRight ? 'true' : 'false';
       node.innerHTML = value.imageRight
         ? `<div class="two-col-text">${value.text || ''}</div>
            <div class="two-col-img"><img src="${value.img || ''}" alt=""></div>`
@@ -40,7 +40,7 @@ function registerTwoColBlot() {
       return {
         img: node.querySelector('img')?.src || '',
         text: node.querySelector('.two-col-text')?.innerHTML || '',
-        imageRight: node.classList.contains('img-right')
+        imageRight: node.dataset.imageRight === 'true'
       };
     }
   }
@@ -62,14 +62,13 @@ function registerPhotoGridBlot() {
       node.setAttribute('contenteditable', false);
       const layout = value.layout || 'duo';
       const images = value.images || [];
-      node.classList.add(`photo-grid-${layout}`);
       node.dataset.layout = layout;
       if (layout === 'montage') {
         const rows = Math.max(1, Math.ceil((images.length - 1) / 2));
         node.style.setProperty('--pg-rows', rows);
       }
       node.innerHTML = images
-        .map(url => `<div class="photo-grid-item"><img src="${url}" alt=""></div>`)
+        .map((url, i) => `<div class="photo-grid-item"${layout === 'montage' && i === 1 ? ' data-center="true"' : ''}><img src="${url}" alt=""></div>`)
         .join('');
       return node;
     }
