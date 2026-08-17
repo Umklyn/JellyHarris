@@ -26,7 +26,9 @@
 }
 
 .contact-header h1.display {
-  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: 700;
+  font-size: clamp(3rem, 9vw, 7.5rem);
+  letter-spacing: -0.02em;
   color: var(--text);
   display: inline-block;
   cursor: default;

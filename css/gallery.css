@@ -26,7 +26,6 @@
 }
 
 .page-header h1.display {
-  font-family: 'Clash Display', var(--font-display);
   font-weight: 700;
   font-size: clamp(3rem, 9vw, 7.5rem);
   color: var(--text);
@@ -164,7 +163,7 @@
   font-family: var(--font-display);
   color: var(--white);
   font-size: clamp(3rem, 8vw, 8rem);
-  font-weight: 400;
+  font-weight: 700;
   text-transform: uppercase;
   line-height: 0.9;
   letter-spacing: -0.01em;

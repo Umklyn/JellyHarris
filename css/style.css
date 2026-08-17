@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap');
-@import url('https://api.fontshare.com/v2/css?f[]=clash-display@700,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap');
 
 :root {
   --bg: #FFFFFF;
@@ -9,7 +9,7 @@
   --accent-red: #BF0A19;
   --accent-yellow: #F0F2AC;
   --white: #FFFFFF;
-  --font-display: 'Anton', Impact, sans-serif;
+  --font-display: 'Clash Display', Impact, sans-serif;
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'Space Mono', monospace;
 }
