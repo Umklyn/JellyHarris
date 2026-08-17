@@ -60,7 +60,6 @@
 
 .article-row:last-child { border-bottom: 1px solid rgba(20,20,20,0.08); }
 .article-row:hover { padding-left: 0.75rem; }
-.article-row:hover .article-row-title { color: var(--accent-red); }
 
 .article-row-cover {
   width: 100%;
