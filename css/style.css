@@ -9,8 +9,8 @@
   --font-display: 'Clash Display', Impact, sans-serif;
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'Space Mono', monospace;
-  --cursor-default: url("../assets/cursor-default.svg") 10 10, auto;
-  --cursor-hover: url("../assets/cursor-hover.svg") 8 8, pointer;
+  --cursor-default: url("../assets/cursor-hover.svg") 8 8, auto;
+  --cursor-active: url("../assets/cursor-default.svg") 10 10, pointer;
 }
 
 *, *::before, *::after {
@@ -40,10 +40,17 @@ body {
   cursor: var(--cursor-default);
 }
 
-/* Curseur viseur — resserré + rouge sur tout élément interactif */
+/* Curseur viseur — rouge au repos, noir pendant le clic.
+   Les navigateurs forcent cursor:pointer sur <a>/<button> via leur
+   feuille de style par défaut ; il faut donc le réaffirmer ici plutôt
+   que compter uniquement sur l'héritage depuis body. */
 a, button, input, textarea, select, label,
 .work-card, .album-card, .article-row, .journal-item, .photo-thumb {
-  cursor: var(--cursor-hover);
+  cursor: var(--cursor-default);
+}
+
+:active {
+  cursor: var(--cursor-active);
 }
 
 /* Grain */
