@@ -55,10 +55,16 @@ async function loadLatestJournal() {
 
     const articles = [];
     snapshot.forEach(doc => articles.push({ id: doc.id, ...doc.data() }));
-    articles.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+    const published = articles.filter(a => a.status !== "draft");
+    published.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+
+    if (!published.length) {
+      list.innerHTML = `<p class="journal-empty label">No articles yet</p>`;
+      return;
+    }
 
     list.innerHTML = "";
-    articles.slice(0, 4).forEach(article => {
+    published.slice(0, 4).forEach(article => {
       const date = article.createdAt?.toDate?.()
         ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
         : "";

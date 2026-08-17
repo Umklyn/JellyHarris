@@ -15,6 +15,7 @@ const ADMIN_EMAIL = "jelisa.harris@gmail.com";
 
 let quill = null;
 let currentArticleId = null;
+let currentArticleStatus = "draft";
 let currentEditAlbumId = null;
 let albumPhotos = [];
 let coverUrl = "";
@@ -476,7 +477,7 @@ function renderArticlesAdminList() {
       <span class="admin-item-drag" aria-hidden="true" title="Drag to reorder">⠿</span>
       ${a.cover ? `<img class="admin-item-thumb" src="${cldResize(a.cover, 200)}" alt="${a.title}" />` : `<div class="admin-item-thumb"></div>`}
       <div class="admin-item-info">
-        <span class="admin-item-title">${a.title}</span>
+        <span class="admin-item-title">${a.title}${a.status === "draft" ? ` <span class="draft-badge">Draft</span>` : ""}</span>
         <span class="admin-item-meta">${date}</span>
       </div>
       <div class="admin-item-actions">
@@ -524,12 +525,14 @@ async function persistArticlesOrder() {
   }
 }
 
-function initArticleModal(title, content = "", articleCoverUrl = "", id = null) {
+function initArticleModal(title, content = "", articleCoverUrl = "", id = null, status = "draft") {
   currentArticleId = id;
+  currentArticleStatus = status;
   coverUrl = articleCoverUrl;
   document.getElementById("article-title").value = title;
   document.getElementById("modal-article-title").textContent = id ? "Edit article" : "New article";
-  document.getElementById("save-article-btn").textContent = id ? "Save changes" : "Publish article";
+  document.getElementById("save-article-btn").textContent =
+    status === "published" ? "Save changes" : "Publish article";
   document.getElementById("cover-preview").innerHTML = articleCoverUrl
     ? `<img src="${articleCoverUrl}" alt="Cover" />`
     : "";
@@ -567,11 +570,11 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null) 
 }
 
 document.getElementById("new-article-btn").addEventListener("click", () => {
-  initArticleModal("", "", "", null);
+  initArticleModal("", "", "", null, "draft");
 });
 
 function openEditArticle(article, id) {
-  initArticleModal(article.title || "", article.content || "", article.cover || "", id);
+  initArticleModal(article.title || "", article.content || "", article.cover || "", id, article.status || "published");
 }
 
 function insertImageInArticle() {
@@ -772,13 +775,13 @@ document.getElementById("preview-article-btn").addEventListener("click", () => {
   openModal("modal-preview");
 });
 
-document.getElementById("save-article-btn").addEventListener("click", async () => {
+async function saveArticleAs(status, btn, savingLabel) {
   const title = document.getElementById("article-title").value.trim();
   if (!title) return alert("Article title is required!");
   if (!quill) return alert("Editor not ready.");
 
-  const btn = document.getElementById("save-article-btn");
-  btn.textContent = currentArticleId ? "Saving..." : "Publishing...";
+  const originalLabel = btn.textContent;
+  btn.textContent = savingLabel;
   btn.disabled = true;
 
   try {
@@ -786,10 +789,10 @@ document.getElementById("save-article-btn").addEventListener("click", async () =
     const excerpt = quill.getText().trim().slice(0, 200);
 
     if (currentArticleId) {
-      await updateDoc(doc(db, "articles", currentArticleId), { title, content, excerpt, cover: coverUrl });
+      await updateDoc(doc(db, "articles", currentArticleId), { title, content, excerpt, cover: coverUrl, status });
     } else {
       await addDoc(collection(db, "articles"), {
-        title, content, excerpt, cover: coverUrl, createdAt: serverTimestamp()
+        title, content, excerpt, cover: coverUrl, status, createdAt: serverTimestamp()
       });
     }
 
@@ -798,9 +801,19 @@ document.getElementById("save-article-btn").addEventListener("click", async () =
   } catch (e) {
     alert("Error: " + e.message);
   } finally {
-    btn.textContent = "Publish article";
+    btn.textContent = originalLabel;
     btn.disabled = false;
   }
+}
+
+document.getElementById("save-article-btn").addEventListener("click", () => {
+  const btn = document.getElementById("save-article-btn");
+  saveArticleAs("published", btn, currentArticleId ? "Saving..." : "Publishing...");
+});
+
+document.getElementById("save-draft-btn").addEventListener("click", () => {
+  const btn = document.getElementById("save-draft-btn");
+  saveArticleAs("draft", btn, "Saving draft...");
 });
 
 document.getElementById("cancel-article-btn").addEventListener("click", closeAllModals);

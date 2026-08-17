@@ -16,10 +16,16 @@ async function loadArticles() {
 
     const articles = [];
     snapshot.forEach(docSnap => articles.push({ id: docSnap.id, ...docSnap.data() }));
-    articles.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+    const published = articles.filter(a => a.status !== "draft");
+    published.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+
+    if (!published.length) {
+      list.innerHTML = `<div class="empty-state"><span class="label">No articles yet</span></div>`;
+      return;
+    }
 
     list.innerHTML = "";
-    articles.forEach(article => {
+    published.forEach(article => {
       const date = article.createdAt?.toDate?.()
         ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
         : "";
@@ -48,7 +54,7 @@ async function loadArticles() {
     if (window.location.hash) {
       const id = window.location.hash.replace("#", "");
       const docSnap = await getDoc(doc(db, "articles", id));
-      if (docSnap.exists()) openArticle(id, docSnap.data());
+      if (docSnap.exists() && docSnap.data().status !== "draft") openArticle(id, docSnap.data());
     }
   } catch (e) {
     console.error(e);

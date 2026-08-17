@@ -365,6 +365,18 @@
   color: var(--text);
 }
 
+.draft-badge {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-red);
+  border: 1px solid var(--accent-red);
+  padding: 0.15rem 0.4rem;
+  vertical-align: middle;
+  margin-left: 0.3rem;
+}
+
 .admin-item-meta {
   font-family: var(--font-mono);
   font-size: 0.55rem;
