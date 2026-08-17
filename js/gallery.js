@@ -225,4 +225,13 @@ window.addEventListener("popstate", e => {
   }
 });
 
+const filtersSentinel = document.getElementById("filters-sentinel");
+const galleryFilters = document.getElementById("gallery-filters");
+if (filtersSentinel && galleryFilters) {
+  new IntersectionObserver(
+    ([entry]) => galleryFilters.classList.toggle("is-stuck", !entry.isIntersecting),
+    { rootMargin: "-89px 0px 0px 0px", threshold: 0 }
+  ).observe(filtersSentinel);
+}
+
 loadAlbums();
