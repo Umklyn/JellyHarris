@@ -50,6 +50,37 @@ function registerTwoColBlot() {
 }
 registerTwoColBlot();
 
+const PHOTO_GRID_LAYOUTS = { duo: 2, trio: 3, montage: 5 };
+
+// Register photo-grid blot for Quill before init
+function registerPhotoGridBlot() {
+  const BlockEmbed = Quill.import('blots/block/embed');
+  class PhotoGridBlot extends BlockEmbed {
+    static create(value) {
+      const node = super.create();
+      node.setAttribute('contenteditable', false);
+      const layout = value.layout || 'duo';
+      node.classList.add(`photo-grid-${layout}`);
+      node.dataset.layout = layout;
+      node.innerHTML = (value.images || [])
+        .map(url => `<div class="photo-grid-item"><img src="${url}" alt=""></div>`)
+        .join('');
+      return node;
+    }
+    static value(node) {
+      return {
+        layout: node.dataset.layout || 'duo',
+        images: [...node.querySelectorAll('img')].map(img => img.src)
+      };
+    }
+  }
+  PhotoGridBlot.blotName = 'photoGrid';
+  PhotoGridBlot.tagName = 'div';
+  PhotoGridBlot.className = 'photo-grid';
+  Quill.register(PhotoGridBlot);
+}
+registerPhotoGridBlot();
+
 // --- Auth ---
 onAuthStateChanged(auth, user => {
   if (user && user.email === ADMIN_EMAIL) {
@@ -512,13 +543,14 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null) 
               ["blockquote"],
               [{ list: "ordered" }, { list: "bullet" }],
               ["link", "image"],
-              ["twoCol"],
+              ["twoCol", "photoGrid"],
               ["clean"]
             ]
           }
         });
         quill.getModule("toolbar").addHandler("image", () => insertImageInArticle());
         quill.getModule("toolbar").addHandler("twoCol", () => openTwoColModal());
+        quill.getModule("toolbar").addHandler("photoGrid", () => openPhotoGridModal());
       } catch(e) { console.error("Quill init:", e); }
     }
     if (content) {
@@ -618,6 +650,79 @@ document.getElementById("cancel-twocol-btn").addEventListener("click", () => {
 });
 document.getElementById("close-twocol-modal").addEventListener("click", () => {
   document.getElementById("modal-twocol").classList.remove("open");
+});
+
+// --- Photo grid block ---
+let photoGridRange = null;
+let photoGridLayout = "duo";
+let photoGridImages = [];
+
+function openPhotoGridModal() {
+  photoGridRange = quill ? quill.getSelection(true) : null;
+  photoGridLayout = "duo";
+  photoGridImages = [];
+  document.querySelectorAll(".photogrid-layout-btn").forEach(b => b.classList.remove("active"));
+  document.querySelector(".photogrid-layout-btn[data-layout='duo']").classList.add("active");
+  renderPhotoGridSlots();
+  openModal("modal-photogrid");
+}
+
+function renderPhotoGridSlots() {
+  const count = PHOTO_GRID_LAYOUTS[photoGridLayout];
+  photoGridImages = new Array(count).fill("");
+  const wrap = document.getElementById("photogrid-slots");
+  wrap.innerHTML = "";
+  wrap.className = `photogrid-slots photogrid-slots-${photoGridLayout}`;
+  for (let i = 0; i < count; i++) {
+    const slot = document.createElement("div");
+    slot.className = "upload-zone upload-zone-sm photogrid-slot";
+    slot.innerHTML = `<p>Photo ${i + 1}${photoGridLayout === "montage" && i === 1 ? " (center)" : ""}</p>`;
+    slot.addEventListener("click", () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        slot.innerHTML = "<p>Uploading...</p>";
+        try {
+          const url = await uploadToCloudinary(file);
+          photoGridImages[i] = url;
+          slot.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(100%);display:block;" />`;
+        } catch (err) {
+          slot.innerHTML = "<p>Upload error</p>";
+          alert("Upload error: " + err.message);
+        }
+      };
+      input.click();
+    });
+    wrap.appendChild(slot);
+  }
+}
+
+document.querySelectorAll(".photogrid-layout-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".photogrid-layout-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    photoGridLayout = btn.dataset.layout;
+    renderPhotoGridSlots();
+  });
+});
+
+document.getElementById("insert-photogrid-btn").addEventListener("click", () => {
+  if (!quill) return;
+  if (photoGridImages.some(url => !url)) return alert("Please upload all photos first.");
+  const idx = photoGridRange ? photoGridRange.index : quill.getLength();
+  quill.insertEmbed(idx, "photoGrid", { layout: photoGridLayout, images: photoGridImages });
+  quill.setSelection(idx + 1);
+  document.getElementById("modal-photogrid").classList.remove("open");
+});
+
+document.getElementById("cancel-photogrid-btn").addEventListener("click", () => {
+  document.getElementById("modal-photogrid").classList.remove("open");
+});
+document.getElementById("close-photogrid-modal").addEventListener("click", () => {
+  document.getElementById("modal-photogrid").classList.remove("open");
 });
 
 document.getElementById("cover-upload-zone").addEventListener("click", () => {
