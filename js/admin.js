@@ -51,31 +51,28 @@ function registerTwoColBlot() {
 }
 registerTwoColBlot();
 
-const PHOTO_GRID_LAYOUTS = { duo: 2, trio: 3, montage: 5 };
-
 // Register photo-grid blot for Quill before init
+// Each cell is square by default; a cell can be set to span vertical (2 rows)
+// or horizontal (2 columns) to become a rectangle. grid-auto-flow:dense in
+// CSS packs the remaining squares around it automatically.
 function registerPhotoGridBlot() {
   const BlockEmbed = Quill.import('blots/block/embed');
   class PhotoGridBlot extends BlockEmbed {
     static create(value) {
       const node = super.create();
       node.setAttribute('contenteditable', false);
-      const layout = value.layout || 'duo';
-      const images = value.images || [];
-      node.dataset.layout = layout;
-      if (layout === 'montage') {
-        const rows = Math.max(1, Math.ceil((images.length - 1) / 2));
-        node.style.setProperty('--pg-rows', rows);
-      }
-      node.innerHTML = images
-        .map((url, i) => `<div class="photo-grid-item"${layout === 'montage' && i === 1 ? ' data-center="true"' : ''}><img src="${url}" alt=""></div>`)
+      const cells = value.cells || [];
+      node.innerHTML = cells
+        .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}"><img src="${c.url || ''}" alt=""></div>`)
         .join('');
       return node;
     }
     static value(node) {
       return {
-        layout: node.dataset.layout || 'duo',
-        images: [...node.querySelectorAll('img')].map(img => img.src)
+        cells: [...node.querySelectorAll('.photo-grid-item')].map(item => ({
+          url: item.querySelector('img')?.src || '',
+          span: item.dataset.span || 'square'
+        }))
       };
     }
   }
@@ -673,24 +670,28 @@ document.getElementById("close-twocol-modal").addEventListener("click", () => {
 });
 
 // --- Photo grid block ---
+// Each cell is square by default. The admin can switch a cell to vertical
+// (spans 2 rows) or horizontal (spans 2 columns) to make it a rectangle;
+// grid-auto-flow:dense in CSS packs the other squares around it.
 let photoGridRange = null;
-let photoGridLayout = "duo";
-let photoGridImages = [];
+let photoGridCells = [];
 
 function openPhotoGridModal() {
   photoGridRange = quill ? quill.getSelection(true) : null;
-  photoGridLayout = "duo";
-  photoGridImages = [];
-  document.querySelectorAll(".photogrid-layout-btn").forEach(b => b.classList.remove("active"));
-  document.querySelector(".photogrid-layout-btn[data-layout='duo']").classList.add("active");
-  renderPhotoGridSlots();
+  photoGridCells = [{ url: "", span: "square" }];
+  renderPhotoGridCells();
   openModal("modal-photogrid");
 }
 
-function createPhotoGridSlot(index) {
+function createPhotoGridCell(cell, index) {
+  const wrap = document.createElement("div");
+  wrap.className = "photogrid-cell";
+
   const slot = document.createElement("div");
   slot.className = "upload-zone upload-zone-sm photogrid-slot";
-  slot.innerHTML = `<p>Photo ${index + 1}${photoGridLayout === "montage" && index === 1 ? " (center)" : ""}</p>`;
+  slot.innerHTML = cell.url
+    ? `<img src="${cell.url}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(100%);display:block;" />`
+    : "<p>Click to upload</p>";
   slot.addEventListener("click", () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -701,7 +702,7 @@ function createPhotoGridSlot(index) {
       slot.innerHTML = "<p>Uploading...</p>";
       try {
         const url = await uploadToCloudinary(file);
-        photoGridImages[index] = url;
+        photoGridCells[index].url = url;
         slot.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(100%);display:block;" />`;
       } catch (err) {
         slot.innerHTML = "<p>Upload error</p>";
@@ -710,43 +711,54 @@ function createPhotoGridSlot(index) {
     };
     input.click();
   });
-  return slot;
+
+  const spanToggle = document.createElement("div");
+  spanToggle.className = "photogrid-span-toggle";
+  spanToggle.innerHTML = `
+    <button type="button" data-span="square" class="${cell.span === "square" ? "active" : ""}">Square</button>
+    <button type="button" data-span="vertical" class="${cell.span === "vertical" ? "active" : ""}">Vertical</button>
+    <button type="button" data-span="horizontal" class="${cell.span === "horizontal" ? "active" : ""}">Horizontal</button>
+  `;
+  spanToggle.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      spanToggle.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      photoGridCells[index].span = btn.dataset.span;
+    });
+  });
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "photogrid-cell-remove";
+  removeBtn.textContent = "✕ Remove photo";
+  removeBtn.addEventListener("click", () => {
+    photoGridCells.splice(index, 1);
+    renderPhotoGridCells();
+  });
+
+  wrap.appendChild(slot);
+  wrap.appendChild(spanToggle);
+  wrap.appendChild(removeBtn);
+  return wrap;
 }
 
-function renderPhotoGridSlots() {
-  const count = PHOTO_GRID_LAYOUTS[photoGridLayout];
-  photoGridImages = new Array(count).fill("");
+function renderPhotoGridCells() {
   const wrap = document.getElementById("photogrid-slots");
   wrap.innerHTML = "";
-  wrap.className = `photogrid-slots photogrid-slots-${photoGridLayout}`;
-  for (let i = 0; i < count; i++) {
-    wrap.appendChild(createPhotoGridSlot(i));
-  }
-  document.getElementById("add-photogrid-slot-btn").style.display =
-    photoGridLayout === "montage" ? "block" : "none";
+  photoGridCells.forEach((cell, i) => wrap.appendChild(createPhotoGridCell(cell, i)));
 }
 
 document.getElementById("add-photogrid-slot-btn").addEventListener("click", () => {
-  const wrap = document.getElementById("photogrid-slots");
-  const index = photoGridImages.length;
-  photoGridImages.push("");
-  wrap.appendChild(createPhotoGridSlot(index));
-});
-
-document.querySelectorAll(".photogrid-layout-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".photogrid-layout-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    photoGridLayout = btn.dataset.layout;
-    renderPhotoGridSlots();
-  });
+  photoGridCells.push({ url: "", span: "square" });
+  renderPhotoGridCells();
 });
 
 document.getElementById("insert-photogrid-btn").addEventListener("click", () => {
   if (!quill) return;
-  if (photoGridImages.some(url => !url)) return alert("Please upload all photos first.");
+  if (!photoGridCells.length) return alert("Add at least one photo.");
+  if (photoGridCells.some(c => !c.url)) return alert("Please upload all photos first.");
   const idx = photoGridRange ? photoGridRange.index : quill.getLength();
-  quill.insertEmbed(idx, "photoGrid", { layout: photoGridLayout, images: photoGridImages });
+  quill.insertEmbed(idx, "photoGrid", { cells: photoGridCells });
   quill.setSelection(idx + 1);
   document.getElementById("modal-photogrid").classList.remove("open");
 });
