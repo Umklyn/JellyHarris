@@ -68,11 +68,16 @@
 
 .contact-intro {
   font-family: var(--font-sans);
-  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  font-size: clamp(1.3rem, 2.4vw, 1.9rem);
   font-style: normal;
-  font-weight: 300;
-  line-height: 1.8;
-  color: var(--text-light);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.contact-intro .accent {
+  color: var(--accent-red);
+  font-weight: 500;
 }
 
 .contact-details {
