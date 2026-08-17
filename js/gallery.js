@@ -164,6 +164,12 @@ function openLightbox(index) {
   document.body.style.overflow = "hidden";
 }
 
+function preloadLightboxPhoto(index) {
+  if (!lightboxPhotos.length) return;
+  const i = ((index % lightboxPhotos.length) + lightboxPhotos.length) % lightboxPhotos.length;
+  new Image().src = cldWatermark(lightboxPhotos[i], 1600);
+}
+
 function showLightboxPhoto(index) {
   document.getElementById("lightbox-img").src = cldWatermark(lightboxPhotos[index], 1600);
   const caption = lightboxCaptions[index] || "";
@@ -171,6 +177,9 @@ function showLightboxPhoto(index) {
   const captionEl = document.getElementById("lightbox-caption");
   captionEl.textContent = caption;
   info.style.display = caption ? "block" : "none";
+
+  preloadLightboxPhoto(index + 1);
+  preloadLightboxPhoto(index - 1);
 }
 
 document.getElementById("lightbox-close").addEventListener("click", () => history.back());
