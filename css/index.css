@@ -224,6 +224,11 @@
   transform-origin: right center;
 }
 
+.section-title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .section-title {
   font-family: var(--font-display);
   font-size: clamp(2rem, 5.5vw, 4.2rem);
