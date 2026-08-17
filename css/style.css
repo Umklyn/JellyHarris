@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
   --bg: #FFFFFF;
@@ -9,7 +9,6 @@
   --accent-yellow: #F0F2AC;
   --white: #FFFFFF;
   --font-display: 'Anton', Impact, sans-serif;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'Space Mono', monospace;
 }

@@ -226,9 +226,8 @@
 .article-body h1,
 .article-body h2,
 .article-body h3 {
-  font-family: var(--font-serif);
-  font-weight: 300;
-  font-style: italic;
+  font-family: var(--font-sans);
+  font-weight: 500;
   margin: 3rem 0 1.25rem;
 }
 
@@ -250,8 +249,7 @@
   border-left: 2px solid var(--accent-red);
   padding-left: 1.5rem;
   margin: 2.5rem 0;
-  font-style: italic;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 1.3rem;
   color: var(--text-light);
   font-weight: 300;
