@@ -72,14 +72,17 @@
   text-transform: uppercase;
   color: var(--text);
   display: block;
+  text-shadow: 0 0 0 currentColor, 0 0 0 currentColor, 0 0 0 currentColor, 0 0 0 currentColor;
   transition: letter-spacing 0.6s cubic-bezier(.25,.46,.45,.94),
-              transform 0.4s cubic-bezier(.25,.46,.45,.94);
+              transform 0.4s cubic-bezier(.25,.46,.45,.94),
+              text-shadow 0.6s cubic-bezier(.25,.46,.45,.94);
   transform-origin: left center;
 }
 
 .hero-name-line:hover {
   letter-spacing: 0.05em;
   transform: scaleY(1.03);
+  text-shadow: -0.8px -0.8px 0 currentColor, 0.8px -0.8px 0 currentColor, -0.8px 0.8px 0 currentColor, 0.8px 0.8px 0 currentColor;
 }
 
 .hero-name-line .title-strike {
@@ -236,8 +239,10 @@
   text-transform: uppercase;
   line-height: 0.95;
   color: var(--text);
+  text-shadow: 0 0 0 currentColor, 0 0 0 currentColor, 0 0 0 currentColor, 0 0 0 currentColor;
   transition: letter-spacing 0.5s cubic-bezier(.25,.46,.45,.94),
-              transform 0.4s cubic-bezier(.25,.46,.45,.94);
+              transform 0.4s cubic-bezier(.25,.46,.45,.94),
+              text-shadow 0.5s cubic-bezier(.25,.46,.45,.94);
   display: inline-block;
   transform-origin: left center;
 }
@@ -245,6 +250,7 @@
 .section-title:hover {
   letter-spacing: 0.04em;
   transform: scaleY(1.04);
+  text-shadow: -0.7px -0.7px 0 currentColor, 0.7px -0.7px 0 currentColor, -0.7px 0.7px 0 currentColor, 0.7px 0.7px 0 currentColor;
 }
 
 .section-title span {
@@ -512,6 +518,7 @@
 
 .journal-item:hover .journal-title {
   color: var(--accent-red);
+  text-shadow: -0.5px -0.5px 0 currentColor, 0.5px -0.5px 0 currentColor, -0.5px 0.5px 0 currentColor, 0.5px 0.5px 0 currentColor;
 }
 
 .journal-date {
@@ -530,7 +537,8 @@
   text-transform: none;
   letter-spacing: 0.005em;
   line-height: 1;
-  transition: color 0.2s;
+  text-shadow: 0 0 0 currentColor, 0 0 0 currentColor, 0 0 0 currentColor, 0 0 0 currentColor;
+  transition: color 0.2s, text-shadow 0.5s cubic-bezier(.25,.46,.45,.94);
 }
 
 .journal-arrow {
