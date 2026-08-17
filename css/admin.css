@@ -734,10 +734,13 @@
 }
 
 .photo-grid-item {
+  position: relative;
   overflow: hidden;
 }
 
 .photo-grid-item img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -760,12 +763,17 @@
 
 .photo-grid-montage {
   grid-template-columns: 1fr 1.3fr 1fr;
-  grid-template-rows: repeat(2, 1fr);
-  aspect-ratio: 3 / 2;
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+}
+
+.photo-grid-montage .photo-grid-item {
+  aspect-ratio: 3 / 4;
 }
 
 .photo-grid-montage .photo-grid-item:nth-child(2) {
-  grid-row: 1 / 3;
+  grid-row: span var(--pg-rows, 2);
+  aspect-ratio: auto;
 }
 
 .twocol-preview {

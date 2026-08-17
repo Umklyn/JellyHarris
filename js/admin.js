@@ -60,9 +60,14 @@ function registerPhotoGridBlot() {
       const node = super.create();
       node.setAttribute('contenteditable', false);
       const layout = value.layout || 'duo';
+      const images = value.images || [];
       node.classList.add(`photo-grid-${layout}`);
       node.dataset.layout = layout;
-      node.innerHTML = (value.images || [])
+      if (layout === 'montage') {
+        const rows = Math.max(1, Math.ceil((images.length - 1) / 2));
+        node.style.setProperty('--pg-rows', rows);
+      }
+      node.innerHTML = images
         .map(url => `<div class="photo-grid-item"><img src="${url}" alt=""></div>`)
         .join('');
       return node;
@@ -667,6 +672,32 @@ function openPhotoGridModal() {
   openModal("modal-photogrid");
 }
 
+function createPhotoGridSlot(index) {
+  const slot = document.createElement("div");
+  slot.className = "upload-zone upload-zone-sm photogrid-slot";
+  slot.innerHTML = `<p>Photo ${index + 1}${photoGridLayout === "montage" && index === 1 ? " (center)" : ""}</p>`;
+  slot.addEventListener("click", () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      slot.innerHTML = "<p>Uploading...</p>";
+      try {
+        const url = await uploadToCloudinary(file);
+        photoGridImages[index] = url;
+        slot.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(100%);display:block;" />`;
+      } catch (err) {
+        slot.innerHTML = "<p>Upload error</p>";
+        alert("Upload error: " + err.message);
+      }
+    };
+    input.click();
+  });
+  return slot;
+}
+
 function renderPhotoGridSlots() {
   const count = PHOTO_GRID_LAYOUTS[photoGridLayout];
   photoGridImages = new Array(count).fill("");
@@ -674,31 +705,18 @@ function renderPhotoGridSlots() {
   wrap.innerHTML = "";
   wrap.className = `photogrid-slots photogrid-slots-${photoGridLayout}`;
   for (let i = 0; i < count; i++) {
-    const slot = document.createElement("div");
-    slot.className = "upload-zone upload-zone-sm photogrid-slot";
-    slot.innerHTML = `<p>Photo ${i + 1}${photoGridLayout === "montage" && i === 1 ? " (center)" : ""}</p>`;
-    slot.addEventListener("click", () => {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = async e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        slot.innerHTML = "<p>Uploading...</p>";
-        try {
-          const url = await uploadToCloudinary(file);
-          photoGridImages[i] = url;
-          slot.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(100%);display:block;" />`;
-        } catch (err) {
-          slot.innerHTML = "<p>Upload error</p>";
-          alert("Upload error: " + err.message);
-        }
-      };
-      input.click();
-    });
-    wrap.appendChild(slot);
+    wrap.appendChild(createPhotoGridSlot(i));
   }
+  document.getElementById("add-photogrid-slot-btn").style.display =
+    photoGridLayout === "montage" ? "block" : "none";
 }
+
+document.getElementById("add-photogrid-slot-btn").addEventListener("click", () => {
+  const wrap = document.getElementById("photogrid-slots");
+  const index = photoGridImages.length;
+  photoGridImages.push("");
+  wrap.appendChild(createPhotoGridSlot(index));
+});
 
 document.querySelectorAll(".photogrid-layout-btn").forEach(btn => {
   btn.addEventListener("click", () => {
