@@ -7,6 +7,6 @@ const WATERMARK_TEXT = encodeURIComponent("© Jelly Harris");
 
 export function cldWatermark(url, width) {
   if (!url || !url.includes("/upload/")) return url;
-  const transform = `w_${width},q_auto,f_auto,c_limit/l_text:Space%20Mono_11:${WATERMARK_TEXT},co_white,o_45/fl_layer_apply,g_south_east,x_40,y_24`;
+  const transform = `w_${width},q_auto,f_auto,c_limit/l_text:Space%20Mono_11:${WATERMARK_TEXT},co_white,o_45/fl_layer_apply,g_south,y_18`;
   return url.replace("/upload/", `/upload/${transform}/`);
 }
