@@ -481,10 +481,23 @@ function renderArticlesAdminList() {
         <span class="admin-item-meta">${date}</span>
       </div>
       <div class="admin-item-actions">
+        <button class="admin-action-btn preview">Preview</button>
+        ${a.status === "draft" ? `<button class="admin-action-btn publish">Publish</button>` : ""}
         <button class="admin-action-btn edit">Edit</button>
         <button class="admin-action-btn delete">Delete</button>
       </div>
     `;
+    item.querySelector(".preview").addEventListener("click", () => {
+      renderArticlePreview(a.title, a.content, a.cover);
+    });
+    if (a.status === "draft") {
+      item.querySelector(".publish").addEventListener("click", async e => {
+        e.target.textContent = "Publishing...";
+        e.target.disabled = true;
+        await updateDoc(doc(db, "articles", a.id), { status: "published" });
+        loadArticles();
+      });
+    }
     item.querySelector(".edit").addEventListener("click", () => openEditArticle(a, a.id));
     item.querySelector(".delete").addEventListener("click", async () => {
       if (confirm(`Delete article "${a.title}"?`)) {
@@ -763,16 +776,19 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
   input.click();
 });
 
-document.getElementById("preview-article-btn").addEventListener("click", () => {
-  if (!quill) return;
-  const title = document.getElementById("article-title").value.trim() || "Untitled";
-  const content = quill.root.innerHTML;
+function renderArticlePreview(title, content, cover) {
   document.getElementById("article-preview-content").innerHTML = `
-    <h1 class="preview-title">${title}</h1>
-    ${coverUrl ? `<img src="${coverUrl}" class="preview-cover" alt="Cover" />` : ""}
-    <div class="preview-body">${content}</div>
+    <h1 class="preview-title">${title || "Untitled"}</h1>
+    ${cover ? `<img src="${cover}" class="preview-cover" alt="Cover" />` : ""}
+    <div class="preview-body">${content || ""}</div>
   `;
   openModal("modal-preview");
+}
+
+document.getElementById("preview-article-btn").addEventListener("click", () => {
+  if (!quill) return;
+  const title = document.getElementById("article-title").value.trim();
+  renderArticlePreview(title, quill.root.innerHTML, coverUrl);
 });
 
 async function saveArticleAs(status, btn, savingLabel) {
