@@ -1,4 +1,5 @@
-import { db, auth } from "./firebase-init.js";
+import { db } from "./firebase-init.js";
+import { auth } from "./firebase-auth-init.js";
 import {
   collection, addDoc, getDocs, deleteDoc, doc, updateDoc,
   query, orderBy, serverTimestamp, where
