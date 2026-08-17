@@ -232,13 +232,13 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  max-width: 80vw;
-  max-height: 90vh;
+  max-width: 62vw;
+  max-height: 78vh;
 }
 
 .lightbox-img {
-  max-width: 80vw;
-  max-height: 85vh;
+  max-width: 62vw;
+  max-height: 68vh;
   object-fit: contain;
   filter: grayscale(100%);
   display: block;
