@@ -67,6 +67,9 @@ async function loadLatestJournal() {
       item.className = "journal-item";
       item.href = `blog.html#${article.id}`;
       item.innerHTML = `
+        <div class="journal-thumb">
+          ${article.cover ? `<img src="${cldWatermark(article.cover, 200)}" alt="" loading="lazy" />` : ""}
+        </div>
         <span class="journal-date">${date}</span>
         <span class="journal-title">${article.title}</span>
         <span class="journal-arrow">→</span>
