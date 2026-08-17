@@ -322,7 +322,8 @@
   background: var(--bg, #fff);
 }
 
-.albums-admin-list .admin-item {
+.albums-admin-list .admin-item,
+.articles-admin-list .admin-item {
   grid-template-columns: 20px 72px 1fr auto;
 }
 

@@ -45,7 +45,7 @@ async function loadLatestJournal() {
   if (!list) return;
 
   try {
-    const q = query(collection(db, "articles"), orderBy("createdAt", "desc"), limit(4));
+    const q = query(collection(db, "articles"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
@@ -53,16 +53,19 @@ async function loadLatestJournal() {
       return;
     }
 
+    const articles = [];
+    snapshot.forEach(doc => articles.push({ id: doc.id, ...doc.data() }));
+    articles.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+
     list.innerHTML = "";
-    snapshot.forEach(doc => {
-      const article = doc.data();
+    articles.slice(0, 4).forEach(article => {
       const date = article.createdAt?.toDate?.()
         ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
         : "";
 
       const item = document.createElement("a");
       item.className = "journal-item";
-      item.href = `blog.html#${doc.id}`;
+      item.href = `blog.html#${article.id}`;
       item.innerHTML = `
         <span class="journal-date">${date}</span>
         <span class="journal-title">${article.title}</span>

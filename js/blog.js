@@ -14,9 +14,12 @@ async function loadArticles() {
       return;
     }
 
+    const articles = [];
+    snapshot.forEach(docSnap => articles.push({ id: docSnap.id, ...docSnap.data() }));
+    articles.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+
     list.innerHTML = "";
-    snapshot.forEach(docSnap => {
-      const article = docSnap.data();
+    articles.forEach(article => {
       const date = article.createdAt?.toDate?.()
         ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
         : "";
@@ -38,7 +41,7 @@ async function loadArticles() {
           ${article.tag ? `<span class="article-row-tag">${article.tag}</span>` : ""}
         </div>
       `;
-      row.addEventListener("click", () => openArticle(docSnap.id, article));
+      row.addEventListener("click", () => openArticle(article.id, article));
       list.appendChild(row);
     });
 

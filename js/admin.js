@@ -395,6 +395,8 @@ document.getElementById("cancel-edit-btn").addEventListener("click", closeAllMod
 document.getElementById("close-edit-modal").addEventListener("click", closeAllModals);
 
 // --- Articles ---
+let articlesOrderState = [];
+
 async function loadArticles() {
   const list = document.getElementById("articles-admin-list");
   list.innerHTML = `<div class="loading-state"><span class="label">Loading...</span></div>`;
@@ -405,40 +407,83 @@ async function loadArticles() {
 
     if (snapshot.empty) {
       list.innerHTML = `<div class="loading-state"><span class="label">No articles yet — create one!</span></div>`;
+      articlesOrderState = [];
       return;
     }
 
-    list.innerHTML = "";
-    snapshot.forEach(docSnap => {
-      const a = docSnap.data();
-      const date = a.createdAt?.toDate?.()
-        ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(a.createdAt.toDate())
-        : "";
-      const item = document.createElement("div");
-      item.className = "admin-item";
-      item.innerHTML = `
-        ${a.cover ? `<img class="admin-item-thumb" src="${cldResize(a.cover, 200)}" alt="${a.title}" />` : `<div class="admin-item-thumb"></div>`}
-        <div class="admin-item-info">
-          <span class="admin-item-title">${a.title}</span>
-          <span class="admin-item-meta">${date}</span>
-        </div>
-        <div class="admin-item-actions">
-          <button class="admin-action-btn edit">Edit</button>
-          <button class="admin-action-btn delete">Delete</button>
-        </div>
-      `;
-      item.querySelector(".edit").addEventListener("click", () => openEditArticle(a, docSnap.id));
-      item.querySelector(".delete").addEventListener("click", async () => {
-        if (confirm(`Delete article "${a.title}"?`)) {
-          await deleteDoc(doc(db, "articles", docSnap.id));
-          loadArticles();
-        }
-      });
-      list.appendChild(item);
-    });
+    const articles = [];
+    snapshot.forEach(docSnap => articles.push({ id: docSnap.id, ...docSnap.data() }));
+    articles.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+
+    articlesOrderState = articles;
+    renderArticlesAdminList();
   } catch (e) {
     list.innerHTML = `<div class="loading-state"><span class="label">Error: ${e.message}</span></div>`;
     console.error("loadArticles:", e);
+  }
+}
+
+function renderArticlesAdminList() {
+  const list = document.getElementById("articles-admin-list");
+  list.innerHTML = "";
+
+  articlesOrderState.forEach(a => {
+    const date = a.createdAt?.toDate?.()
+      ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(a.createdAt.toDate())
+      : "";
+    const item = document.createElement("div");
+    item.className = "admin-item";
+    item.draggable = true;
+    item.dataset.id = a.id;
+    item.innerHTML = `
+      <span class="admin-item-drag" aria-hidden="true" title="Drag to reorder">⠿</span>
+      ${a.cover ? `<img class="admin-item-thumb" src="${cldResize(a.cover, 200)}" alt="${a.title}" />` : `<div class="admin-item-thumb"></div>`}
+      <div class="admin-item-info">
+        <span class="admin-item-title">${a.title}</span>
+        <span class="admin-item-meta">${date}</span>
+      </div>
+      <div class="admin-item-actions">
+        <button class="admin-action-btn edit">Edit</button>
+        <button class="admin-action-btn delete">Delete</button>
+      </div>
+    `;
+    item.querySelector(".edit").addEventListener("click", () => openEditArticle(a, a.id));
+    item.querySelector(".delete").addEventListener("click", async () => {
+      if (confirm(`Delete article "${a.title}"?`)) {
+        await deleteDoc(doc(db, "articles", a.id));
+        loadArticles();
+      }
+    });
+
+    item.addEventListener("dragstart", () => item.classList.add("dragging"));
+    item.addEventListener("dragend", () => {
+      item.classList.remove("dragging");
+      persistArticlesOrder();
+    });
+
+    list.appendChild(item);
+  });
+}
+
+document.getElementById("articles-admin-list").addEventListener("dragover", e => {
+  e.preventDefault();
+  const list = e.currentTarget;
+  const dragging = list.querySelector(".dragging");
+  if (!dragging) return;
+  const after = getDragAfterElement(list, e.clientY);
+  if (after == null) list.appendChild(dragging);
+  else list.insertBefore(dragging, after);
+});
+
+async function persistArticlesOrder() {
+  const list = document.getElementById("articles-admin-list");
+  const ids = [...list.querySelectorAll(".admin-item")].map(el => el.dataset.id);
+  articlesOrderState = ids.map(id => articlesOrderState.find(a => a.id === id));
+  try {
+    await Promise.all(ids.map((id, index) => updateDoc(doc(db, "articles", id), { order: index })));
+  } catch (e) {
+    console.error("persistArticlesOrder:", e);
+    alert("Couldn't save the new order: " + e.message);
   }
 }
 
