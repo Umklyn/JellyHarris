@@ -219,7 +219,12 @@ async function persistAlbumsOrder() {
   const list = document.getElementById("albums-admin-list");
   const ids = [...list.querySelectorAll(".admin-item")].map(el => el.dataset.id);
   albumsOrderState = ids.map(id => albumsOrderState.find(a => a.id === id));
-  await Promise.all(ids.map((id, index) => updateDoc(doc(db, "albums", id), { order: index })));
+  try {
+    await Promise.all(ids.map((id, index) => updateDoc(doc(db, "albums", id), { order: index })));
+  } catch (e) {
+    console.error("persistAlbumsOrder:", e);
+    alert("Couldn't save the new order: " + e.message);
+  }
 }
 
 document.getElementById("new-album-btn").addEventListener("click", () => {

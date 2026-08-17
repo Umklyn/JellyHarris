@@ -7,7 +7,7 @@ async function loadLatestWorks() {
   if (!grid) return;
 
   try {
-    const q = query(collection(db, "albums"), orderBy("createdAt", "desc"), limit(2));
+    const q = query(collection(db, "albums"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
@@ -15,9 +15,12 @@ async function loadLatestWorks() {
       return;
     }
 
+    const albums = [];
+    snapshot.forEach(doc => albums.push({ id: doc.id, ...doc.data() }));
+    albums.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+
     grid.innerHTML = "";
-    snapshot.forEach(doc => {
-      const album = doc.data();
+    albums.slice(0, 2).forEach(album => {
       const cover = album.photos?.[0] || "";
       const card = document.createElement("div");
       card.className = "work-card";
@@ -28,7 +31,7 @@ async function loadLatestWorks() {
         </div>
       `;
       card.addEventListener("click", () => {
-        window.location.href = `gallery.html#${doc.id}`;
+        window.location.href = `gallery.html#${album.id}`;
       });
       grid.appendChild(card);
     });
