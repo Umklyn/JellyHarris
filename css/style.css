@@ -9,8 +9,8 @@
   --font-display: 'Clash Display', Impact, sans-serif;
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'Space Mono', monospace;
-  --cursor-default: url("../assets/cursor-hover.svg") 8 8, auto;
-  --cursor-active: url("../assets/cursor-default.svg") 10 10, pointer;
+  --cursor-default: url("../assets/cursor-arrow-red.svg") 2 1, auto;
+  --cursor-active: url("../assets/cursor-arrow-black.svg") 2 1, pointer;
 }
 
 *, *::before, *::after {
