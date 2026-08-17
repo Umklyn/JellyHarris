@@ -313,12 +313,26 @@ p {
 }
 
 .btn-red {
+  position: relative;
+  overflow: hidden;
   background: var(--accent-red);
   color: var(--white);
+  z-index: 0;
 }
 
-.btn-red:hover {
-  background: #a00815;
+.btn-red::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(.25,.46,.45,.94);
+  z-index: -1;
+}
+
+.btn-red:hover::before {
+  transform: scaleX(1);
 }
 
 /* Footer */
