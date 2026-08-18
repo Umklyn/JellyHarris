@@ -368,6 +368,23 @@ document.getElementById("cancel-album-btn").addEventListener("click", closeAllMo
 document.getElementById("close-album-modal").addEventListener("click", closeAllModals);
 
 // --- Edit album ---
+function createEditPhotoItem(url, caption) {
+  const item = document.createElement("div");
+  item.className = "edit-photo-item";
+  item.draggable = true;
+  item.dataset.url = url;
+  item.innerHTML = `
+    <span class="edit-photo-drag" aria-hidden="true" title="Drag to reorder">⠿</span>
+    <img src="${cldResize(url, 300)}" class="edit-photo-thumb" alt="" />
+    <textarea class="edit-caption-input" placeholder="Add a caption...">${caption || ""}</textarea>
+    <button type="button" class="edit-photo-remove" title="Remove photo">✕</button>
+  `;
+  item.querySelector(".edit-photo-remove").addEventListener("click", () => item.remove());
+  item.addEventListener("dragstart", () => item.classList.add("dragging"));
+  item.addEventListener("dragend", () => item.classList.remove("dragging"));
+  return item;
+}
+
 function openEditAlbum(album, id) {
   currentEditAlbumId = id;
   document.getElementById("edit-album-name").value = album.name || "";
@@ -377,25 +394,46 @@ function openEditAlbum(album, id) {
   const list = document.getElementById("edit-photos-list");
   list.innerHTML = "";
   (album.photos || []).forEach((url, i) => {
-    const caption = (album.captions || [])[i] || "";
-    const item = document.createElement("div");
-    item.className = "edit-photo-item";
-    item.draggable = true;
-    item.dataset.url = url;
-    item.innerHTML = `
-      <span class="edit-photo-drag" aria-hidden="true" title="Drag to reorder">⠿</span>
-      <img src="${cldResize(url, 300)}" class="edit-photo-thumb" alt="Photo ${i + 1}" />
-      <textarea class="edit-caption-input" placeholder="Add a caption...">${caption}</textarea>
-      <button type="button" class="edit-photo-remove" title="Remove photo">✕</button>
-    `;
-    item.querySelector(".edit-photo-remove").addEventListener("click", () => item.remove());
-    item.addEventListener("dragstart", () => item.classList.add("dragging"));
-    item.addEventListener("dragend", () => item.classList.remove("dragging"));
-    list.appendChild(item);
+    list.appendChild(createEditPhotoItem(url, (album.captions || [])[i]));
   });
 
   openModal("modal-edit-album");
 }
+
+async function handleEditAlbumFiles(files) {
+  const list = document.getElementById("edit-photos-list");
+  for (const file of files) {
+    if (!file.type.startsWith("image/")) continue;
+    const item = createEditPhotoItem(URL.createObjectURL(file), "");
+    item.classList.add("uploading");
+    list.appendChild(item);
+    try {
+      const url = await uploadToCloudinary(file);
+      item.dataset.url = url;
+      item.classList.remove("uploading");
+    } catch (err) {
+      item.remove();
+      alert("Upload error: " + err.message);
+    }
+  }
+}
+
+const editAlbumZone = document.getElementById("edit-album-upload-zone");
+editAlbumZone.addEventListener("click", () => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.multiple = true;
+  input.onchange = e => handleEditAlbumFiles(Array.from(e.target.files));
+  input.click();
+});
+editAlbumZone.addEventListener("dragover", e => { e.preventDefault(); editAlbumZone.classList.add("drag-over"); });
+editAlbumZone.addEventListener("dragleave", () => editAlbumZone.classList.remove("drag-over"));
+editAlbumZone.addEventListener("drop", e => {
+  e.preventDefault();
+  editAlbumZone.classList.remove("drag-over");
+  handleEditAlbumFiles(Array.from(e.dataTransfer.files));
+});
 
 function getPhotoDragAfterElement(container, y) {
   const els = [...container.querySelectorAll(".edit-photo-item:not(.dragging)")];
@@ -418,6 +456,10 @@ document.getElementById("edit-photos-list").addEventListener("dragover", e => {
 });
 
 document.getElementById("save-edit-btn").addEventListener("click", async () => {
+  if (document.querySelector("#edit-photos-list .edit-photo-item.uploading")) {
+    return alert("Please wait for all photos to finish uploading first.");
+  }
+
   const btn = document.getElementById("save-edit-btn");
   btn.textContent = "Saving...";
   btn.disabled = true;

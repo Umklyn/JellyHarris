@@ -153,6 +153,11 @@
   opacity: 0.4;
 }
 
+.edit-photo-item.uploading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .edit-photo-drag {
   cursor: grab;
   color: var(--text-light);
