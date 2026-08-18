@@ -534,7 +534,7 @@ async function persistArticlesOrder() {
   }
 }
 
-function initArticleModal(title, content = "", articleCoverUrl = "", id = null, status = "draft") {
+function initArticleModal(title, content = "", articleCoverUrl = "", id = null, status = "draft", colorPhotos = false) {
   currentArticleId = id;
   currentArticleStatus = status;
   coverUrl = articleCoverUrl;
@@ -545,6 +545,7 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null, 
   document.getElementById("cover-preview").innerHTML = articleCoverUrl
     ? `<img src="${articleCoverUrl}" alt="Cover" />`
     : "";
+  document.getElementById("article-color-toggle").checked = !!colorPhotos;
 
   openModal("modal-article");
 
@@ -583,7 +584,7 @@ document.getElementById("new-article-btn").addEventListener("click", () => {
 });
 
 function openEditArticle(article, id) {
-  initArticleModal(article.title || "", article.content || "", article.cover || "", id, article.status || "published");
+  initArticleModal(article.title || "", article.content || "", article.cover || "", id, article.status || "published", !!article.colorPhotos);
 }
 
 function insertImageInArticle() {
@@ -787,19 +788,22 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
   input.click();
 });
 
-function renderArticlePreview(title, content, cover) {
-  document.getElementById("article-preview-content").innerHTML = `
+function renderArticlePreview(title, content, cover, colorPhotos) {
+  const preview = document.getElementById("article-preview-content");
+  preview.innerHTML = `
     <h1 class="preview-title">${title || "Untitled"}</h1>
     ${cover ? `<img src="${cover}" class="preview-cover" alt="Cover" />` : ""}
     <div class="preview-body">${content || ""}</div>
   `;
+  preview.classList.toggle("color-photos", !!colorPhotos);
   openModal("modal-preview");
 }
 
 document.getElementById("preview-article-btn").addEventListener("click", () => {
   if (!quill) return;
   const title = document.getElementById("article-title").value.trim();
-  renderArticlePreview(title, quill.root.innerHTML, coverUrl);
+  const colorPhotos = document.getElementById("article-color-toggle").checked;
+  renderArticlePreview(title, quill.root.innerHTML, coverUrl, colorPhotos);
 });
 
 async function saveArticleAs(status, btn, savingLabel) {
@@ -814,12 +818,13 @@ async function saveArticleAs(status, btn, savingLabel) {
   try {
     const content = quill.root.innerHTML;
     const excerpt = quill.getText().trim().slice(0, 200);
+    const colorPhotos = document.getElementById("article-color-toggle").checked;
 
     if (currentArticleId) {
-      await updateDoc(doc(db, "articles", currentArticleId), { title, content, excerpt, cover: coverUrl, status });
+      await updateDoc(doc(db, "articles", currentArticleId), { title, content, excerpt, cover: coverUrl, status, colorPhotos });
     } else {
       await addDoc(collection(db, "articles"), {
-        title, content, excerpt, cover: coverUrl, status, createdAt: serverTimestamp()
+        title, content, excerpt, cover: coverUrl, status, colorPhotos, createdAt: serverTimestamp()
       });
     }
 

@@ -503,6 +503,8 @@
   transition: transform 0.5s cubic-bezier(.25,.46,.45,.94), filter 0.4s;
 }
 
+.journal-item.color-photos .journal-thumb img { filter: none; }
+
 .journal-item:hover .journal-thumb img {
   transform: scale(1.08);
   filter: grayscale(20%);

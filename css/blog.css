@@ -76,6 +76,8 @@
   transition: transform 0.5s;
 }
 
+.article-row.color-photos .article-row-cover img { filter: none; }
+
 .article-row:hover .article-row-cover img { transform: scale(1.05); }
 
 .article-row-body {
@@ -265,6 +267,13 @@
   filter: grayscale(100%);
   margin-bottom: 2.5rem;
   display: block;
+}
+
+#article-content.color-photos .article-cover-img,
+#article-content.color-photos .two-col-img img,
+#article-content.color-photos .photo-grid-item img,
+#article-content.color-photos .article-body img {
+  filter: none;
 }
 
 .article-body {

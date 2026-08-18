@@ -70,7 +70,7 @@ async function loadLatestJournal() {
         : "";
 
       const item = document.createElement("a");
-      item.className = "journal-item";
+      item.className = "journal-item" + (article.colorPhotos ? " color-photos" : "");
       item.href = `blog.html#${article.id}`;
       item.innerHTML = `
         <div class="journal-thumb">
