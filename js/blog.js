@@ -36,7 +36,7 @@ async function loadArticles() {
       row.className = "article-row";
       row.innerHTML = `
         <div class="article-row-cover">
-          ${article.cover ? `<img src="${cldWatermark(article.cover, 600)}" alt="${article.title}" data-color="${!!article.coverColor}" loading="lazy" />` : ""}
+          ${article.cover ? `<img src="${cldWatermark(article.cover, 600)}" alt="${article.title}" data-color="${!!article.coverColor}" style="object-position:${article.coverPosition || "50% 50%"};" loading="lazy" />` : ""}
         </div>
         <div class="article-row-body">
           <h2 class="article-row-title">${article.title}</h2>
@@ -73,7 +73,7 @@ function openArticle(id, article) {
     <div class="article-header">
       <span class="article-date label">${date}</span>
       <h1>${article.title}</h1>
-      ${article.cover ? `<img class="article-cover-img" src="${cldWatermark(article.cover, 1200)}" alt="${article.title}" data-color="${!!article.coverColor}" />` : ""}
+      ${article.cover ? `<img class="article-cover-img" src="${cldWatermark(article.cover, 1200)}" alt="${article.title}" data-color="${!!article.coverColor}" style="object-position:${article.coverPosition || "50% 50%"};" />` : ""}
     </div>
     <div class="article-body">${article.content || ""}</div>
   `;
