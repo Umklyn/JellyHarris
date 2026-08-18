@@ -38,7 +38,7 @@ function buildTwoColHTML(value) {
 
 function buildPhotoGridHTML(cells) {
   return (cells || [])
-    .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}" data-color="${c.color ? 'true' : 'false'}" data-rotate="${c.rotate || 0}" data-raw-url="${c.url || ''}"><img src="${cldRotate(c.url, c.rotate) || ''}" alt=""></div>`)
+    .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}" data-color="${c.color ? 'true' : 'false'}" data-rotate="${c.rotate || 0}" data-raw-url="${c.url || ''}"><div class="photo-grid-item-inner"><img src="${cldRotate(c.url, c.rotate) || ''}" alt=""></div></div>`)
     .join('');
 }
 

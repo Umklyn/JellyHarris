@@ -224,11 +224,16 @@
 /* Photo grid block: cells are square by default; a cell can span 2 rows
    (vertical) or 2 columns (horizontal) to become a rectangle.
    grid-auto-flow:dense packs the remaining squares around it.
-   Each cell's height comes from a ::before with percentage padding-top
-   (the classic "intrinsic ratio box" trick) instead of aspect-ratio —
-   more reliable across browsers when combined with CSS Grid auto row
-   sizing. Any stray non-cell child (e.g. an empty paragraph left behind
-   by the editor) is hidden so it can't eat a grid row of its own. */
+
+   .photo-grid-item is the grid item — it must NOT have overflow:hidden,
+   because a grid item's "automatic minimum size" collapses to 0 for track
+   sizing purposes as soon as overflow isn't visible (CSS Sizing spec).
+   That silently starved the row track of the height our ::before padding
+   trick was trying to give it, which is what caused the gaps/misalignment.
+   The actual image clipping happens on the inner wrapper instead, which
+   isn't a grid item and so doesn't affect track sizing.
+   Any stray non-cell child (e.g. an empty paragraph left behind by the
+   editor) is hidden so it can't eat a grid row of its own. */
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -241,7 +246,6 @@
 
 .photo-grid-item {
   position: relative;
-  overflow: hidden;
 }
 
 .photo-grid-item::before {
@@ -250,9 +254,13 @@
   padding-top: 100%;
 }
 
-.photo-grid-item img {
+.photo-grid-item-inner {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+}
+
+.photo-grid-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
