@@ -642,8 +642,9 @@ document.getElementById("twocol-upload-zone").addEventListener("click", () => {
     try {
       twoColImageUrl = await uploadToCloudinary(file);
       zone.innerHTML = "<p>✓ Image uploaded</p>";
+      const previewFilter = document.getElementById("article-color-toggle").checked ? "none" : "grayscale(100%)";
       document.getElementById("twocol-img-preview").innerHTML =
-        `<img src="${twoColImageUrl}" style="max-width:100%;max-height:120px;object-fit:cover;filter:grayscale(100%);margin-top:0.5rem;display:block;" />`;
+        `<img src="${twoColImageUrl}" style="max-width:100%;max-height:120px;object-fit:cover;filter:${previewFilter};margin-top:0.5rem;display:block;" />`;
     } catch(e) {
       zone.innerHTML = "<p>Upload error</p>";
       alert("Upload error: " + e.message);
@@ -687,11 +688,12 @@ function openPhotoGridModal() {
 function createPhotoGridCell(cell, index) {
   const wrap = document.createElement("div");
   wrap.className = "photogrid-cell";
+  const previewFilter = document.getElementById("article-color-toggle").checked ? "none" : "grayscale(100%)";
 
   const slot = document.createElement("div");
   slot.className = "upload-zone upload-zone-sm photogrid-slot";
   slot.innerHTML = cell.url
-    ? `<img src="${cell.url}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(100%);display:block;" />`
+    ? `<img src="${cell.url}" style="width:100%;height:100%;object-fit:cover;filter:${previewFilter};display:block;" />`
     : "<p>Click to upload</p>";
   slot.addEventListener("click", () => {
     const input = document.createElement("input");
@@ -704,7 +706,7 @@ function createPhotoGridCell(cell, index) {
       try {
         const url = await uploadToCloudinary(file);
         photoGridCells[index].url = url;
-        slot.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(100%);display:block;" />`;
+        slot.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;filter:${previewFilter};display:block;" />`;
       } catch (err) {
         slot.innerHTML = "<p>Upload error</p>";
         alert("Upload error: " + err.message);
