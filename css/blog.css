@@ -224,10 +224,11 @@
 /* Photo grid block: cells are square by default; a cell can span 2 rows
    (vertical) or 2 columns (horizontal) to become a rectangle.
    grid-auto-flow:dense packs the remaining squares around it.
-   Each cell gets an aspect-ratio matching its own footprint (square,
-   1:2, or 2:1) so it has a real intrinsic size — rows are plain "auto"
-   and size themselves from that, identically in every context (editor,
-   preview, published page), with no JS measurement involved. */
+   Each cell's height comes from a ::before with percentage padding-top
+   (the classic "intrinsic ratio box" trick) instead of aspect-ratio —
+   more reliable across browsers when combined with CSS Grid auto row
+   sizing. Any stray non-cell child (e.g. an empty paragraph left behind
+   by the editor) is hidden so it can't eat a grid row of its own. */
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -236,10 +237,17 @@
   margin: 2.5rem 0;
 }
 
+.photo-grid > *:not(.photo-grid-item) { display: none; }
+
 .photo-grid-item {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 1 / 1;
+}
+
+.photo-grid-item::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
 }
 
 .photo-grid-item img {
@@ -254,9 +262,11 @@
 
 .photo-grid-item[data-color="true"] img { filter: none; }
 
-.photo-grid-item[data-span="vertical"] { grid-row: span 2; aspect-ratio: 1 / 2; }
+.photo-grid-item[data-span="vertical"] { grid-row: span 2; }
+.photo-grid-item[data-span="vertical"]::before { padding-top: 204%; }
 
-.photo-grid-item[data-span="horizontal"] { grid-column: span 2; aspect-ratio: 2 / 1; }
+.photo-grid-item[data-span="horizontal"] { grid-column: span 2; }
+.photo-grid-item[data-span="horizontal"]::before { padding-top: 49%; }
 
 
 .article-cover-img {
