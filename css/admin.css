@@ -654,17 +654,21 @@
   cursor: pointer;
 }
 
-.ql-editor .two-col {
+.ql-editor .two-col,
+.preview-body .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   align-items: start;
   margin: 1.5rem 0;
+}
+
+.ql-editor .two-col {
   border: 1px dashed rgba(14,14,14,0.12);
   padding: 1rem;
 }
 
-.ql-editor .two-col-img img {
+.two-col-img img {
   width: 100%;
   height: auto;
   display: block;
@@ -673,7 +677,8 @@
 
 .two-col-img[data-color="true"] img { filter: none; }
 
-.ql-editor .two-col-text {
+.ql-editor .two-col-text,
+.preview-body .two-col-text {
   font-size: 0.95rem;
   line-height: 1.7;
 }
