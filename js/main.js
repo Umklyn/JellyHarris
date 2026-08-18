@@ -1,6 +1,6 @@
 import { db } from "./firebase-init.js";
 import { collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { cldWatermark } from "./cloudinary.js";
+import { cldWatermark, cldRotate } from "./cloudinary.js";
 
 async function loadLatestWorks() {
   const grid = document.getElementById("latest-works-grid");
@@ -74,7 +74,7 @@ async function loadLatestJournal() {
       item.href = `blog.html#${article.id}`;
       item.innerHTML = `
         <div class="journal-thumb">
-          ${article.cover ? `<img src="${cldWatermark(article.cover, 200)}" alt="" data-color="${!!article.coverColor}" style="object-position:${article.coverPosition || "50% 50%"};" loading="lazy" />` : ""}
+          ${article.cover ? `<img src="${cldWatermark(cldRotate(article.cover, article.coverRotate), 200)}" alt="" data-color="${!!article.coverColor}" style="object-position:${article.coverPosition || "50% 50%"};" loading="lazy" />` : ""}
         </div>
         <span class="journal-date">${date}</span>
         <span class="journal-title">${article.title}</span>

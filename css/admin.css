@@ -625,6 +625,7 @@
 #cover-preview img[data-color="true"] { filter: none; }
 
 #cover-color-toggle { margin-top: 0.75rem; }
+#cover-rotate-btn { margin-top: 0.5rem; }
 
 .field-hint {
   font-family: var(--font-mono);

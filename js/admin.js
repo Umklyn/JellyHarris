@@ -21,6 +21,7 @@ let albumPhotos = [];
 let coverUrl = "";
 let coverColor = false;
 let coverPosition = "50% 50%";
+let coverRotate = 0;
 let twoColImageUrl = "";
 let twoColImageColor = false;
 let twoColEditEl = null;
@@ -503,7 +504,7 @@ function renderArticlesAdminList() {
       </div>
     `;
     item.querySelector(".preview").addEventListener("click", () => {
-      renderArticlePreview(a.title, a.content, a.cover, a.coverColor, a.coverPosition);
+      renderArticlePreview(a.title, a.content, a.cover, a.coverColor, a.coverPosition, a.coverRotate);
     });
     if (a.status === "draft") {
       item.querySelector(".publish").addEventListener("click", async e => {
@@ -583,27 +584,33 @@ function makeFocalPointPickable(imgEl, initialPosition, onPick) {
   });
 }
 
-function initArticleModal(title, content = "", articleCoverUrl = "", id = null, status = "draft", initialCoverColor = false, initialCoverPosition = "50% 50%") {
+function renderCoverPreview() {
+  const preview = document.getElementById("cover-preview");
+  preview.innerHTML = coverUrl
+    ? `<img src="${cldRotate(coverUrl, coverRotate)}" alt="Cover" data-color="${coverColor}" />`
+    : "";
+  const coverImg = preview.querySelector("img");
+  if (coverImg) makeFocalPointPickable(coverImg, coverPosition, pos => { coverPosition = pos; });
+  document.getElementById("cover-position-hint").style.display = coverImg ? "" : "none";
+}
+
+function initArticleModal(title, content = "", articleCoverUrl = "", id = null, status = "draft", initialCoverColor = false, initialCoverPosition = "50% 50%", initialCoverRotate = 0) {
   currentArticleId = id;
   currentArticleStatus = status;
   coverUrl = articleCoverUrl;
   coverColor = initialCoverColor;
   coverPosition = initialCoverPosition;
+  coverRotate = initialCoverRotate;
   document.getElementById("article-title").value = title;
   document.getElementById("modal-article-title").textContent = id ? "Edit article" : "New article";
   document.getElementById("save-article-btn").textContent =
     status === "published" ? "Save changes" : "Publish article";
-  document.getElementById("cover-preview").innerHTML = articleCoverUrl
-    ? `<img src="${articleCoverUrl}" alt="Cover" data-color="${coverColor}" />`
-    : "";
+  renderCoverPreview();
   setupColorToggle(document.getElementById("cover-color-toggle"), coverColor, color => {
     coverColor = color;
     const img = document.querySelector("#cover-preview img");
     if (img) img.dataset.color = color;
   });
-  const coverImg = document.querySelector("#cover-preview img");
-  if (coverImg) makeFocalPointPickable(coverImg, coverPosition, pos => { coverPosition = pos; });
-  document.getElementById("cover-position-hint").style.display = coverImg ? "" : "none";
 
   openModal("modal-article");
 
@@ -648,7 +655,7 @@ document.getElementById("new-article-btn").addEventListener("click", () => {
 });
 
 function openEditArticle(article, id) {
-  initArticleModal(article.title || "", article.content || "", article.cover || "", id, article.status || "published", !!article.coverColor, article.coverPosition || "50% 50%");
+  initArticleModal(article.title || "", article.content || "", article.cover || "", id, article.status || "published", !!article.coverColor, article.coverPosition || "50% 50%", article.coverRotate || 0);
 }
 
 function insertImageInArticle() {
@@ -973,10 +980,8 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
     try {
       coverUrl = await uploadToCloudinary(file);
       coverPosition = "50% 50%";
-      document.getElementById("cover-preview").innerHTML = `<img src="${coverUrl}" alt="Cover" data-color="${coverColor}" />`;
-      const coverImg = document.querySelector("#cover-preview img");
-      makeFocalPointPickable(coverImg, coverPosition, pos => { coverPosition = pos; });
-      document.getElementById("cover-position-hint").style.display = "";
+      coverRotate = 0;
+      renderCoverPreview();
     } catch(e) {
       alert("Cover upload error: " + e.message);
     }
@@ -984,11 +989,17 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
   input.click();
 });
 
-function renderArticlePreview(title, content, cover, coverIsColor, coverPos) {
+document.getElementById("cover-rotate-btn").addEventListener("click", () => {
+  if (!coverUrl) return;
+  coverRotate = (coverRotate + 90) % 360;
+  renderCoverPreview();
+});
+
+function renderArticlePreview(title, content, cover, coverIsColor, coverPos, coverRot) {
   const preview = document.getElementById("article-preview-content");
   preview.innerHTML = `
     <h1 class="preview-title">${title || "Untitled"}</h1>
-    ${cover ? `<img src="${cover}" class="preview-cover" alt="Cover" data-color="${coverIsColor}" style="object-position:${coverPos || "50% 50%"};" />` : ""}
+    ${cover ? `<img src="${cldRotate(cover, coverRot)}" class="preview-cover" alt="Cover" data-color="${coverIsColor}" style="object-position:${coverPos || "50% 50%"};" />` : ""}
     <div class="preview-body">${content || ""}</div>
   `;
   openModal("modal-preview");
@@ -997,7 +1008,7 @@ function renderArticlePreview(title, content, cover, coverIsColor, coverPos) {
 document.getElementById("preview-article-btn").addEventListener("click", () => {
   if (!quill) return;
   const title = document.getElementById("article-title").value.trim();
-  renderArticlePreview(title, quill.root.innerHTML, coverUrl, coverColor, coverPosition);
+  renderArticlePreview(title, quill.root.innerHTML, coverUrl, coverColor, coverPosition, coverRotate);
 });
 
 async function saveArticleAs(status, btn, savingLabel) {
@@ -1014,10 +1025,10 @@ async function saveArticleAs(status, btn, savingLabel) {
     const excerpt = quill.getText().trim().slice(0, 200);
 
     if (currentArticleId) {
-      await updateDoc(doc(db, "articles", currentArticleId), { title, content, excerpt, cover: coverUrl, coverColor, coverPosition, status });
+      await updateDoc(doc(db, "articles", currentArticleId), { title, content, excerpt, cover: coverUrl, coverColor, coverPosition, coverRotate, status });
     } else {
       await addDoc(collection(db, "articles"), {
-        title, content, excerpt, cover: coverUrl, coverColor, coverPosition, status, createdAt: serverTimestamp()
+        title, content, excerpt, cover: coverUrl, coverColor, coverPosition, coverRotate, status, createdAt: serverTimestamp()
       });
     }
 
