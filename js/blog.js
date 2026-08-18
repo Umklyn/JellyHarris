@@ -1,6 +1,7 @@
 import { db } from "./firebase-init.js";
 import { collection, query, orderBy, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { cldWatermark } from "./cloudinary.js";
+import { sizePhotoGrids } from "./photo-grid.js";
 
 async function loadArticles() {
   const list = document.getElementById("articles-list");
@@ -80,6 +81,7 @@ function openArticle(id, article) {
 
   document.getElementById("blog-list-view").style.display = "none";
   document.getElementById("article-single-view").style.display = "block";
+  sizePhotoGrids(document.getElementById("article-content"));
   window.scrollTo(0, 0);
 }
 

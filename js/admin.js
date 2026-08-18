@@ -7,7 +7,8 @@ import {
 import {
   GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { cldResize } from "./cloudinary.js";
+import { cldResize, cldRotate } from "./cloudinary.js";
+import { sizePhotoGrids } from "./photo-grid.js";
 
 const CLOUDINARY_CLOUD = "qjupwxds";
 const CLOUDINARY_PRESET = "JellyHarris_uploads";
@@ -22,6 +23,8 @@ let coverUrl = "";
 let coverColor = false;
 let twoColImageUrl = "";
 let twoColImageColor = false;
+let twoColEditIndex = null;
+let photoGridEditIndex = null;
 
 // Register two-col blot for Quill before init
 function registerTwoColBlot() {
@@ -64,16 +67,17 @@ function registerPhotoGridBlot() {
       node.setAttribute('contenteditable', false);
       const cells = value.cells || [];
       node.innerHTML = cells
-        .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}" data-color="${c.color ? 'true' : 'false'}"><img src="${c.url || ''}" alt=""></div>`)
+        .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}" data-color="${c.color ? 'true' : 'false'}" data-rotate="${c.rotate || 0}" data-raw-url="${c.url || ''}"><img src="${cldRotate(c.url, c.rotate) || ''}" alt=""></div>`)
         .join('');
       return node;
     }
     static value(node) {
       return {
         cells: [...node.querySelectorAll('.photo-grid-item')].map(item => ({
-          url: item.querySelector('img')?.src || '',
+          url: item.dataset.rawUrl || item.querySelector('img')?.src || '',
           span: item.dataset.span || 'square',
-          color: item.dataset.color === 'true'
+          color: item.dataset.color === 'true',
+          rotate: parseInt(item.dataset.rotate || '0', 10)
         }))
       };
     }
@@ -231,8 +235,8 @@ function renderAlbumsAdminList() {
   });
 }
 
-function getDragAfterElement(container, y) {
-  const els = [...container.querySelectorAll(".admin-item:not(.dragging)")];
+function getDragAfterElement(container, y, selector = ".admin-item") {
+  const els = [...container.querySelectorAll(`${selector}:not(.dragging)`)];
   return els.reduce((closest, child) => {
     const box = child.getBoundingClientRect();
     const offset = y - box.top - box.height / 2;
@@ -589,6 +593,13 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null, 
         quill.getModule("toolbar").addHandler("image", () => insertImageInArticle());
         quill.getModule("toolbar").addHandler("twoCol", () => openTwoColModal());
         quill.getModule("toolbar").addHandler("photoGrid", () => openPhotoGridModal());
+        // Click an inserted two-col or photo-grid block to edit it in place.
+        quill.root.addEventListener("click", e => {
+          const gridEl = e.target.closest(".photo-grid");
+          if (gridEl) return openPhotoGridModal(gridEl);
+          const twoColEl = e.target.closest(".two-col");
+          if (twoColEl) return openTwoColModal(twoColEl);
+        });
       } catch(e) { console.error("Quill init:", e); }
     }
     if (content) {
@@ -596,6 +607,7 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null, 
     } else {
       quill.setContents([]);
     }
+    sizePhotoGrids(quill.root);
   }, 100);
 }
 
@@ -628,17 +640,37 @@ function insertImageInArticle() {
 // --- Two-column block ---
 let twoColRange = null;
 
-function openTwoColModal() {
-  twoColImageUrl = "";
-  twoColImageColor = false;
-  twoColRange = quill ? quill.getSelection(true) : null;
-  document.getElementById("twocol-img-preview").innerHTML = "";
-  document.getElementById("twocol-text").value = "";
-  document.getElementById("twocol-upload-zone").innerHTML = "<p>Click to upload image</p>";
-  // Reset position toggle to left
-  document.querySelectorAll(".twocol-pos-btn").forEach(b => b.classList.remove("active"));
-  document.querySelector(".twocol-pos-btn[data-pos='left']").classList.add("active");
-  document.getElementById("twocol-text-label").textContent = "Text (right side)";
+function openTwoColModal(existingEl) {
+  const posBtns = document.querySelectorAll(".twocol-pos-btn");
+  const deleteBtn = document.getElementById("delete-twocol-btn");
+
+  if (existingEl) {
+    const blot = Quill.find(existingEl);
+    if (!blot) return;
+    twoColEditIndex = quill.getIndex(blot);
+    twoColImageUrl = existingEl.querySelector("img")?.src || "";
+    twoColImageColor = existingEl.querySelector(".two-col-img")?.dataset.color === "true";
+    const imageRight = existingEl.dataset.imageRight === "true";
+    document.getElementById("twocol-text").value = existingEl.querySelector(".two-col-text")?.textContent.trim() || "";
+    document.getElementById("twocol-upload-zone").innerHTML = "<p>✓ Image uploaded — click to replace</p>";
+    document.getElementById("twocol-img-preview").innerHTML =
+      `<img src="${twoColImageUrl}" data-color="${twoColImageColor}" />`;
+    posBtns.forEach(b => b.classList.toggle("active", (b.dataset.pos === "right") === imageRight));
+    document.getElementById("twocol-text-label").textContent = imageRight ? "Text (left side)" : "Text (right side)";
+    deleteBtn.style.display = "";
+  } else {
+    twoColEditIndex = null;
+    twoColImageUrl = "";
+    twoColImageColor = false;
+    twoColRange = quill ? quill.getSelection(true) : null;
+    document.getElementById("twocol-img-preview").innerHTML = "";
+    document.getElementById("twocol-text").value = "";
+    document.getElementById("twocol-upload-zone").innerHTML = "<p>Click to upload image</p>";
+    posBtns.forEach(b => b.classList.toggle("active", b.dataset.pos === "left"));
+    document.getElementById("twocol-text-label").textContent = "Text (right side)";
+    deleteBtn.style.display = "none";
+  }
+
   setupColorToggle(document.getElementById("twocol-color-toggle"), twoColImageColor, color => {
     twoColImageColor = color;
     const img = document.querySelector("#twocol-img-preview img");
@@ -683,9 +715,22 @@ document.getElementById("insert-twocol-btn").addEventListener("click", () => {
   const text = document.getElementById("twocol-text").value.trim();
   if (!twoColImageUrl) return alert("Please upload an image first.");
   const imageRight = document.querySelector(".twocol-pos-btn.active")?.dataset.pos === "right";
-  const idx = twoColRange ? twoColRange.index : quill.getLength();
-  quill.insertEmbed(idx, "twoCol", { img: twoColImageUrl, text: `<p>${text}</p>`, imageRight, color: twoColImageColor });
-  quill.setSelection(idx + 1);
+  const value = { img: twoColImageUrl, text: `<p>${text}</p>`, imageRight, color: twoColImageColor };
+  if (twoColEditIndex !== null) {
+    quill.deleteText(twoColEditIndex, 1);
+    quill.insertEmbed(twoColEditIndex, "twoCol", value);
+    quill.setSelection(twoColEditIndex + 1);
+  } else {
+    const idx = twoColRange ? twoColRange.index : quill.getLength();
+    quill.insertEmbed(idx, "twoCol", value);
+    quill.setSelection(idx + 1);
+  }
+  document.getElementById("modal-twocol").classList.remove("open");
+});
+
+document.getElementById("delete-twocol-btn").addEventListener("click", () => {
+  if (!quill || twoColEditIndex === null) return;
+  quill.deleteText(twoColEditIndex, 1);
   document.getElementById("modal-twocol").classList.remove("open");
 });
 
@@ -703,22 +748,48 @@ document.getElementById("close-twocol-modal").addEventListener("click", () => {
 let photoGridRange = null;
 let photoGridCells = [];
 
-function openPhotoGridModal() {
-  photoGridRange = quill ? quill.getSelection(true) : null;
-  photoGridCells = [{ url: "", span: "square", color: false }];
+function openPhotoGridModal(existingEl) {
+  const deleteBtn = document.getElementById("delete-photogrid-btn");
+  if (existingEl) {
+    const blot = Quill.find(existingEl);
+    if (!blot) return;
+    photoGridEditIndex = quill.getIndex(blot);
+    photoGridCells = [...existingEl.querySelectorAll(".photo-grid-item")].map(item => ({
+      url: item.dataset.rawUrl || item.querySelector("img")?.src || "",
+      span: item.dataset.span || "square",
+      color: item.dataset.color === "true",
+      rotate: parseInt(item.dataset.rotate || "0", 10)
+    }));
+    deleteBtn.style.display = "";
+  } else {
+    photoGridEditIndex = null;
+    photoGridRange = quill ? quill.getSelection(true) : null;
+    photoGridCells = [{ url: "", span: "square", color: false, rotate: 0 }];
+    deleteBtn.style.display = "none";
+  }
   renderPhotoGridCells();
   openModal("modal-photogrid");
 }
 
-function createPhotoGridCell(cell, index) {
+function createPhotoGridCell(cell) {
   const wrap = document.createElement("div");
   wrap.className = "photogrid-cell";
+  wrap.draggable = true;
+  wrap._cell = cell;
+
+  wrap.addEventListener("dragstart", () => wrap.classList.add("dragging"));
+  wrap.addEventListener("dragend", () => {
+    wrap.classList.remove("dragging");
+    const container = document.getElementById("photogrid-slots");
+    photoGridCells = [...container.children].map(el => el._cell);
+  });
 
   const slot = document.createElement("div");
   slot.className = "upload-zone upload-zone-sm photogrid-slot";
-  slot.innerHTML = cell.url
-    ? `<img src="${cell.url}" data-color="${!!cell.color}" />`
+  const renderSlotImg = () => cell.url
+    ? `<img src="${cell.url}" data-color="${!!cell.color}" style="transform:rotate(${cell.rotate || 0}deg);" />`
     : "<p>Click to upload</p>";
+  slot.innerHTML = renderSlotImg();
   slot.addEventListener("click", () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -728,9 +799,8 @@ function createPhotoGridCell(cell, index) {
       if (!file) return;
       slot.innerHTML = "<p>Uploading...</p>";
       try {
-        const url = await uploadToCloudinary(file);
-        photoGridCells[index].url = url;
-        slot.innerHTML = `<img src="${url}" data-color="${!!photoGridCells[index].color}" />`;
+        cell.url = await uploadToCloudinary(file);
+        slot.innerHTML = renderSlotImg();
       } catch (err) {
         slot.innerHTML = "<p>Upload error</p>";
         alert("Upload error: " + err.message);
@@ -753,7 +823,7 @@ function createPhotoGridCell(cell, index) {
     btn.addEventListener("click", () => {
       spanToggle.querySelectorAll("button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      photoGridCells[index].span = btn.dataset.span;
+      cell.span = btn.dataset.span;
     });
   });
 
@@ -764,20 +834,32 @@ function createPhotoGridCell(cell, index) {
     <button type="button" data-color="true" class="${cell.color ? "active" : ""}">Color</button>
   `;
   setupColorToggle(colorToggle, !!cell.color, color => {
-    photoGridCells[index].color = color;
+    cell.color = color;
     const img = slot.querySelector("img");
     if (img) img.dataset.color = color;
   });
 
+  const rotateBtn = document.createElement("button");
+  rotateBtn.type = "button";
+  rotateBtn.className = "photogrid-rotate-btn";
+  rotateBtn.title = "Rotate photo 90°";
+  rotateBtn.textContent = "⟳ Rotate";
+  rotateBtn.addEventListener("click", () => {
+    cell.rotate = ((cell.rotate || 0) + 90) % 360;
+    const img = slot.querySelector("img");
+    if (img) img.style.transform = `rotate(${cell.rotate}deg)`;
+  });
+
   toggles.appendChild(spanToggle);
   toggles.appendChild(colorToggle);
+  toggles.appendChild(rotateBtn);
 
   const removeBtn = document.createElement("button");
   removeBtn.type = "button";
   removeBtn.className = "photogrid-cell-remove";
   removeBtn.textContent = "✕ Remove photo";
   removeBtn.addEventListener("click", () => {
-    photoGridCells.splice(index, 1);
+    photoGridCells = photoGridCells.filter(c => c !== cell);
     renderPhotoGridCells();
   });
 
@@ -790,11 +872,21 @@ function createPhotoGridCell(cell, index) {
 function renderPhotoGridCells() {
   const wrap = document.getElementById("photogrid-slots");
   wrap.innerHTML = "";
-  photoGridCells.forEach((cell, i) => wrap.appendChild(createPhotoGridCell(cell, i)));
+  photoGridCells.forEach(cell => wrap.appendChild(createPhotoGridCell(cell)));
 }
 
+document.getElementById("photogrid-slots").addEventListener("dragover", e => {
+  e.preventDefault();
+  const list = e.currentTarget;
+  const dragging = list.querySelector(".dragging");
+  if (!dragging) return;
+  const after = getDragAfterElement(list, e.clientY, ".photogrid-cell");
+  if (after == null) list.appendChild(dragging);
+  else list.insertBefore(dragging, after);
+});
+
 document.getElementById("add-photogrid-slot-btn").addEventListener("click", () => {
-  photoGridCells.push({ url: "", span: "square", color: false });
+  photoGridCells.push({ url: "", span: "square", color: false, rotate: 0 });
   renderPhotoGridCells();
 });
 
@@ -802,9 +894,22 @@ document.getElementById("insert-photogrid-btn").addEventListener("click", () => 
   if (!quill) return;
   if (!photoGridCells.length) return alert("Add at least one photo.");
   if (photoGridCells.some(c => !c.url)) return alert("Please upload all photos first.");
-  const idx = photoGridRange ? photoGridRange.index : quill.getLength();
-  quill.insertEmbed(idx, "photoGrid", { cells: photoGridCells });
-  quill.setSelection(idx + 1);
+  if (photoGridEditIndex !== null) {
+    quill.deleteText(photoGridEditIndex, 1);
+    quill.insertEmbed(photoGridEditIndex, "photoGrid", { cells: photoGridCells });
+    quill.setSelection(photoGridEditIndex + 1);
+  } else {
+    const idx = photoGridRange ? photoGridRange.index : quill.getLength();
+    quill.insertEmbed(idx, "photoGrid", { cells: photoGridCells });
+    quill.setSelection(idx + 1);
+  }
+  sizePhotoGrids(quill.root);
+  document.getElementById("modal-photogrid").classList.remove("open");
+});
+
+document.getElementById("delete-photogrid-btn").addEventListener("click", () => {
+  if (!quill || photoGridEditIndex === null) return;
+  quill.deleteText(photoGridEditIndex, 1);
   document.getElementById("modal-photogrid").classList.remove("open");
 });
 
@@ -840,6 +945,7 @@ function renderArticlePreview(title, content, cover, coverIsColor) {
     <div class="preview-body">${content || ""}</div>
   `;
   openModal("modal-preview");
+  sizePhotoGrids(preview);
 }
 
 document.getElementById("preview-article-btn").addEventListener("click", () => {
