@@ -19,7 +19,9 @@ let currentArticleStatus = "draft";
 let currentEditAlbumId = null;
 let albumPhotos = [];
 let coverUrl = "";
+let coverColor = false;
 let twoColImageUrl = "";
+let twoColImageColor = false;
 
 // Register two-col blot for Quill before init
 function registerTwoColBlot() {
@@ -29,18 +31,17 @@ function registerTwoColBlot() {
       const node = super.create();
       node.setAttribute('contenteditable', false);
       node.dataset.imageRight = value.imageRight ? 'true' : 'false';
-      node.innerHTML = value.imageRight
-        ? `<div class="two-col-text">${value.text || ''}</div>
-           <div class="two-col-img"><img src="${value.img || ''}" alt=""></div>`
-        : `<div class="two-col-img"><img src="${value.img || ''}" alt=""></div>
-           <div class="two-col-text">${value.text || ''}</div>`;
+      const imgHtml = `<div class="two-col-img" data-color="${value.color ? 'true' : 'false'}"><img src="${value.img || ''}" alt=""></div>`;
+      const textHtml = `<div class="two-col-text">${value.text || ''}</div>`;
+      node.innerHTML = value.imageRight ? textHtml + imgHtml : imgHtml + textHtml;
       return node;
     }
     static value(node) {
       return {
         img: node.querySelector('img')?.src || '',
         text: node.querySelector('.two-col-text')?.innerHTML || '',
-        imageRight: node.dataset.imageRight === 'true'
+        imageRight: node.dataset.imageRight === 'true',
+        color: node.querySelector('.two-col-img')?.dataset.color === 'true'
       };
     }
   }
@@ -63,7 +64,7 @@ function registerPhotoGridBlot() {
       node.setAttribute('contenteditable', false);
       const cells = value.cells || [];
       node.innerHTML = cells
-        .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}"><img src="${c.url || ''}" alt=""></div>`)
+        .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}" data-color="${c.color ? 'true' : 'false'}"><img src="${c.url || ''}" alt=""></div>`)
         .join('');
       return node;
     }
@@ -71,7 +72,8 @@ function registerPhotoGridBlot() {
       return {
         cells: [...node.querySelectorAll('.photo-grid-item')].map(item => ({
           url: item.querySelector('img')?.src || '',
-          span: item.dataset.span || 'square'
+          span: item.dataset.span || 'square',
+          color: item.dataset.color === 'true'
         }))
       };
     }
@@ -534,18 +536,36 @@ async function persistArticlesOrder() {
   }
 }
 
-function initArticleModal(title, content = "", articleCoverUrl = "", id = null, status = "draft", colorPhotos = false) {
+// Wires a Black&white/Color button pair. Calls onChange(true|false) on click.
+function setupColorToggle(container, initialColor, onChange) {
+  const buttons = container.querySelectorAll("button");
+  buttons.forEach(btn => {
+    btn.classList.toggle("active", (btn.dataset.color === "true") === initialColor);
+    btn.onclick = () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      onChange(btn.dataset.color === "true");
+    };
+  });
+}
+
+function initArticleModal(title, content = "", articleCoverUrl = "", id = null, status = "draft", initialCoverColor = false) {
   currentArticleId = id;
   currentArticleStatus = status;
   coverUrl = articleCoverUrl;
+  coverColor = initialCoverColor;
   document.getElementById("article-title").value = title;
   document.getElementById("modal-article-title").textContent = id ? "Edit article" : "New article";
   document.getElementById("save-article-btn").textContent =
     status === "published" ? "Save changes" : "Publish article";
   document.getElementById("cover-preview").innerHTML = articleCoverUrl
-    ? `<img src="${articleCoverUrl}" alt="Cover" />`
+    ? `<img src="${articleCoverUrl}" alt="Cover" data-color="${coverColor}" />`
     : "";
-  document.getElementById("article-color-toggle").checked = !!colorPhotos;
+  setupColorToggle(document.getElementById("cover-color-toggle"), coverColor, color => {
+    coverColor = color;
+    const img = document.querySelector("#cover-preview img");
+    if (img) img.dataset.color = color;
+  });
 
   openModal("modal-article");
 
@@ -584,7 +604,7 @@ document.getElementById("new-article-btn").addEventListener("click", () => {
 });
 
 function openEditArticle(article, id) {
-  initArticleModal(article.title || "", article.content || "", article.cover || "", id, article.status || "published", !!article.colorPhotos);
+  initArticleModal(article.title || "", article.content || "", article.cover || "", id, article.status || "published", !!article.coverColor);
 }
 
 function insertImageInArticle() {
@@ -610,6 +630,7 @@ let twoColRange = null;
 
 function openTwoColModal() {
   twoColImageUrl = "";
+  twoColImageColor = false;
   twoColRange = quill ? quill.getSelection(true) : null;
   document.getElementById("twocol-img-preview").innerHTML = "";
   document.getElementById("twocol-text").value = "";
@@ -618,6 +639,11 @@ function openTwoColModal() {
   document.querySelectorAll(".twocol-pos-btn").forEach(b => b.classList.remove("active"));
   document.querySelector(".twocol-pos-btn[data-pos='left']").classList.add("active");
   document.getElementById("twocol-text-label").textContent = "Text (right side)";
+  setupColorToggle(document.getElementById("twocol-color-toggle"), twoColImageColor, color => {
+    twoColImageColor = color;
+    const img = document.querySelector("#twocol-img-preview img");
+    if (img) img.dataset.color = color;
+  });
   openModal("modal-twocol");
 }
 
@@ -642,9 +668,8 @@ document.getElementById("twocol-upload-zone").addEventListener("click", () => {
     try {
       twoColImageUrl = await uploadToCloudinary(file);
       zone.innerHTML = "<p>✓ Image uploaded</p>";
-      const previewFilter = document.getElementById("article-color-toggle").checked ? "none" : "grayscale(100%)";
       document.getElementById("twocol-img-preview").innerHTML =
-        `<img src="${twoColImageUrl}" style="max-width:100%;max-height:120px;object-fit:cover;filter:${previewFilter};margin-top:0.5rem;display:block;" />`;
+        `<img src="${twoColImageUrl}" data-color="${twoColImageColor}" />`;
     } catch(e) {
       zone.innerHTML = "<p>Upload error</p>";
       alert("Upload error: " + e.message);
@@ -659,7 +684,7 @@ document.getElementById("insert-twocol-btn").addEventListener("click", () => {
   if (!twoColImageUrl) return alert("Please upload an image first.");
   const imageRight = document.querySelector(".twocol-pos-btn.active")?.dataset.pos === "right";
   const idx = twoColRange ? twoColRange.index : quill.getLength();
-  quill.insertEmbed(idx, "twoCol", { img: twoColImageUrl, text: `<p>${text}</p>`, imageRight });
+  quill.insertEmbed(idx, "twoCol", { img: twoColImageUrl, text: `<p>${text}</p>`, imageRight, color: twoColImageColor });
   quill.setSelection(idx + 1);
   document.getElementById("modal-twocol").classList.remove("open");
 });
@@ -680,7 +705,7 @@ let photoGridCells = [];
 
 function openPhotoGridModal() {
   photoGridRange = quill ? quill.getSelection(true) : null;
-  photoGridCells = [{ url: "", span: "square" }];
+  photoGridCells = [{ url: "", span: "square", color: false }];
   renderPhotoGridCells();
   openModal("modal-photogrid");
 }
@@ -688,12 +713,11 @@ function openPhotoGridModal() {
 function createPhotoGridCell(cell, index) {
   const wrap = document.createElement("div");
   wrap.className = "photogrid-cell";
-  const previewFilter = document.getElementById("article-color-toggle").checked ? "none" : "grayscale(100%)";
 
   const slot = document.createElement("div");
   slot.className = "upload-zone upload-zone-sm photogrid-slot";
   slot.innerHTML = cell.url
-    ? `<img src="${cell.url}" style="width:100%;height:100%;object-fit:cover;filter:${previewFilter};display:block;" />`
+    ? `<img src="${cell.url}" data-color="${!!cell.color}" />`
     : "<p>Click to upload</p>";
   slot.addEventListener("click", () => {
     const input = document.createElement("input");
@@ -706,7 +730,7 @@ function createPhotoGridCell(cell, index) {
       try {
         const url = await uploadToCloudinary(file);
         photoGridCells[index].url = url;
-        slot.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;filter:${previewFilter};display:block;" />`;
+        slot.innerHTML = `<img src="${url}" data-color="${!!photoGridCells[index].color}" />`;
       } catch (err) {
         slot.innerHTML = "<p>Upload error</p>";
         alert("Upload error: " + err.message);
@@ -714,6 +738,9 @@ function createPhotoGridCell(cell, index) {
     };
     input.click();
   });
+
+  const toggles = document.createElement("div");
+  toggles.className = "photogrid-cell-toggles";
 
   const spanToggle = document.createElement("div");
   spanToggle.className = "photogrid-span-toggle";
@@ -730,6 +757,21 @@ function createPhotoGridCell(cell, index) {
     });
   });
 
+  const colorToggle = document.createElement("div");
+  colorToggle.className = "photogrid-color-toggle";
+  colorToggle.innerHTML = `
+    <button type="button" data-color="false" class="${!cell.color ? "active" : ""}">Black &amp; white</button>
+    <button type="button" data-color="true" class="${cell.color ? "active" : ""}">Color</button>
+  `;
+  setupColorToggle(colorToggle, !!cell.color, color => {
+    photoGridCells[index].color = color;
+    const img = slot.querySelector("img");
+    if (img) img.dataset.color = color;
+  });
+
+  toggles.appendChild(spanToggle);
+  toggles.appendChild(colorToggle);
+
   const removeBtn = document.createElement("button");
   removeBtn.type = "button";
   removeBtn.className = "photogrid-cell-remove";
@@ -740,7 +782,7 @@ function createPhotoGridCell(cell, index) {
   });
 
   wrap.appendChild(slot);
-  wrap.appendChild(spanToggle);
+  wrap.appendChild(toggles);
   wrap.appendChild(removeBtn);
   return wrap;
 }
@@ -752,7 +794,7 @@ function renderPhotoGridCells() {
 }
 
 document.getElementById("add-photogrid-slot-btn").addEventListener("click", () => {
-  photoGridCells.push({ url: "", span: "square" });
+  photoGridCells.push({ url: "", span: "square", color: false });
   renderPhotoGridCells();
 });
 
@@ -782,7 +824,7 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
     if (!file) return;
     try {
       coverUrl = await uploadToCloudinary(file);
-      document.getElementById("cover-preview").innerHTML = `<img src="${coverUrl}" alt="Cover" />`;
+      document.getElementById("cover-preview").innerHTML = `<img src="${coverUrl}" alt="Cover" data-color="${coverColor}" />`;
     } catch(e) {
       alert("Cover upload error: " + e.message);
     }
@@ -790,22 +832,20 @@ document.getElementById("cover-upload-zone").addEventListener("click", () => {
   input.click();
 });
 
-function renderArticlePreview(title, content, cover, colorPhotos) {
+function renderArticlePreview(title, content, cover, coverIsColor) {
   const preview = document.getElementById("article-preview-content");
   preview.innerHTML = `
     <h1 class="preview-title">${title || "Untitled"}</h1>
-    ${cover ? `<img src="${cover}" class="preview-cover" alt="Cover" />` : ""}
+    ${cover ? `<img src="${cover}" class="preview-cover" alt="Cover" data-color="${coverIsColor}" />` : ""}
     <div class="preview-body">${content || ""}</div>
   `;
-  preview.classList.toggle("color-photos", !!colorPhotos);
   openModal("modal-preview");
 }
 
 document.getElementById("preview-article-btn").addEventListener("click", () => {
   if (!quill) return;
   const title = document.getElementById("article-title").value.trim();
-  const colorPhotos = document.getElementById("article-color-toggle").checked;
-  renderArticlePreview(title, quill.root.innerHTML, coverUrl, colorPhotos);
+  renderArticlePreview(title, quill.root.innerHTML, coverUrl, coverColor);
 });
 
 async function saveArticleAs(status, btn, savingLabel) {
@@ -820,13 +860,12 @@ async function saveArticleAs(status, btn, savingLabel) {
   try {
     const content = quill.root.innerHTML;
     const excerpt = quill.getText().trim().slice(0, 200);
-    const colorPhotos = document.getElementById("article-color-toggle").checked;
 
     if (currentArticleId) {
-      await updateDoc(doc(db, "articles", currentArticleId), { title, content, excerpt, cover: coverUrl, status, colorPhotos });
+      await updateDoc(doc(db, "articles", currentArticleId), { title, content, excerpt, cover: coverUrl, coverColor, status });
     } else {
       await addDoc(collection(db, "articles"), {
-        title, content, excerpt, cover: coverUrl, status, colorPhotos, createdAt: serverTimestamp()
+        title, content, excerpt, cover: coverUrl, coverColor, status, createdAt: serverTimestamp()
       });
     }
 

@@ -171,12 +171,10 @@
             <p>Click to upload a cover image</p>
           </div>
           <div id="cover-preview"></div>
-        </div>
-        <div class="form-group">
-          <label class="checkbox-label">
-            <input type="checkbox" id="article-color-toggle" />
-            Show photos in color (default: black &amp; white)
-          </label>
+          <div class="photogrid-color-toggle" id="cover-color-toggle">
+            <button type="button" data-color="false" class="active">Black &amp; white</button>
+            <button type="button" data-color="true">Color</button>
+          </div>
         </div>
         <div class="form-group">
           <label class="label">Article content</label>
@@ -258,6 +256,10 @@
             <p>Click to upload image</p>
           </div>
           <div id="twocol-img-preview"></div>
+          <div class="photogrid-color-toggle" id="twocol-color-toggle">
+            <button type="button" data-color="false" class="active">Black &amp; white</button>
+            <button type="button" data-color="true">Color</button>
+          </div>
         </div>
         <div class="form-group">
           <label class="label" id="twocol-text-label">Text (right side)</label>
