@@ -393,18 +393,6 @@ footer p:nth-child(2) {
   opacity: 1;
 }
 
-.admin-link {
-  color: rgba(14,14,14,0.25);
-  text-decoration: none;
-  margin-left: 0.75rem;
-  font-size: 0.7rem;
-  transition: color 0.2s;
-}
-
-.admin-link:hover {
-  color: var(--accent-red);
-}
-
 /* Title strike — ligne animée au hover */
 .display {
   position: relative;
@@ -490,11 +478,5 @@ nav.menu-open {
   }
   footer p:last-child .footer-insta {
     margin-left: 0;
-  }
-  footer p:last-child .admin-link {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
   }
 }
