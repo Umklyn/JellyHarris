@@ -614,10 +614,9 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null, 
         });
       } catch(e) { console.error("Quill init:", e); }
     }
+    quill.setContents([]);
     if (content) {
       quill.clipboard.dangerouslyPasteHTML(0, content);
-    } else {
-      quill.setContents([]);
     }
     sizePhotoGrids(quill.root);
   }, 100);

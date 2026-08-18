@@ -257,9 +257,6 @@
 
 .photo-grid-item[data-span="horizontal"] { grid-column: span 2; }
 
-@media (max-width: 680px) {
-  .photo-grid { grid-template-columns: repeat(2, 1fr); }
-}
 
 .article-cover-img {
   width: 100%;
