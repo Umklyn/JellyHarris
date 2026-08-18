@@ -8,7 +8,6 @@ import {
   GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { cldResize, cldRotate } from "./cloudinary.js";
-import { sizePhotoGrids, watchPhotoGrids } from "./photo-grid.js";
 
 const CLOUDINARY_CLOUD = "qjupwxds";
 const CLOUDINARY_PRESET = "JellyHarris_uploads";
@@ -618,8 +617,6 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null, 
     if (content) {
       quill.clipboard.dangerouslyPasteHTML(0, content);
     }
-    sizePhotoGrids(quill.root);
-    watchPhotoGrids(quill.root);
   }, 100);
 }
 
@@ -911,8 +908,6 @@ document.getElementById("insert-photogrid-btn").addEventListener("click", () => 
     quill.insertEmbed(idx, "photoGrid", { cells: photoGridCells });
     quill.setSelection(idx + 1);
   }
-  sizePhotoGrids(quill.root);
-  watchPhotoGrids(quill.root);
   document.getElementById("modal-photogrid").classList.remove("open");
 });
 
@@ -955,8 +950,6 @@ function renderArticlePreview(title, content, cover, coverIsColor) {
     <div class="preview-body">${content || ""}</div>
   `;
   openModal("modal-preview");
-  sizePhotoGrids(preview);
-  watchPhotoGrids(preview);
 }
 
 document.getElementById("preview-article-btn").addEventListener("click", () => {
