@@ -23,8 +23,25 @@ let coverUrl = "";
 let coverColor = false;
 let twoColImageUrl = "";
 let twoColImageColor = false;
-let twoColEditIndex = null;
-let photoGridEditIndex = null;
+let twoColEditEl = null;
+let photoGridEditEl = null;
+
+// Builds the inner HTML of a two-col / photo-grid block. Shared by the
+// Quill blot (on first insert) and by the "click an existing block to edit
+// it" flow, which mutates an existing block's innerHTML directly instead of
+// deleting+reinserting at a computed index — index math on embeds is easy
+// to get subtly wrong (stale index → duplicated block instead of replaced).
+function buildTwoColHTML(value) {
+  const imgHtml = `<div class="two-col-img" data-color="${value.color ? 'true' : 'false'}"><img src="${value.img || ''}" alt=""></div>`;
+  const textHtml = `<div class="two-col-text">${value.text || ''}</div>`;
+  return value.imageRight ? textHtml + imgHtml : imgHtml + textHtml;
+}
+
+function buildPhotoGridHTML(cells) {
+  return (cells || [])
+    .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}" data-color="${c.color ? 'true' : 'false'}" data-rotate="${c.rotate || 0}" data-raw-url="${c.url || ''}"><img src="${cldRotate(c.url, c.rotate) || ''}" alt=""></div>`)
+    .join('');
+}
 
 // Register two-col blot for Quill before init
 function registerTwoColBlot() {
@@ -34,9 +51,7 @@ function registerTwoColBlot() {
       const node = super.create();
       node.setAttribute('contenteditable', false);
       node.dataset.imageRight = value.imageRight ? 'true' : 'false';
-      const imgHtml = `<div class="two-col-img" data-color="${value.color ? 'true' : 'false'}"><img src="${value.img || ''}" alt=""></div>`;
-      const textHtml = `<div class="two-col-text">${value.text || ''}</div>`;
-      node.innerHTML = value.imageRight ? textHtml + imgHtml : imgHtml + textHtml;
+      node.innerHTML = buildTwoColHTML(value);
       return node;
     }
     static value(node) {
@@ -65,10 +80,7 @@ function registerPhotoGridBlot() {
     static create(value) {
       const node = super.create();
       node.setAttribute('contenteditable', false);
-      const cells = value.cells || [];
-      node.innerHTML = cells
-        .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}" data-color="${c.color ? 'true' : 'false'}" data-rotate="${c.rotate || 0}" data-raw-url="${c.url || ''}"><img src="${cldRotate(c.url, c.rotate) || ''}" alt=""></div>`)
-        .join('');
+      node.innerHTML = buildPhotoGridHTML(value.cells);
       return node;
     }
     static value(node) {
@@ -645,9 +657,7 @@ function openTwoColModal(existingEl) {
   const deleteBtn = document.getElementById("delete-twocol-btn");
 
   if (existingEl) {
-    const blot = Quill.find(existingEl);
-    if (!blot) return;
-    twoColEditIndex = quill.getIndex(blot);
+    twoColEditEl = existingEl;
     twoColImageUrl = existingEl.querySelector("img")?.src || "";
     twoColImageColor = existingEl.querySelector(".two-col-img")?.dataset.color === "true";
     const imageRight = existingEl.dataset.imageRight === "true";
@@ -659,7 +669,7 @@ function openTwoColModal(existingEl) {
     document.getElementById("twocol-text-label").textContent = imageRight ? "Text (left side)" : "Text (right side)";
     deleteBtn.style.display = "";
   } else {
-    twoColEditIndex = null;
+    twoColEditEl = null;
     twoColImageUrl = "";
     twoColImageColor = false;
     twoColRange = quill ? quill.getSelection(true) : null;
@@ -716,10 +726,10 @@ document.getElementById("insert-twocol-btn").addEventListener("click", () => {
   if (!twoColImageUrl) return alert("Please upload an image first.");
   const imageRight = document.querySelector(".twocol-pos-btn.active")?.dataset.pos === "right";
   const value = { img: twoColImageUrl, text: `<p>${text}</p>`, imageRight, color: twoColImageColor };
-  if (twoColEditIndex !== null) {
-    quill.deleteText(twoColEditIndex, 1);
-    quill.insertEmbed(twoColEditIndex, "twoCol", value);
-    quill.setSelection(twoColEditIndex + 1);
+  if (twoColEditEl) {
+    twoColEditEl.dataset.imageRight = imageRight ? "true" : "false";
+    twoColEditEl.innerHTML = buildTwoColHTML(value);
+    quill.update();
   } else {
     const idx = twoColRange ? twoColRange.index : quill.getLength();
     quill.insertEmbed(idx, "twoCol", value);
@@ -729,8 +739,9 @@ document.getElementById("insert-twocol-btn").addEventListener("click", () => {
 });
 
 document.getElementById("delete-twocol-btn").addEventListener("click", () => {
-  if (!quill || twoColEditIndex === null) return;
-  quill.deleteText(twoColEditIndex, 1);
+  if (!quill || !twoColEditEl) return;
+  twoColEditEl.remove();
+  quill.update();
   document.getElementById("modal-twocol").classList.remove("open");
 });
 
@@ -751,9 +762,7 @@ let photoGridCells = [];
 function openPhotoGridModal(existingEl) {
   const deleteBtn = document.getElementById("delete-photogrid-btn");
   if (existingEl) {
-    const blot = Quill.find(existingEl);
-    if (!blot) return;
-    photoGridEditIndex = quill.getIndex(blot);
+    photoGridEditEl = existingEl;
     photoGridCells = [...existingEl.querySelectorAll(".photo-grid-item")].map(item => ({
       url: item.dataset.rawUrl || item.querySelector("img")?.src || "",
       span: item.dataset.span || "square",
@@ -762,7 +771,7 @@ function openPhotoGridModal(existingEl) {
     }));
     deleteBtn.style.display = "";
   } else {
-    photoGridEditIndex = null;
+    photoGridEditEl = null;
     photoGridRange = quill ? quill.getSelection(true) : null;
     photoGridCells = [{ url: "", span: "square", color: false, rotate: 0 }];
     deleteBtn.style.display = "none";
@@ -894,10 +903,9 @@ document.getElementById("insert-photogrid-btn").addEventListener("click", () => 
   if (!quill) return;
   if (!photoGridCells.length) return alert("Add at least one photo.");
   if (photoGridCells.some(c => !c.url)) return alert("Please upload all photos first.");
-  if (photoGridEditIndex !== null) {
-    quill.deleteText(photoGridEditIndex, 1);
-    quill.insertEmbed(photoGridEditIndex, "photoGrid", { cells: photoGridCells });
-    quill.setSelection(photoGridEditIndex + 1);
+  if (photoGridEditEl) {
+    photoGridEditEl.innerHTML = buildPhotoGridHTML(photoGridCells);
+    quill.update();
   } else {
     const idx = photoGridRange ? photoGridRange.index : quill.getLength();
     quill.insertEmbed(idx, "photoGrid", { cells: photoGridCells });
@@ -908,8 +916,9 @@ document.getElementById("insert-photogrid-btn").addEventListener("click", () => 
 });
 
 document.getElementById("delete-photogrid-btn").addEventListener("click", () => {
-  if (!quill || photoGridEditIndex === null) return;
-  quill.deleteText(photoGridEditIndex, 1);
+  if (!quill || !photoGridEditEl) return;
+  photoGridEditEl.remove();
+  quill.update();
   document.getElementById("modal-photogrid").classList.remove("open");
 });
 
