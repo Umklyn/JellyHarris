@@ -331,6 +331,10 @@
 .article-body em { font-style: italic; }
 .article-body a { color: var(--accent-red); text-decoration: underline; }
 
+.article-body .ql-align-center { text-align: center; }
+.article-body .ql-align-right { text-align: right; }
+.article-body .ql-font-bubble { font-family: 'Bagel Fat One', cursive; }
+
 /* Colored sections */
 .article-body .article-section {
   padding: 1.75rem;

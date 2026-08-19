@@ -137,6 +137,12 @@ function registerSectionBreakBlot() {
 }
 registerSectionBreakBlot();
 
+// Extra font choice for the article body — the built-in "font" format
+// already handles registering a class (ql-font-bubble) on the selection.
+const FontAttributor = Quill.import('attributors/class/font');
+FontAttributor.whitelist = ['bubble'];
+Quill.register(FontAttributor, true);
+
 // --- Auth ---
 onAuthStateChanged(auth, user => {
   if (user && user.email === ADMIN_EMAIL) {
@@ -698,7 +704,9 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null, 
           modules: {
             toolbar: [
               [{ header: [1, 2, 3, false] }],
+              [{ font: [false, "bubble"] }],
               ["bold", "italic", "underline"],
+              [{ align: [false, "center", "right"] }],
               ["blockquote"],
               [{ list: "ordered" }, { list: "bullet" }],
               ["link", "image"],

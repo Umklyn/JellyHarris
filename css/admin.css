@@ -677,6 +677,27 @@
   cursor: pointer;
 }
 
+/* Bubble font choice — picker label + rendered text */
+.ql-snow .ql-picker.ql-font .ql-picker-label::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item::before {
+  content: 'Default';
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=bubble]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=bubble]::before {
+  content: 'Bubble';
+  font-family: 'Bagel Fat One', cursive;
+}
+
+.ql-editor .ql-font-bubble,
+.preview-body .ql-font-bubble {
+  font-family: 'Bagel Fat One', cursive;
+}
+
+/* Text alignment in the article preview (Quill's own CSS only covers .ql-editor) */
+.preview-body .ql-align-center { text-align: center; }
+.preview-body .ql-align-right { text-align: right; }
+
 .ql-editor .two-col,
 .preview-body .two-col {
   display: grid;
