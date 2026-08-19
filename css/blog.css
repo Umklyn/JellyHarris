@@ -331,6 +331,29 @@
 .article-body em { font-style: italic; }
 .article-body a { color: var(--accent-red); text-decoration: underline; }
 
+/* Colored sections */
+.article-body .article-section {
+  padding: 1.75rem;
+  margin: 2.5rem 0;
+}
+
+.article-body .article-section.is-dark,
+.article-body .article-section.is-dark p,
+.article-body .article-section.is-dark h1,
+.article-body .article-section.is-dark h2,
+.article-body .article-section.is-dark h3,
+.article-body .article-section.is-dark li {
+  color: var(--white);
+}
+
+.article-body .article-section.is-dark blockquote {
+  color: rgba(255,255,255,0.7);
+  border-left-color: var(--white);
+}
+
+.article-body .article-section > *:first-child { margin-top: 0; }
+.article-body .article-section > *:last-child { margin-bottom: 0; }
+
 .loading-state,
 .empty-state {
   padding: 6rem 0;

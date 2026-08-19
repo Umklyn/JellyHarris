@@ -1,6 +1,7 @@
 import { db } from "./firebase-init.js";
 import { collection, query, orderBy, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { cldWatermark, cldRotate } from "./cloudinary.js";
+import { wrapArticleSections } from "./article-sections.js";
 
 async function loadArticles() {
   const list = document.getElementById("articles-list");
@@ -75,7 +76,7 @@ function openArticle(id, article) {
       <h1>${article.title}</h1>
       ${article.cover ? `<img class="article-cover-img" src="${cldWatermark(cldRotate(article.cover, article.coverRotate), 1200)}" alt="${article.title}" data-color="${!!article.coverColor}" style="object-position:${article.coverPosition || "50% 50%"};" />` : ""}
     </div>
-    <div class="article-body">${article.content || ""}</div>
+    <div class="article-body">${wrapArticleSections(article.content) || ""}</div>
   `;
 
   document.getElementById("blog-list-view").style.display = "none";
@@ -92,6 +93,7 @@ document.getElementById("back-to-list").addEventListener("click", () => {
 function stripHtml(html) {
   const tmp = document.createElement("div");
   tmp.innerHTML = html || "";
+  tmp.querySelectorAll(".section-break").forEach(el => el.remove());
   return tmp.textContent || "";
 }
 

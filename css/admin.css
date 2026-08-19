@@ -716,6 +716,90 @@
   font-size: 1rem;
 }
 
+.ql-section::before {
+  content: '◧';
+  font-size: 1rem;
+}
+
+/* Section-break marker (editor only — real colored wrapping happens at display time) */
+.section-break {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px dashed rgba(14,14,14,0.25);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-light);
+}
+
+.section-break-dot {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(14,14,14,0.2);
+  flex-shrink: 0;
+}
+
+/* Section modal color swatches */
+.section-swatches {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.section-swatch {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(14,14,14,0.2);
+  padding: 0;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.section-swatch:hover {
+  transform: translateY(-2px);
+}
+
+.section-swatch.active {
+  border-color: var(--text);
+  border-width: 2px;
+}
+
+#section-custom-color {
+  width: 60px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(14,14,14,0.2);
+  cursor: pointer;
+  background: none;
+}
+
+/* Rendered colored sections (article preview) */
+.preview-body .article-section {
+  padding: 2rem;
+  margin: 2.5rem 0;
+}
+
+.preview-body .article-section.is-dark,
+.preview-body .article-section.is-dark p,
+.preview-body .article-section.is-dark h1,
+.preview-body .article-section.is-dark h2,
+.preview-body .article-section.is-dark h3,
+.preview-body .article-section.is-dark li {
+  color: var(--white);
+}
+
+.preview-body .article-section.is-dark blockquote {
+  color: rgba(255,255,255,0.7);
+  border-left-color: var(--white);
+}
+
+.preview-body .article-section > *:first-child { margin-top: 0; }
+.preview-body .article-section > *:last-child { margin-bottom: 0; }
+
 /* modal two-col */
 .twocol-position-toggle {
   display: flex;

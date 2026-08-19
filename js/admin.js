@@ -8,6 +8,7 @@ import {
   GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { cldResize, cldRotate } from "./cloudinary.js";
+import { wrapArticleSections } from "./article-sections.js";
 
 const CLOUDINARY_CLOUD = "qjupwxds";
 const CLOUDINARY_PRESET = "JellyHarris_uploads";
@@ -42,6 +43,17 @@ function buildPhotoGridHTML(cells) {
   return (cells || [])
     .map(c => `<div class="photo-grid-item" data-span="${c.span || 'square'}" data-color="${c.color ? 'true' : 'false'}" data-rotate="${c.rotate || 0}" data-position="${c.position || '50% 50%'}" data-raw-url="${c.url || ''}"><div class="photo-grid-item-inner"><img src="${cldRotate(c.url, c.rotate) || ''}" alt="" style="object-position:${c.position || '50% 50%'};"></div></div>`)
     .join('');
+}
+
+// Marker block: "everything after this point gets this background color,
+// until the next marker or the end of the article." Rendered as a plain
+// dashed strip in the editor — the real colored <section> wrapping only
+// happens at display time (see article-sections.js), since a Quill embed
+// can't contain other editable blocks.
+function buildSectionBreakHTML(value) {
+  const color = value.color || '';
+  const label = color ? color.toUpperCase() : 'Default background';
+  return `<span class="section-break-dot" style="background:${color || 'transparent'}"></span><span>Section — ${label}</span>`;
 }
 
 // Register two-col blot for Quill before init
@@ -102,6 +114,28 @@ function registerPhotoGridBlot() {
   Quill.register(PhotoGridBlot);
 }
 registerPhotoGridBlot();
+
+// Register section-break blot for Quill before init
+function registerSectionBreakBlot() {
+  const BlockEmbed = Quill.import('blots/block/embed');
+  class SectionBreakBlot extends BlockEmbed {
+    static create(value) {
+      const node = super.create();
+      node.setAttribute('contenteditable', false);
+      node.dataset.bg = value.color || '';
+      node.innerHTML = buildSectionBreakHTML(value);
+      return node;
+    }
+    static value(node) {
+      return { color: node.dataset.bg || '' };
+    }
+  }
+  SectionBreakBlot.blotName = 'sectionBreak';
+  SectionBreakBlot.tagName = 'div';
+  SectionBreakBlot.className = 'section-break';
+  Quill.register(SectionBreakBlot);
+}
+registerSectionBreakBlot();
 
 // --- Auth ---
 onAuthStateChanged(auth, user => {
@@ -668,7 +702,7 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null, 
               ["blockquote"],
               [{ list: "ordered" }, { list: "bullet" }],
               ["link", "image"],
-              ["twoCol", "photoGrid"],
+              ["twoCol", "photoGrid", "section"],
               ["clean"]
             ]
           }
@@ -676,12 +710,15 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null, 
         quill.getModule("toolbar").addHandler("image", () => insertImageInArticle());
         quill.getModule("toolbar").addHandler("twoCol", () => openTwoColModal());
         quill.getModule("toolbar").addHandler("photoGrid", () => openPhotoGridModal());
-        // Click an inserted two-col or photo-grid block to edit it in place.
+        quill.getModule("toolbar").addHandler("section", () => openSectionModal());
+        // Click an inserted two-col, photo-grid or section-break block to edit it in place.
         quill.root.addEventListener("click", e => {
           const gridEl = e.target.closest(".photo-grid");
           if (gridEl) return openPhotoGridModal(gridEl);
           const twoColEl = e.target.closest(".two-col");
           if (twoColEl) return openTwoColModal(twoColEl);
+          const sectionEl = e.target.closest(".section-break");
+          if (sectionEl) return openSectionModal(sectionEl);
         });
       } catch(e) { console.error("Quill init:", e); }
     }
@@ -1012,6 +1049,74 @@ document.getElementById("close-photogrid-modal").addEventListener("click", () =>
   document.getElementById("modal-photogrid").classList.remove("open");
 });
 
+// --- Section background block ---
+let sectionRange = null;
+let sectionEditEl = null;
+let sectionColor = "";
+
+function openSectionModal(existingEl) {
+  const deleteBtn = document.getElementById("delete-section-btn");
+  if (existingEl) {
+    sectionEditEl = existingEl;
+    sectionColor = existingEl.dataset.bg || "";
+    sectionRange = null;
+    deleteBtn.style.display = "";
+  } else {
+    sectionEditEl = null;
+    sectionColor = "";
+    sectionRange = quill ? quill.getSelection(true) : null;
+    deleteBtn.style.display = "none";
+  }
+  document.querySelectorAll(".section-swatch").forEach(b => {
+    b.classList.toggle("active", b.dataset.color === sectionColor);
+  });
+  document.getElementById("section-custom-color").value = sectionColor || "#F4F3F1";
+  openModal("modal-section");
+}
+
+document.querySelectorAll(".section-swatch").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".section-swatch").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    sectionColor = btn.dataset.color;
+    document.getElementById("section-custom-color").value = sectionColor || "#F4F3F1";
+  });
+});
+
+document.getElementById("section-custom-color").addEventListener("input", e => {
+  sectionColor = e.target.value;
+  document.querySelectorAll(".section-swatch").forEach(b => b.classList.remove("active"));
+});
+
+document.getElementById("insert-section-btn").addEventListener("click", () => {
+  if (!quill) return;
+  const value = { color: sectionColor };
+  if (sectionEditEl) {
+    sectionEditEl.dataset.bg = sectionColor;
+    sectionEditEl.innerHTML = buildSectionBreakHTML(value);
+    quill.update();
+  } else {
+    const idx = sectionRange ? sectionRange.index : quill.getLength();
+    quill.insertEmbed(idx, "sectionBreak", value);
+    quill.setSelection(idx + 1);
+  }
+  document.getElementById("modal-section").classList.remove("open");
+});
+
+document.getElementById("delete-section-btn").addEventListener("click", () => {
+  if (!quill || !sectionEditEl) return;
+  sectionEditEl.remove();
+  quill.update();
+  document.getElementById("modal-section").classList.remove("open");
+});
+
+document.getElementById("cancel-section-btn").addEventListener("click", () => {
+  document.getElementById("modal-section").classList.remove("open");
+});
+document.getElementById("close-section-modal").addEventListener("click", () => {
+  document.getElementById("modal-section").classList.remove("open");
+});
+
 document.getElementById("cover-upload-zone").addEventListener("click", () => {
   const input = document.createElement("input");
   input.type = "file";
@@ -1042,7 +1147,7 @@ function renderArticlePreview(title, content, cover, coverIsColor, coverPos, cov
   preview.innerHTML = `
     <h1 class="preview-title">${title || "Untitled"}</h1>
     ${cover ? `<img src="${cldRotate(cover, coverRot)}" class="preview-cover" alt="Cover" data-color="${coverIsColor}" style="object-position:${coverPos || "50% 50%"};" />` : ""}
-    <div class="preview-body">${content || ""}</div>
+    <div class="preview-body">${wrapArticleSections(content) || ""}</div>
   `;
   openModal("modal-preview");
 }
