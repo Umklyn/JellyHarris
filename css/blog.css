@@ -333,6 +333,8 @@
 
 .article-body .ql-align-center { text-align: center; }
 .article-body .ql-align-right { text-align: right; }
+.article-body .ql-font-display { font-family: var(--font-display); text-transform: uppercase; }
+.article-body .ql-font-mono { font-family: var(--font-mono); }
 .article-body .ql-font-bubble { font-family: 'Bagel Fat One', cursive; }
 
 /* Colored sections */

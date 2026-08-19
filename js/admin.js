@@ -137,10 +137,12 @@ function registerSectionBreakBlot() {
 }
 registerSectionBreakBlot();
 
-// Extra font choice for the article body — the built-in "font" format
-// already handles registering a class (ql-font-bubble) on the selection.
+// Extra font choices for the article body, matching the site's own type
+// system (see --font-display/--font-mono in style.css) plus the bubble
+// display font. The built-in "font" format handles registering a class
+// (e.g. ql-font-display) on the selection.
 const FontAttributor = Quill.import('attributors/class/font');
-FontAttributor.whitelist = ['bubble'];
+FontAttributor.whitelist = ['display', 'mono', 'bubble'];
 Quill.register(FontAttributor, true);
 
 // --- Auth ---
@@ -704,7 +706,7 @@ function initArticleModal(title, content = "", articleCoverUrl = "", id = null, 
           modules: {
             toolbar: [
               [{ header: [1, 2, 3, false] }],
-              [{ font: [false, "bubble"] }],
+              [{ font: [false, "display", "mono", "bubble"] }],
               ["bold", "italic", "underline"],
               [{ align: [false, "center", "right"] }],
               ["blockquote"],

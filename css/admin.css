@@ -677,16 +677,44 @@
   cursor: pointer;
 }
 
-/* Bubble font choice — picker label + rendered text */
+/* Font choices — picker labels + rendered text, matching the site's type system */
+.ql-snow .ql-picker.ql-font {
+  width: 130px;
+}
+
 .ql-snow .ql-picker.ql-font .ql-picker-label::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item::before {
   content: 'Default';
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=display]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=display]::before {
+  content: 'Display';
+  font-family: var(--font-display);
+  text-transform: uppercase;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=mono]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=mono]::before {
+  content: 'Mono';
+  font-family: var(--font-mono);
 }
 
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=bubble]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=bubble]::before {
   content: 'Bubble';
   font-family: 'Bagel Fat One', cursive;
+}
+
+.ql-editor .ql-font-display,
+.preview-body .ql-font-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+}
+
+.ql-editor .ql-font-mono,
+.preview-body .ql-font-mono {
+  font-family: var(--font-mono);
 }
 
 .ql-editor .ql-font-bubble,
