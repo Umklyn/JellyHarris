@@ -130,7 +130,7 @@ function registerSectionBreakBlot() {
       return { color: node.dataset.bg || '' };
     }
   }
-  SectionBreakBlot.blotName = 'sectionBreak';
+  SectionBreakBlot.blotName = 'section';
   SectionBreakBlot.tagName = 'div';
   SectionBreakBlot.className = 'section-break';
   Quill.register(SectionBreakBlot);
@@ -1097,7 +1097,7 @@ document.getElementById("insert-section-btn").addEventListener("click", () => {
     quill.update();
   } else {
     const idx = sectionRange ? sectionRange.index : quill.getLength();
-    quill.insertEmbed(idx, "sectionBreak", value);
+    quill.insertEmbed(idx, "section", value);
     quill.setSelection(idx + 1);
   }
   document.getElementById("modal-section").classList.remove("open");
