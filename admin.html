@@ -46,7 +46,16 @@
   <!-- Admin dashboard -->
   <div class="admin-dashboard" id="admin-dashboard" style="display:none;">
 
-    <aside class="admin-sidebar">
+    <header class="admin-topbar">
+      <img src="assets/logo.png" alt="Jelly Harris" class="topbar-logo-img" />
+      <button class="admin-burger" id="admin-burger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </header>
+
+    <div class="admin-sidebar-overlay" id="admin-sidebar-overlay"></div>
+
+    <aside class="admin-sidebar" id="admin-sidebar">
       <div class="sidebar-logo">
         <img src="assets/logo.png" alt="Jelly Harris" class="sidebar-logo-img" />
         <span class="label">Admin</span>
@@ -309,6 +318,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  <script src="js/admin-nav.js"></script>
   <script type="module" src="js/admin.js"></script>
 </body>
 </html>
