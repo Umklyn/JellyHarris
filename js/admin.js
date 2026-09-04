@@ -419,6 +419,7 @@ function renderSeriesManageList() {
     if (isOpen) {
       const albumsWrap = document.createElement("div");
       albumsWrap.className = "series-manage-albums";
+      const checkboxes = [];
       albumsOrderState.forEach(a => {
         const inSeries = a.series === series;
         const item = document.createElement("label");
@@ -428,17 +429,36 @@ function renderSeriesManageList() {
           <span>${a.name}</span>
           ${a.series && !inSeries ? `<span class="admin-item-meta">currently in ${a.series}</span>` : ""}
         `;
-        item.querySelector("input").addEventListener("change", async e => {
-          try {
-            await setAlbumSeries(a.id, e.target.checked ? series : null);
-            renderAlbumsAdminList();
-            renderSeriesManageList();
-          } catch (err) {
-            alert("Couldn't update album: " + err.message);
-          }
-        });
+        const checkbox = item.querySelector("input");
+        checkbox.dataset.albumId = a.id;
+        checkboxes.push(checkbox);
         albumsWrap.appendChild(item);
       });
+
+      const applyBtn = document.createElement("button");
+      applyBtn.type = "button";
+      applyBtn.className = "btn btn-red series-manage-apply";
+      applyBtn.textContent = "Apply";
+      applyBtn.addEventListener("click", async () => {
+        const changed = checkboxes.filter(cb => {
+          const a = albumsOrderState.find(x => x.id === cb.dataset.albumId);
+          return cb.checked !== (a.series === series);
+        });
+        if (!changed.length) return;
+        applyBtn.textContent = "Saving...";
+        applyBtn.disabled = true;
+        try {
+          await Promise.all(changed.map(cb => setAlbumSeries(cb.dataset.albumId, cb.checked ? series : null)));
+          renderAlbumsAdminList();
+          renderSeriesManageList();
+        } catch (err) {
+          alert("Couldn't update albums: " + err.message);
+          applyBtn.textContent = "Apply";
+          applyBtn.disabled = false;
+        }
+      });
+      albumsWrap.appendChild(applyBtn);
+
       wrap.appendChild(albumsWrap);
     }
   });
