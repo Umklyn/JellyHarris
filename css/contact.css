@@ -73,6 +73,12 @@
   font-weight: 400;
   line-height: 1.4;
   color: var(--text);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.contact-intro:hover {
+  opacity: 0.75;
+  transform: translateX(4px);
 }
 
 .contact-intro .accent {
