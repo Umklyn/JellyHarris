@@ -143,7 +143,10 @@
         </div>
         <div class="form-group">
           <label class="label">Series (for filters)</label>
-          <input type="text" id="album-series" placeholder="Ex: Urban, Portrait, Nature..." autocomplete="off" />
+          <select id="album-series">
+            <option value="">No series</option>
+          </select>
+          <span class="field-hint">New series can only be created from "Manage series".</span>
         </div>
         <div class="form-group">
           <label class="label">Short description</label>
@@ -255,7 +258,10 @@
         </div>
         <div class="form-group">
           <label class="label">Series</label>
-          <input type="text" id="edit-album-series" autocomplete="off" />
+          <select id="edit-album-series">
+            <option value="">No series</option>
+          </select>
+          <span class="field-hint">New series can only be created from "Manage series".</span>
         </div>
         <div class="form-group">
           <label class="label">Description (displayed below title)</label>

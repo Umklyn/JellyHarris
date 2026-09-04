@@ -145,11 +145,13 @@ FontAttributor.whitelist = ['display', 'mono'];
 Quill.register(FontAttributor, true);
 
 // --- Auth ---
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async user => {
   if (user && user.email === ADMIN_EMAIL) {
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("admin-dashboard").style.display = "grid";
-    loadAlbums();
+    await loadAlbums();
+    await loadSeriesDocs();
+    await migrateLegacySeries();
     loadArticles();
     loadMessages();
   } else {
@@ -473,10 +475,20 @@ document.getElementById("add-series-btn").addEventListener("click", async () => 
 document.getElementById("close-series-btn").addEventListener("click", closeAllModals);
 document.getElementById("close-series-modal").addEventListener("click", closeAllModals);
 
+// Fills a <select> with every known series, sorted, plus a "No series"
+// option. Series can only be created from the "Manage series" modal, so
+// this list is always the source of truth — no free typing here.
+function populateSeriesSelect(selectEl, selectedValue) {
+  const options = [...seriesListState].sort((a, b) => a.name.localeCompare(b.name));
+  selectEl.innerHTML = `<option value="">No series</option>` +
+    options.map(s => `<option value="${s.name}">${s.name}</option>`).join("");
+  selectEl.value = selectedValue || "";
+}
+
 document.getElementById("new-album-btn").addEventListener("click", () => {
   albumPhotos = [];
   document.getElementById("album-name").value = "";
-  document.getElementById("album-series").value = "";
+  populateSeriesSelect(document.getElementById("album-series"), "");
   document.getElementById("album-desc").value = "";
   document.getElementById("album-upload-preview").innerHTML = "";
   openModal("modal-album");
@@ -580,7 +592,7 @@ function createEditPhotoItem(url, caption) {
 function openEditAlbum(album, id) {
   currentEditAlbumId = id;
   document.getElementById("edit-album-name").value = album.name || "";
-  document.getElementById("edit-album-series").value = album.series || "";
+  populateSeriesSelect(document.getElementById("edit-album-series"), album.series || "");
   document.getElementById("edit-album-desc").value = album.description || "";
 
   const list = document.getElementById("edit-photos-list");
