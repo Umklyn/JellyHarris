@@ -322,6 +322,66 @@ async function persistAlbumsOrder() {
   }
 }
 
+// --- Manage series ---
+function renderSeriesManageList() {
+  const wrap = document.getElementById("series-manage-list");
+  const counts = new Map();
+  albumsOrderState.forEach(a => {
+    if (a.series) counts.set(a.series, (counts.get(a.series) || 0) + 1);
+  });
+
+  if (!counts.size) {
+    wrap.innerHTML = `<div class="loading-state"><span class="label">No series yet — add one from an album.</span></div>`;
+    return;
+  }
+
+  wrap.innerHTML = "";
+  [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0])).forEach(([series, count]) => {
+    const row = document.createElement("div");
+    row.className = "series-manage-row";
+    row.innerHTML = `
+      <input type="text" class="series-manage-input" value="${series}" />
+      <span class="admin-item-meta">${count} album(s)</span>
+      <button type="button" class="admin-action-btn rename">Rename</button>
+      <button type="button" class="admin-action-btn delete">Remove</button>
+    `;
+
+    row.querySelector(".rename").addEventListener("click", async () => {
+      const newName = row.querySelector(".series-manage-input").value.trim();
+      if (!newName || newName === series) return;
+      const targets = albumsOrderState.filter(a => a.series === series);
+      try {
+        await Promise.all(targets.map(a => updateDoc(doc(db, "albums", a.id), { series: newName })));
+        await loadAlbums();
+        renderSeriesManageList();
+      } catch (e) {
+        alert("Couldn't rename series: " + e.message);
+      }
+    });
+
+    row.querySelector(".delete").addEventListener("click", async () => {
+      if (!confirm(`Remove series "${series}"? The ${count} album(s) using it will keep their photos, just without a series tag.`)) return;
+      const targets = albumsOrderState.filter(a => a.series === series);
+      try {
+        await Promise.all(targets.map(a => updateDoc(doc(db, "albums", a.id), { series: null })));
+        await loadAlbums();
+        renderSeriesManageList();
+      } catch (e) {
+        alert("Couldn't remove series: " + e.message);
+      }
+    });
+
+    wrap.appendChild(row);
+  });
+}
+
+document.getElementById("manage-series-btn").addEventListener("click", () => {
+  renderSeriesManageList();
+  openModal("modal-series");
+});
+document.getElementById("close-series-btn").addEventListener("click", closeAllModals);
+document.getElementById("close-series-modal").addEventListener("click", closeAllModals);
+
 document.getElementById("new-album-btn").addEventListener("click", () => {
   albumPhotos = [];
   document.getElementById("album-name").value = "";

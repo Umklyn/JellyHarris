@@ -87,7 +87,10 @@
             <span class="label">Gallery</span>
             <h2>Albums</h2>
           </div>
-          <button class="btn btn-red" id="new-album-btn">+ New album</button>
+          <div class="panel-header-actions">
+            <button class="btn btn-outline" id="manage-series-btn">Manage series</button>
+            <button class="btn btn-red" id="new-album-btn">+ New album</button>
+          </div>
         </div>
 
         <div class="albums-admin-list" id="albums-admin-list">
@@ -213,6 +216,23 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" id="back-to-edit-btn">← Back to edit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Manage series -->
+  <div class="modal" id="modal-series">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Manage series</h3>
+        <button class="modal-close" id="close-series-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="field-hint">Rename a series to update it everywhere, or remove it to un-tag every album that used it (the albums themselves aren't deleted).</p>
+        <div id="series-manage-list" class="series-manage-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="close-series-btn">Close</button>
       </div>
     </div>
   </div>
