@@ -228,7 +228,11 @@
         <button class="modal-close" id="close-series-modal">✕</button>
       </div>
       <div class="modal-body">
-        <p class="field-hint">Rename a series to update it everywhere, or remove it to un-tag every album that used it (the albums themselves aren't deleted).</p>
+        <p class="field-hint">Rename a series to update it everywhere, or remove it to un-tag every album that used it (the albums themselves aren't deleted). Checking/unchecking an album below only changes that album — the series stays until you explicitly remove it.</p>
+        <div class="series-add-row">
+          <input type="text" id="series-add-input" placeholder="New series name..." autocomplete="off" />
+          <button type="button" class="btn btn-outline" id="add-series-btn">+ Add series</button>
+        </div>
         <div id="series-manage-list" class="series-manage-list"></div>
       </div>
       <div class="modal-footer">

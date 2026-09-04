@@ -323,7 +323,28 @@ async function persistAlbumsOrder() {
 }
 
 // --- Manage series ---
+// Series live in their own Firestore collection so the list is stable:
+// removing every album from a series no longer makes the series vanish —
+// only an explicit "Remove" deletes the series itself.
+let seriesListState = [];
 let expandedSeries = new Set();
+
+async function loadSeriesDocs() {
+  const snap = await getDocs(collection(db, "series"));
+  seriesListState = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+// Backfill: any series name already used on an album but not yet in the
+// "series" collection (e.g. albums created before this feature existed)
+// gets a matching series doc so it shows up here too.
+async function migrateLegacySeries() {
+  const existingNames = new Set(seriesListState.map(s => s.name));
+  const legacyNames = [...new Set(albumsOrderState.map(a => a.series).filter(Boolean))];
+  const missing = legacyNames.filter(n => !existingNames.has(n));
+  if (!missing.length) return;
+  await Promise.all(missing.map(n => addDoc(collection(db, "series"), { name: n, createdAt: serverTimestamp() })));
+  await loadSeriesDocs();
+}
 
 async function setAlbumSeries(albumId, series) {
   await updateDoc(doc(db, "albums", albumId), { series: series || null });
@@ -333,19 +354,17 @@ async function setAlbumSeries(albumId, series) {
 
 function renderSeriesManageList() {
   const wrap = document.getElementById("series-manage-list");
-  const counts = new Map();
-  albumsOrderState.forEach(a => {
-    if (a.series) counts.set(a.series, (counts.get(a.series) || 0) + 1);
-  });
 
-  if (!counts.size) {
-    wrap.innerHTML = `<div class="loading-state"><span class="label">No series yet — add one from an album.</span></div>`;
+  if (!seriesListState.length) {
+    wrap.innerHTML = `<div class="loading-state"><span class="label">No series yet — add one above.</span></div>`;
     return;
   }
 
   wrap.innerHTML = "";
-  [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0])).forEach(([series, count]) => {
-    const isOpen = expandedSeries.has(series);
+  [...seriesListState].sort((a, b) => a.name.localeCompare(b.name)).forEach(s => {
+    const series = s.name;
+    const count = albumsOrderState.filter(a => a.series === series).length;
+    const isOpen = expandedSeries.has(s.id);
 
     const row = document.createElement("div");
     row.className = "series-manage-row";
@@ -358,8 +377,8 @@ function renderSeriesManageList() {
     `;
 
     row.querySelector(".series-manage-toggle").addEventListener("click", () => {
-      if (isOpen) expandedSeries.delete(series);
-      else expandedSeries.add(series);
+      if (isOpen) expandedSeries.delete(s.id);
+      else expandedSeries.add(s.id);
       renderSeriesManageList();
     });
 
@@ -368,8 +387,9 @@ function renderSeriesManageList() {
       if (!newName || newName === series) return;
       const targets = albumsOrderState.filter(a => a.series === series);
       try {
+        await updateDoc(doc(db, "series", s.id), { name: newName });
+        s.name = newName;
         await Promise.all(targets.map(a => setAlbumSeries(a.id, newName)));
-        if (expandedSeries.has(series)) { expandedSeries.delete(series); expandedSeries.add(newName); }
         renderAlbumsAdminList();
         renderSeriesManageList();
       } catch (e) {
@@ -381,8 +401,10 @@ function renderSeriesManageList() {
       if (!confirm(`Remove series "${series}"? The ${count} album(s) using it will keep their photos, just without a series tag.`)) return;
       const targets = albumsOrderState.filter(a => a.series === series);
       try {
+        await deleteDoc(doc(db, "series", s.id));
         await Promise.all(targets.map(a => setAlbumSeries(a.id, null)));
-        expandedSeries.delete(series);
+        seriesListState = seriesListState.filter(x => x.id !== s.id);
+        expandedSeries.delete(s.id);
         renderAlbumsAdminList();
         renderSeriesManageList();
       } catch (e) {
@@ -420,10 +442,34 @@ function renderSeriesManageList() {
   });
 }
 
-document.getElementById("manage-series-btn").addEventListener("click", () => {
-  renderSeriesManageList();
+document.getElementById("manage-series-btn").addEventListener("click", async () => {
+  const wrap = document.getElementById("series-manage-list");
+  wrap.innerHTML = `<div class="loading-state"><span class="label">Loading...</span></div>`;
   openModal("modal-series");
+  try {
+    await loadSeriesDocs();
+    await migrateLegacySeries();
+    renderSeriesManageList();
+  } catch (e) {
+    wrap.innerHTML = `<div class="loading-state"><span class="label">Error: ${e.message}</span></div>`;
+  }
 });
+
+document.getElementById("add-series-btn").addEventListener("click", async () => {
+  const input = document.getElementById("series-add-input");
+  const name = input.value.trim();
+  if (!name) return;
+  if (seriesListState.some(s => s.name === name)) return alert(`Series "${name}" already exists.`);
+  try {
+    const ref = await addDoc(collection(db, "series"), { name, createdAt: serverTimestamp() });
+    seriesListState.push({ id: ref.id, name });
+    input.value = "";
+    renderSeriesManageList();
+  } catch (e) {
+    alert("Couldn't add series: " + e.message);
+  }
+});
+
 document.getElementById("close-series-btn").addEventListener("click", closeAllModals);
 document.getElementById("close-series-modal").addEventListener("click", closeAllModals);
 
