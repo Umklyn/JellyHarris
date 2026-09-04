@@ -323,6 +323,14 @@ async function persistAlbumsOrder() {
 }
 
 // --- Manage series ---
+let expandedSeries = new Set();
+
+async function setAlbumSeries(albumId, series) {
+  await updateDoc(doc(db, "albums", albumId), { series: series || null });
+  const local = albumsOrderState.find(a => a.id === albumId);
+  if (local) local.series = series || null;
+}
+
 function renderSeriesManageList() {
   const wrap = document.getElementById("series-manage-list");
   const counts = new Map();
@@ -337,22 +345,32 @@ function renderSeriesManageList() {
 
   wrap.innerHTML = "";
   [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0])).forEach(([series, count]) => {
+    const isOpen = expandedSeries.has(series);
+
     const row = document.createElement("div");
     row.className = "series-manage-row";
     row.innerHTML = `
+      <button type="button" class="series-manage-toggle" title="Show albums in this series">${isOpen ? "▾" : "▸"}</button>
       <input type="text" class="series-manage-input" value="${series}" />
       <span class="admin-item-meta">${count} album(s)</span>
       <button type="button" class="admin-action-btn rename">Rename</button>
       <button type="button" class="admin-action-btn delete">Remove</button>
     `;
 
+    row.querySelector(".series-manage-toggle").addEventListener("click", () => {
+      if (isOpen) expandedSeries.delete(series);
+      else expandedSeries.add(series);
+      renderSeriesManageList();
+    });
+
     row.querySelector(".rename").addEventListener("click", async () => {
       const newName = row.querySelector(".series-manage-input").value.trim();
       if (!newName || newName === series) return;
       const targets = albumsOrderState.filter(a => a.series === series);
       try {
-        await Promise.all(targets.map(a => updateDoc(doc(db, "albums", a.id), { series: newName })));
-        await loadAlbums();
+        await Promise.all(targets.map(a => setAlbumSeries(a.id, newName)));
+        if (expandedSeries.has(series)) { expandedSeries.delete(series); expandedSeries.add(newName); }
+        renderAlbumsAdminList();
         renderSeriesManageList();
       } catch (e) {
         alert("Couldn't rename series: " + e.message);
@@ -363,8 +381,9 @@ function renderSeriesManageList() {
       if (!confirm(`Remove series "${series}"? The ${count} album(s) using it will keep their photos, just without a series tag.`)) return;
       const targets = albumsOrderState.filter(a => a.series === series);
       try {
-        await Promise.all(targets.map(a => updateDoc(doc(db, "albums", a.id), { series: null })));
-        await loadAlbums();
+        await Promise.all(targets.map(a => setAlbumSeries(a.id, null)));
+        expandedSeries.delete(series);
+        renderAlbumsAdminList();
         renderSeriesManageList();
       } catch (e) {
         alert("Couldn't remove series: " + e.message);
@@ -372,6 +391,32 @@ function renderSeriesManageList() {
     });
 
     wrap.appendChild(row);
+
+    if (isOpen) {
+      const albumsWrap = document.createElement("div");
+      albumsWrap.className = "series-manage-albums";
+      albumsOrderState.forEach(a => {
+        const inSeries = a.series === series;
+        const item = document.createElement("label");
+        item.className = "series-manage-album-item";
+        item.innerHTML = `
+          <input type="checkbox" ${inSeries ? "checked" : ""} />
+          <span>${a.name}</span>
+          ${a.series && !inSeries ? `<span class="admin-item-meta">currently in ${a.series}</span>` : ""}
+        `;
+        item.querySelector("input").addEventListener("change", async e => {
+          try {
+            await setAlbumSeries(a.id, e.target.checked ? series : null);
+            renderAlbumsAdminList();
+            renderSeriesManageList();
+          } catch (err) {
+            alert("Couldn't update album: " + err.message);
+          }
+        });
+        albumsWrap.appendChild(item);
+      });
+      wrap.appendChild(albumsWrap);
+    }
   });
 }
 
