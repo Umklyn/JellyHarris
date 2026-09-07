@@ -426,9 +426,7 @@ footer .theme-toggle {
   width: 16px;
   height: 16px;
   color: var(--text);
-  margin-left: 1.5rem;
-  padding-left: 1rem;
-  border-left: 1px solid var(--text-light);
+  margin-left: 0.6rem;
   vertical-align: middle;
   transition: opacity 0.2s;
   opacity: 0.6;
@@ -532,9 +530,5 @@ nav.menu-open {
   }
   footer p:last-child .footer-insta {
     margin-left: 0;
-  }
-  footer p:last-child .theme-toggle {
-    margin-left: 0.5rem;
-    padding-left: 0.5rem;
   }
 }
