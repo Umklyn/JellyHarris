@@ -13,6 +13,13 @@
   --cursor-active: url("../assets/cursor-arrow-black.svg") 2 1, pointer;
 }
 
+:root[data-theme="dark"] {
+  --bg: #0E0E0E;
+  --bg-alt: #161616;
+  --text: #F5F5F3;
+  --text-light: #8A8884;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -113,6 +120,12 @@ nav {
   opacity: 0.4;
 }
 
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
 .nav-links {
   display: flex;
   gap: 3rem;
@@ -148,6 +161,21 @@ nav {
 
 .nav-links a:hover {
   color: var(--accent-red);
+}
+
+/* Theme toggle */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1;
 }
 
 /* Hamburger button — masqué sur desktop */
@@ -443,6 +471,11 @@ nav.scrolled {
   backdrop-filter: blur(16px) saturate(1.8);
   -webkit-backdrop-filter: blur(16px) saturate(1.8);
   border-bottom: 1px solid rgba(14,14,14,0.06);
+}
+
+:root[data-theme="dark"] nav.scrolled {
+  background: rgba(14,14,14,0.75);
+  border-bottom: 1px solid rgba(245,245,243,0.08);
 }
 
 /* backdrop-filter crée un containing block pour les descendants position:fixed

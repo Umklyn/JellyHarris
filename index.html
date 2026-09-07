@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="js/theme-init.js"></script>
   <title>Jelly Harris — Photographer</title>
   <meta name="description" content="Jelly Harris — photographer based in Brussels." />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
@@ -23,14 +24,17 @@
 
   <nav>
     <a href="index.html" class="nav-logo"><img src="assets/logo.png" alt="Jelly Harris" class="nav-logo-img" /><span class="nav-logo-text">Jelly Harris</span></a>
-    <ul class="nav-links">
-      <li><a href="blog.html">Journal</a></li>
-      <li><a href="gallery.html">Gallery</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-    <button class="nav-burger" aria-label="Menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="blog.html">Journal</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" aria-label="Basculer le mode sombre">🌙</button>
+      <button class="nav-burger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </nav>
 
   <main class="page-content">
@@ -113,6 +117,7 @@
   </footer>
 
   <script src="js/nav.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/protect-images.js"></script>
   <script type="module" src="js/firebase-init.js"></script>
   <script type="module" src="js/main.js"></script>
