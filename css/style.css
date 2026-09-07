@@ -422,6 +422,20 @@ footer p:nth-child(2) {
   opacity: 0.6;
 }
 
+footer .theme-toggle {
+  width: 16px;
+  height: 16px;
+  color: var(--text);
+  margin-left: 0.6rem;
+  vertical-align: middle;
+  transition: opacity 0.2s;
+  opacity: 0.6;
+}
+
+footer .theme-toggle:hover {
+  opacity: 1;
+}
+
 .footer-insta:hover {
   opacity: 1;
 }
