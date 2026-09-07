@@ -21,7 +21,9 @@
 }
 
 :root[data-theme="dark"] .nav-logo-img,
-:root[data-theme="dark"] .footer-logo-img {
+:root[data-theme="dark"] .footer-logo-img,
+:root[data-theme="dark"] .topbar-logo-img,
+:root[data-theme="dark"] .sidebar-logo-img {
   filter: invert(1);
 }
 

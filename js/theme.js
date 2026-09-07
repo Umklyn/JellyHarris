@@ -4,7 +4,16 @@ const MOON_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" s
 const SUN_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
 
 function updateThemeIcon(theme) {
-  if (themeToggle) themeToggle.innerHTML = theme === 'dark' ? SUN_ICON : MOON_ICON;
+  if (!themeToggle) return;
+  const icon = theme === 'dark' ? SUN_ICON : MOON_ICON;
+  const iconHolder = themeToggle.querySelector('.theme-toggle-icon');
+  const label = themeToggle.querySelector('.theme-toggle-label');
+  if (iconHolder) {
+    iconHolder.innerHTML = icon;
+    if (label) label.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+  } else {
+    themeToggle.innerHTML = icon;
+  }
 }
 
 if (themeToggle) {

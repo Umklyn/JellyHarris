@@ -270,6 +270,35 @@
   color: var(--accent-red);
 }
 
+.sidebar-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: auto;
+  height: auto;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0;
+  margin-bottom: 1rem;
+  transition: color 0.2s;
+}
+
+.sidebar-theme-toggle:hover {
+  color: var(--text);
+}
+
+.sidebar-theme-toggle .theme-toggle-icon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+}
+
 .sidebar-logout {
   background: none;
   border: none;
