@@ -678,6 +678,77 @@
   color: rgba(14,14,14,0.2);
 }
 
+/* ── Notes ── */
+.note-form {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.note-form textarea {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--admin-border);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+  border-radius: 0;
+  transition: border-color 0.2s;
+}
+
+.note-form textarea:focus {
+  border-color: var(--text);
+}
+
+.note-form textarea::placeholder {
+  color: var(--text-light);
+}
+
+.note-form .btn {
+  flex-shrink: 0;
+}
+
+.notes-admin-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.note-item {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--admin-border-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.note-body {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.note-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.note-date {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.15em;
+  color: var(--text-light);
+  text-transform: uppercase;
+}
+
 .input-title {
   font-family: var(--font-sans) !important;
   font-size: 1rem !important;
@@ -1456,6 +1527,15 @@
   }
 
   .panel-header .btn-red {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .note-form {
+    flex-direction: column;
+  }
+
+  .note-form .btn {
     width: 100%;
     justify-content: center;
   }
