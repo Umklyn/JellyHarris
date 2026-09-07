@@ -154,6 +154,7 @@ onAuthStateChanged(auth, async user => {
     await migrateLegacySeries();
     loadArticles();
     loadMessages();
+    loadNotes();
   } else {
     document.getElementById("login-screen").style.display = "flex";
     document.getElementById("admin-dashboard").style.display = "none";
@@ -1462,6 +1463,61 @@ async function loadMessages() {
     list.innerHTML = `<div class="loading-state"><span class="label">Error: ${e.message}</span></div>`;
   }
 }
+
+// --- Notes (privé, jamais affiché sur le site public) ---
+async function loadNotes() {
+  const list = document.getElementById("notes-admin-list");
+  list.innerHTML = `<div class="loading-state"><span class="label">Loading...</span></div>`;
+
+  try {
+    const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      list.innerHTML = `<div class="loading-state"><span class="label">No notes yet.</span></div>`;
+      return;
+    }
+
+    list.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const n = docSnap.data();
+      const date = n.createdAt?.toDate?.()
+        ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(n.createdAt.toDate())
+        : "";
+
+      const item = document.createElement("div");
+      item.className = "note-item";
+      item.innerHTML = `
+        <div class="note-body">${n.text || ""}</div>
+        <div class="note-actions">
+          <span class="note-date">${date}</span>
+          <button class="admin-action-btn delete" data-id="${docSnap.id}">Delete</button>
+        </div>
+      `;
+
+      item.querySelector(".delete").addEventListener("click", async () => {
+        if (confirm("Delete this note?")) {
+          await deleteDoc(doc(db, "notes", docSnap.id));
+          loadNotes();
+        }
+      });
+
+      list.appendChild(item);
+    });
+  } catch (e) {
+    list.innerHTML = `<div class="loading-state"><span class="label">Error: ${e.message}</span></div>`;
+  }
+}
+
+document.getElementById("add-note-btn").addEventListener("click", async () => {
+  const input = document.getElementById("note-input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  await addDoc(collection(db, "notes"), { text, createdAt: serverTimestamp() });
+  input.value = "";
+  loadNotes();
+});
 
 // --- Modal helpers ---
 function openModal(id) {

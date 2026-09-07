@@ -59,7 +59,12 @@
     <aside class="admin-sidebar" id="admin-sidebar">
       <div class="sidebar-logo">
         <img src="assets/logo.png" alt="Jelly Harris" class="sidebar-logo-img" />
-        <span class="label">Admin</span>
+        <div class="sidebar-logo-row">
+          <span class="label">Admin</span>
+          <button class="sidebar-theme-toggle theme-toggle" aria-label="Basculer le mode sombre">
+            <span class="theme-toggle-icon"></span>
+          </button>
+        </div>
         <p class="sidebar-name">Jelly Harris</p>
       </div>
 
@@ -74,12 +79,10 @@
           <span>Messages</span>
           <span class="msg-badge" id="msg-badge" style="display:none"></span>
         </button>
+        <button class="sidebar-btn" data-panel="notes">
+          <span>Notes</span>
+        </button>
       </div>
-
-      <button class="sidebar-theme-toggle theme-toggle" aria-label="Basculer le mode sombre">
-        <span class="theme-toggle-icon"></span>
-        <span class="theme-toggle-label">Dark mode</span>
-      </button>
 
       <button class="sidebar-logout" id="logout-btn">Sign out</button>
     </aside>
@@ -113,6 +116,25 @@
           </div>
         </div>
         <div class="messages-admin-list" id="messages-admin-list">
+          <div class="loading-state"><span class="label">Loading...</span></div>
+        </div>
+      </div>
+
+      <!-- Panel Notes -->
+      <div class="admin-panel" id="panel-notes" style="display:none;">
+        <div class="panel-header">
+          <div>
+            <span class="label">Private — never public</span>
+            <h2>Notes</h2>
+          </div>
+        </div>
+
+        <div class="note-form">
+          <textarea id="note-input" rows="3" placeholder="Idée d'article, d'album..."></textarea>
+          <button class="btn btn-red" id="add-note-btn">Add note</button>
+        </div>
+
+        <div class="notes-admin-list" id="notes-admin-list">
           <div class="loading-state"><span class="label">Loading...</span></div>
         </div>
       </div>
