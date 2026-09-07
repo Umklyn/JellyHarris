@@ -426,7 +426,7 @@ footer .theme-toggle {
   width: 16px;
   height: 16px;
   color: var(--text);
-  margin-right: 0.6rem;
+  margin-left: 0.6rem;
   vertical-align: middle;
   transition: opacity 0.2s;
   opacity: 0.6;
