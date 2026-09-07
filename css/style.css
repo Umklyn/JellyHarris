@@ -20,6 +20,11 @@
   --text-light: #8A8884;
 }
 
+:root[data-theme="dark"] .nav-logo-img,
+:root[data-theme="dark"] .footer-logo-img {
+  filter: invert(1);
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;

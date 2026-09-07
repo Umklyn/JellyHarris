@@ -72,6 +72,11 @@
   border-bottom-color: rgba(14,14,14,0.07);
 }
 
+:root[data-theme="dark"] .gallery-filters.is-stuck {
+  background: rgba(14,14,14,0.55);
+  border-bottom-color: rgba(245,245,243,0.08);
+}
+
 .filter-btn {
   font-family: var(--font-mono);
   font-size: 0.55rem;
