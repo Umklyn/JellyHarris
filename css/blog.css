@@ -381,3 +381,13 @@
   .blog-main { padding-left: 1rem; padding-right: 1rem; }
   .article-content { padding-left: 0; padding-right: 0; }
 }
+
+@media (min-width: 1800px) {
+  .blog-main { max-width: 1600px; }
+  .article-content { max-width: 760px; }
+}
+
+@media (min-width: 2400px) {
+  .blog-main { max-width: 1900px; }
+  .article-content { max-width: 880px; }
+}

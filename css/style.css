@@ -48,6 +48,14 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (min-width: 1800px) {
+  html { font-size: 18px; }
+}
+
+@media (min-width: 2400px) {
+  html { font-size: 21px; }
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--bg);
