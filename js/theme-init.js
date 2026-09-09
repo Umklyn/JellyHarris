@@ -1,5 +1,5 @@
 (function () {
   var saved = localStorage.getItem('theme');
-  var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  var theme = saved || 'light';
   document.documentElement.setAttribute('data-theme', theme);
 })();
