@@ -137,7 +137,7 @@ async function openAlbumDetail(album) {
 
     const img = document.createElement("img");
     img.src = cldWatermark(url, 800);
-    img.alt = album.name;
+    img.alt = (album.captions && album.captions[i]) || album.name;
     img.loading = "lazy";
     img.className = "photo-thumb";
     img.dataset.color = !!(album.colors && album.colors[i]);
@@ -191,6 +191,7 @@ function showLightboxPhoto(index) {
   lightboxImg.src = cldWatermark(lightboxPhotos[index], 1600);
   lightboxImg.dataset.color = !!lightboxColors[index];
   const caption = lightboxCaptions[index] || "";
+  lightboxImg.alt = caption || currentAlbum?.name || "";
   const info = document.querySelector(".lightbox-info");
   const captionEl = document.getElementById("lightbox-caption");
   captionEl.textContent = caption;

@@ -32,7 +32,8 @@ module.exports = async (req, res) => {
     .map((url, i) => {
       const thumb = cldWatermark(url, 800);
       const isColor = !!colors[i];
-      return `<div class="photo-cell"><img src="${escapeHtml(thumb)}" alt="${name}" data-color="${isColor}" class="photo-thumb" loading="lazy" /></div>`;
+      const alt = escapeHtml(captions[i] || album.name || "");
+      return `<div class="photo-cell"><img src="${escapeHtml(thumb)}" alt="${alt}" data-color="${isColor}" class="photo-thumb" loading="lazy" /></div>`;
     })
     .join("");
 
