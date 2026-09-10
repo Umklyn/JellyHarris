@@ -163,6 +163,11 @@
   filter: grayscale(50%);
 }
 
+.album-card img[data-color="true"],
+.album-card:hover img[data-color="true"] {
+  filter: none;
+}
+
 .album-overlay {
   position: absolute;
   inset: 0;
@@ -247,6 +252,10 @@
   object-fit: contain;
   filter: grayscale(100%);
   display: block;
+}
+
+.lightbox-img[data-color="true"] {
+  filter: none;
 }
 
 .lightbox-info {
@@ -393,6 +402,11 @@
 .photo-thumb:hover {
   filter: grayscale(15%);
   transform: scale(1.04);
+}
+
+.photo-thumb[data-color="true"],
+.photo-thumb[data-color="true"]:hover {
+  filter: none;
 }
 
 /* Responsive */

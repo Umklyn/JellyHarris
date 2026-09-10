@@ -556,6 +556,7 @@ document.getElementById("save-album-btn").addEventListener("click", async () => 
       series: document.getElementById("album-series").value.trim() || null,
       description: document.getElementById("album-desc").value.trim(),
       photos: urls,
+      colors: urls.map(() => false),
       createdAt: serverTimestamp()
     });
 
@@ -573,17 +574,26 @@ document.getElementById("cancel-album-btn").addEventListener("click", closeAllMo
 document.getElementById("close-album-modal").addEventListener("click", closeAllModals);
 
 // --- Edit album ---
-function createEditPhotoItem(url, caption) {
+function createEditPhotoItem(url, caption, color) {
   const item = document.createElement("div");
   item.className = "edit-photo-item";
   item.draggable = true;
   item.dataset.url = url;
+  item.dataset.color = !!color;
   item.innerHTML = `
     <span class="edit-photo-drag" aria-hidden="true" title="Drag to reorder">⠿</span>
-    <img src="${cldResize(url, 300)}" class="edit-photo-thumb" alt="" />
+    <img src="${cldResize(url, 300)}" class="edit-photo-thumb" data-color="${!!color}" alt="" />
     <textarea class="edit-caption-input" placeholder="Add a caption...">${caption || ""}</textarea>
+    <div class="edit-photo-color-toggle">
+      <button type="button" data-color="false" class="${!color ? "active" : ""}">B&amp;W</button>
+      <button type="button" data-color="true" class="${color ? "active" : ""}">Color</button>
+    </div>
     <button type="button" class="edit-photo-remove" title="Remove photo">✕</button>
   `;
+  setupColorToggle(item.querySelector(".edit-photo-color-toggle"), !!color, isColor => {
+    item.dataset.color = isColor;
+    item.querySelector(".edit-photo-thumb").dataset.color = isColor;
+  });
   item.querySelector(".edit-photo-remove").addEventListener("click", () => item.remove());
   item.addEventListener("dragstart", () => item.classList.add("dragging"));
   item.addEventListener("dragend", () => item.classList.remove("dragging"));
@@ -599,7 +609,7 @@ function openEditAlbum(album, id) {
   const list = document.getElementById("edit-photos-list");
   list.innerHTML = "";
   (album.photos || []).forEach((url, i) => {
-    list.appendChild(createEditPhotoItem(url, (album.captions || [])[i]));
+    list.appendChild(createEditPhotoItem(url, (album.captions || [])[i], (album.colors || [])[i]));
   });
 
   openModal("modal-edit-album");
@@ -609,7 +619,7 @@ async function handleEditAlbumFiles(files) {
   const list = document.getElementById("edit-photos-list");
   for (const file of files) {
     if (!file.type.startsWith("image/")) continue;
-    const item = createEditPhotoItem(URL.createObjectURL(file), "");
+    const item = createEditPhotoItem(URL.createObjectURL(file), "", false);
     item.classList.add("uploading");
     list.appendChild(item);
     try {
@@ -673,13 +683,15 @@ document.getElementById("save-edit-btn").addEventListener("click", async () => {
     const items = [...document.querySelectorAll("#edit-photos-list .edit-photo-item")];
     const photos = items.map(item => item.dataset.url);
     const captions = items.map(item => item.querySelector(".edit-caption-input").value.trim());
+    const colors = items.map(item => item.dataset.color === "true");
 
     await updateDoc(doc(db, "albums", currentEditAlbumId), {
       name: document.getElementById("edit-album-name").value.trim(),
       series: document.getElementById("edit-album-series").value.trim() || null,
       description: document.getElementById("edit-album-desc").value.trim(),
       photos,
-      captions
+      captions,
+      colors
     });
 
     closeAllModals();

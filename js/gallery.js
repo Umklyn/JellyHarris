@@ -6,6 +6,7 @@ let allAlbums = [];
 let currentAlbum = null;
 let lightboxPhotos = [];
 let lightboxCaptions = [];
+let lightboxColors = [];
 let lightboxIndex = 0;
 
 async function loadAlbums() {
@@ -50,6 +51,7 @@ function renderAlbums(albums) {
 
   albums.forEach((album, i) => {
     const cover = album.photos?.[0] || "";
+    const coverColor = !!album.colors?.[0];
     const count = album.photos?.length || 0;
     const index = String(i + 1).padStart(2, "0");
 
@@ -57,7 +59,7 @@ function renderAlbums(albums) {
     card.className = "album-card";
     card.innerHTML = `
       <span class="album-index">${index}</span>
-      <img src="${cldWatermark(cover, 800)}" alt="${album.name}" loading="lazy" />
+      <img src="${cldWatermark(cover, 800)}" alt="${album.name}" data-color="${coverColor}" loading="lazy" />
       <div class="album-overlay">
         <h3>${album.name}</h3>
         <span class="album-count">${count} photo${count > 1 ? "s" : ""}</span>
@@ -100,6 +102,7 @@ async function openAlbumDetail(album) {
   currentAlbum = album;
   lightboxPhotos = album.photos || [];
   lightboxCaptions = album.captions || [];
+  lightboxColors = album.colors || [];
   if (!lightboxPhotos.length) return;
 
   document.querySelector(".albums-grid").style.display = "none";
@@ -125,6 +128,7 @@ async function openAlbumDetail(album) {
     img.alt = album.name;
     img.loading = "lazy";
     img.className = "photo-thumb";
+    img.dataset.color = !!(album.colors && album.colors[i]);
     img.addEventListener("click", () => {
       history.pushState({ view: "lightbox", id: album.id, index: i }, "", `#${album.id}`);
       openLightbox(i);
@@ -171,7 +175,9 @@ function preloadLightboxPhoto(index) {
 }
 
 function showLightboxPhoto(index) {
-  document.getElementById("lightbox-img").src = cldWatermark(lightboxPhotos[index], 1600);
+  const lightboxImg = document.getElementById("lightbox-img");
+  lightboxImg.src = cldWatermark(lightboxPhotos[index], 1600);
+  lightboxImg.dataset.color = !!lightboxColors[index];
   const caption = lightboxCaptions[index] || "";
   const info = document.querySelector(".lightbox-info");
   const captionEl = document.getElementById("lightbox-caption");
