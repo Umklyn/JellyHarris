@@ -593,6 +593,10 @@
     max-height: 70vw;
   }
 
+  .hero-img-wrap img {
+    object-position: 30% 2%;
+  }
+
   .hero-signature {
     width: 38%;
     bottom: -4rem;
