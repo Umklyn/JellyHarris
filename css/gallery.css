@@ -25,7 +25,7 @@
   color: var(--accent-red);
 }
 
-.page-header h1.display {
+.page-header .display {
   font-weight: 700;
   font-size: clamp(2.6rem, 7.5vw, 6.5rem);
   color: var(--text);
@@ -37,7 +37,7 @@
   transform-origin: center;
 }
 
-.page-header h1.display:hover {
+.page-header .display:hover {
   letter-spacing: 0.04em;
   transform: scaleY(1.03);
 }

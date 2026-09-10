@@ -1,6 +1,7 @@
 import { db } from "./firebase-init.js";
 import { collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { cldWatermark } from "./cloudinary.js";
+import { slugify } from "./slug.js";
 
 let allAlbums = [];
 let currentAlbum = null;
@@ -29,14 +30,25 @@ async function loadAlbums() {
     renderAlbums(allAlbums);
     renderFilters(allAlbums, filtersEl);
 
-    history.replaceState({ view: "grid" }, "", window.location.pathname);
-
-    if (window.location.hash) {
-      const id = window.location.hash.replace("#", "");
-      const album = allAlbums.find(a => a.id === id);
+    const pathMatch = window.location.pathname.match(/^\/gallery\/([^/]+)\/?$/);
+    if (pathMatch) {
+      const album = allAlbums.find(a => slugify(a.name) === pathMatch[1]);
       if (album) {
-        history.pushState({ view: "album", id }, "", `#${id}`);
+        history.replaceState({ view: "album", id: album.id }, "", window.location.pathname);
         openAlbumDetail(album);
+      } else {
+        history.replaceState({ view: "grid" }, "", "/gallery");
+      }
+    } else {
+      history.replaceState({ view: "grid" }, "", window.location.pathname);
+
+      if (window.location.hash) {
+        const id = window.location.hash.replace("#", "");
+        const album = allAlbums.find(a => a.id === id);
+        if (album) {
+          history.pushState({ view: "album", id }, "", `/gallery/${slugify(album.name)}`);
+          openAlbumDetail(album);
+        }
       }
     }
   } catch (e) {
@@ -66,7 +78,7 @@ function renderAlbums(albums) {
       </div>
     `;
     card.addEventListener("click", () => {
-      history.pushState({ view: "album", id: album.id }, "", `#${album.id}`);
+      history.pushState({ view: "album", id: album.id }, "", `/gallery/${slugify(album.name)}`);
       openAlbumDetail(album);
     });
     grid.appendChild(card);
@@ -130,7 +142,7 @@ async function openAlbumDetail(album) {
     img.className = "photo-thumb";
     img.dataset.color = !!(album.colors && album.colors[i]);
     img.addEventListener("click", () => {
-      history.pushState({ view: "lightbox", id: album.id, index: i }, "", `#${album.id}`);
+      history.pushState({ view: "lightbox", id: album.id, index: i }, "", `/gallery/${slugify(album.name)}`);
       openLightbox(i);
     });
     wrap.appendChild(img);

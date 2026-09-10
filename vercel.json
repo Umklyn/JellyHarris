@@ -1,5 +1,10 @@
 {
   "cleanUrls": true,
+  "rewrites": [
+    { "source": "/blog/:slug", "destination": "/api/blog/:slug" },
+    { "source": "/gallery/:slug", "destination": "/api/gallery/:slug" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

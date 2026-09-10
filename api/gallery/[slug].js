@@ -1,0 +1,158 @@
+const { SITE_URL, fetchCollection, slugify, escapeHtml, cldWatermark } = require("../_lib");
+
+module.exports = async (req, res) => {
+  const { slug } = req.query;
+
+  let albums;
+  try {
+    albums = await fetchCollection("albums");
+  } catch (e) {
+    res.writeHead(302, { Location: "/gallery.html" });
+    return res.end();
+  }
+
+  const album = albums.find(a => slugify(a.name) === slug);
+
+  if (!album || !(album.photos || []).length) {
+    res.writeHead(302, { Location: "/gallery.html" });
+    return res.end();
+  }
+
+  const name = escapeHtml(album.name || "");
+  const photos = album.photos || [];
+  const colors = album.colors || [];
+  const captions = album.captions || [];
+  const count = photos.length;
+  const descriptionRaw = album.description || `${count} photo${count > 1 ? "s" : ""} from Jelly Harris${album.series ? " — " + album.series : ""}.`;
+  const description = escapeHtml(descriptionRaw.slice(0, 160));
+  const coverUrl = cldWatermark(photos[0], 1200);
+  const canonical = `${SITE_URL}/gallery/${slug}`;
+
+  const photosGridHtml = photos
+    .map((url, i) => {
+      const thumb = cldWatermark(url, 800);
+      const isColor = !!colors[i];
+      return `<div class="photo-cell"><img src="${escapeHtml(thumb)}" alt="${name}" data-color="${isColor}" class="photo-thumb" loading="lazy" /></div>`;
+    })
+    .join("");
+
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    name: album.name || "",
+    description: descriptionRaw,
+    image: photos.slice(0, 8).map(u => cldWatermark(u, 1200)),
+    author: { "@type": "Person", name: "Jelly Harris" }
+  });
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="/js/theme-init.js"></script>
+  <title>${name} — Jelly Harris</title>
+  <meta name="description" content="${description}" />
+  <link rel="canonical" href="${canonical}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="${name} — Jelly Harris" />
+  <meta property="og:description" content="${description}" />
+  <meta property="og:image" content="${escapeHtml(coverUrl)}" />
+  <meta property="og:url" content="${canonical}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${name} — Jelly Harris" />
+  <meta name="twitter:description" content="${description}" />
+  <meta name="twitter:image" content="${escapeHtml(coverUrl)}" />
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://firestore.googleapis.com" />
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@1&display=swap" />
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js" />
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/gallery.css" />
+  <script type="application/ld+json">${jsonLd}</script>
+</head>
+<body>
+
+  <nav>
+    <a href="/index.html" class="nav-logo"><img src="/assets/logo.png" alt="Jelly Harris" class="nav-logo-img" /><span class="nav-logo-text">Jelly Harris</span></a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="/blog.html">Journal</a></li>
+        <li><a href="/gallery.html" class="active">Gallery</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+      <button class="nav-burger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content gallery-main">
+
+    <header class="page-header" style="display:none;">
+      <span class="label">Portfolio</span>
+      <span class="display">Gallery</span>
+    </header>
+
+    <div class="filters-sentinel" id="filters-sentinel"></div>
+    <div class="gallery-filters" id="gallery-filters" style="display:none;">
+      <button class="filter-btn active" data-filter="all">All series</button>
+    </div>
+
+    <div class="albums-grid" id="albums-grid" style="display:none;">
+      <div class="loading-state"><span class="label">Loading...</span></div>
+    </div>
+
+    <!-- Album detail view -->
+    <div class="album-detail" id="album-detail">
+      <div class="album-detail-header">
+        <button class="back-btn" id="back-to-albums">← Back</button>
+        <div>
+          <h1 class="album-detail-title" id="album-detail-title">${name}</h1>
+          <p class="album-detail-desc" id="album-detail-desc"${album.description ? "" : ' style="display:none;"'}>${escapeHtml(album.description || "")}</p>
+        </div>
+      </div>
+      <div class="photos-grid" id="photos-grid">${photosGridHtml}</div>
+    </div>
+
+  </main>
+
+  <button class="lightbox-close" id="lightbox-close">CLOSE</button>
+  <button class="lightbox-nav lightbox-prev" id="lightbox-prev">← PREV</button>
+  <button class="lightbox-nav lightbox-next" id="lightbox-next">NEXT →</button>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+      <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+      <div class="lightbox-info">
+        <span class="label" id="lightbox-series"></span>
+        <p id="lightbox-caption"></p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Jelly Harris</p>
+    <p><a href="/index.html"><img src="/assets/logo.png" alt="Jelly Harris" class="footer-logo-img" /></a></p>
+    <p>Brussels, Belgium <a href="https://www.instagram.com/jelly.harris/" target="_blank" rel="noopener" class="footer-insta" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg></a><button class="theme-toggle" aria-label="Basculer le mode sombre"></button></p>
+  </footer>
+
+  <script src="/js/nav.js"></script>
+  <script src="/js/theme.js"></script>
+  <script src="/js/protect-images.js"></script>
+  <script type="module" src="/js/firebase-init.js"></script>
+  <script type="module" src="/js/gallery.js"></script>
+</body>
+</html>`;
+
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
+  res.status(200).send(html);
+};

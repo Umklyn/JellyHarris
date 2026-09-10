@@ -2,6 +2,7 @@ import { db } from "./firebase-init.js";
 import { collection, query, orderBy, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { cldWatermark, cldRotate } from "./cloudinary.js";
 import { wrapArticleSections } from "./article-sections.js";
+import { slugify } from "./slug.js";
 
 async function loadArticles() {
   const list = document.getElementById("articles-list");
@@ -52,7 +53,11 @@ async function loadArticles() {
       list.appendChild(row);
     });
 
-    if (window.location.hash) {
+    const pathMatch = window.location.pathname.match(/^\/blog\/([^/]+)\/?$/);
+    if (pathMatch) {
+      const match = published.find(a => slugify(a.title) === pathMatch[1]);
+      if (match) openArticle(match.id, match, { updateUrl: false });
+    } else if (window.location.hash) {
       const id = window.location.hash.replace("#", "");
       const docSnap = await getDoc(doc(db, "articles", id));
       if (docSnap.exists() && docSnap.data().status !== "draft") openArticle(id, docSnap.data());
@@ -63,8 +68,8 @@ async function loadArticles() {
   }
 }
 
-function openArticle(id, article) {
-  window.history.pushState({}, "", `#${id}`);
+function openArticle(id, article, { updateUrl = true } = {}) {
+  if (updateUrl) window.history.pushState({}, "", `/blog/${slugify(article.title)}`);
 
   const date = article.createdAt?.toDate?.()
     ? new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric" }).format(article.createdAt.toDate())
@@ -85,7 +90,7 @@ function openArticle(id, article) {
 }
 
 document.getElementById("back-to-list").addEventListener("click", () => {
-  window.history.pushState({}, "", window.location.pathname);
+  window.history.pushState({}, "", "/blog");
   document.getElementById("article-single-view").style.display = "none";
   document.getElementById("blog-list-view").style.display = "block";
 });
